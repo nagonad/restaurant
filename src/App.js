@@ -130,7 +130,7 @@ export default class App extends Component {
       });
   };
   componentDidMount() {
-    console.log("componentdidmount");
+    //gereksizdi
     this.getProducts();
   }
 
