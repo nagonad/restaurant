@@ -1,11 +1,26 @@
 import React, { Component } from "react";
 import { Table, Input, Button } from "reactstrap";
+import Modal from "react-modal";
+import CheckoutModal from "./CheckoutModal";
+
+Modal.setAppElement(document.getElementById("root"));
 
 export default class CreateOrder extends Component {
-  state = { orderNote: "" };
+  state = {
+    showModal: false,
+    currentOrderItem: {},
+  };
 
-  handleOrderNote = (orderNote) => {
-    this.setState({ orderNote: orderNote.target.value });
+  toggleModal = () => {
+    this.setState({ showModal: !this.state.showModal });
+  };
+
+  handleCurrentOrderItem = (product, size) => {
+    let currentOrderItem = this.state.currentOrderItem;
+    currentOrderItem.product = product;
+    currentOrderItem.size = size;
+
+    this.setState({ currentOrderItem: currentOrderItem });
   };
 
   render() {
@@ -16,7 +31,7 @@ export default class CreateOrder extends Component {
             <tr>
               <th>#</th>
               <th>Product Name</th>
-              <th>Description</th>
+
               <th>Klein</th>
               <th>Mittel</th>
               <th>Groß</th>
@@ -28,23 +43,16 @@ export default class CreateOrder extends Component {
               <tr key={product.productId}>
                 <th scope="row">{product.productId}</th>
                 <td>{product.productName}</td>
-                <td>
-                  <Input onChange={this.handleOrderNote} name="orderNote" />
-                </td>
 
                 <td>
                   {product.unitPrice.Klein ? (
                     <Button
                       onClick={() => {
-                        this.props.addToCart(
-                          product,
-                          "Klein",
-                          this.state.orderNote
-                        );
+                        this.handleCurrentOrderItem(product, "Klein");
                         this.props.setOrderNumber();
+                        this.toggleModal();
                       }}
                     >
-                      {""}
                       {product.unitPrice.Klein}
                     </Button>
                   ) : (
@@ -55,16 +63,11 @@ export default class CreateOrder extends Component {
                   {product.unitPrice.Mittel ? (
                     <Button
                       onClick={() => {
-                        this.props.addToCart(
-                          product,
-                          "Mittel",
-                          this.state.orderNote
-                        );
-
+                        this.handleCurrentOrderItem(product, "Mittel");
                         this.props.setOrderNumber();
+                        this.toggleModal();
                       }}
                     >
-                      {""}
                       {product.unitPrice.Mittel}
                     </Button>
                   ) : (
@@ -75,15 +78,11 @@ export default class CreateOrder extends Component {
                   {product.unitPrice.Groß ? (
                     <Button
                       onClick={() => {
-                        this.props.addToCart(
-                          product,
-                          "Groß",
-                          this.state.orderNote
-                        );
+                        this.handleCurrentOrderItem(product, "Groß");
                         this.props.setOrderNumber();
+                        this.toggleModal();
                       }}
                     >
-                      {""}
                       {product.unitPrice.Groß}
                     </Button>
                   ) : (
@@ -94,15 +93,11 @@ export default class CreateOrder extends Component {
                   {product.unitPrice.Grand ? (
                     <Button
                       onClick={() => {
-                        this.props.addToCart(
-                          product,
-                          "Grand",
-                          this.state.orderNote
-                        );
+                        this.handleCurrentOrderItem(product, "Grand");
                         this.props.setOrderNumber();
+                        this.toggleModal();
                       }}
                     >
-                      {""}
                       {product.unitPrice.Grand}
                     </Button>
                   ) : (
@@ -113,6 +108,12 @@ export default class CreateOrder extends Component {
             ))}
           </tbody>
         </Table>
+        <CheckoutModal
+          isOpen={this.state.showModal}
+          toggle={this.toggleModal}
+          addToCart={this.props.addToCart}
+          currentOrderItem={this.state.currentOrderItem}
+        ></CheckoutModal>
       </div>
     );
   }

@@ -5,6 +5,8 @@ import { Container, Row } from "reactstrap";
 import Checkout from "./Checkout.js";
 import { Routes, Route } from "react-router-dom";
 import OrderLayout from "./OrderLayout.js";
+import MenuControl from "./MenuControl";
+import "./App.css";
 
 export default class App extends Component {
   state = {
@@ -130,7 +132,6 @@ export default class App extends Component {
       });
   };
   componentDidMount() {
-    //gereksizdi
     this.getProducts();
   }
 
@@ -221,6 +222,7 @@ export default class App extends Component {
               exact
               path="/"
               element={
+                // <MenuControl></MenuControl>
                 <OrderLayout
                   currentCategory={this.state.currentCategory}
                   changeCategory={this.changeCategory}

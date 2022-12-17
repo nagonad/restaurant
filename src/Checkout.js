@@ -9,6 +9,7 @@ import {
   Form,
   Label,
 } from "reactstrap";
+import PrintComponent from "./PrintComponent";
 
 const renderExtraProductCost = (props, cartItem) => {
   return (
@@ -130,7 +131,46 @@ const renderLieferungOptions = (props) => {
 };
 
 function App(props) {
+  const [phoneNumberValue, setPhoneNumberValue] = useState("");
+  const [costumerInfo, setCostumerInfo] = useState([]);
+  const [costumerName, setCostumerName] = useState("");
+  const [costumerAddress, setCostumerAddress] = useState("");
+
   const [totalCost, setTotalCost] = useState(0);
+  const [cartItemQuantity, setCartItemQuantity] = useState(0);
+
+  const onChange = (event) => {
+    setPhoneNumberValue(event.target.value);
+  };
+
+  const fetchData = () => {
+    let url = "http://localhost:3000/costumerInfo?phoneNumber_like=";
+    if (phoneNumberValue !== "") {
+      url += phoneNumberValue;
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          setCostumerInfo(data);
+          setCostumerName(data.costumerName);
+          setCostumerAddress(data.address);
+        });
+    } else {
+      setCostumerInfo([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [phoneNumberValue]);
+
+  let initialCartItemQuantity = 0;
+  props.cart.forEach((cartItem) => {
+    initialCartItemQuantity += cartItem.quantity;
+  });
+
+  useEffect(() => {
+    setCartItemQuantity(initialCartItemQuantity);
+  }, [initialCartItemQuantity]);
 
   let totalcost = 0;
   props.cart.forEach((cartItem) => {
@@ -158,18 +198,35 @@ function App(props) {
           <FormGroup row>
             <Label sm={2}>Phone Number</Label>
             <Col sm={4}>
-              <Input
-                value={props.checkoutInformation.phoneNumber}
-                onChange={props.changeCheckoutInformation}
-                type="number"
-                name="phoneNumber"
-                id="phoneNumber"
-              />
+              <div className="search-container">
+                <div className="search-inner">
+                  <Input
+                    type="number"
+                    value={phoneNumberValue}
+                    onChange={onChange}
+                  />
+                </div>
+                <div className="dropdown">
+                  {costumerInfo.slice(0, 10).map((costumer) =>
+                    costumer.phoneNumber === phoneNumberValue ? null : (
+                      <div
+                        onClick={() =>
+                          setPhoneNumberValue(costumer.phoneNumber)
+                        }
+                        className="dropdown-row"
+                        key={costumer.id}
+                      >
+                        {costumer.phoneNumber}
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
             </Col>
             <Label sm={2}>Costumer Name</Label>
             <Col sm={4}>
               <Input
-                value={props.checkoutInformation.costumerName}
+                value={costumerName}
                 onChange={props.changeCheckoutInformation}
                 type="text"
                 name="costumerName"
@@ -181,7 +238,7 @@ function App(props) {
             <Label sm={2}>Adress</Label>
             <Col sm={4}>
               <Input
-                value={props.checkoutInformation.address}
+                value={costumerAddress}
                 onChange={props.changeCheckoutInformation}
                 type="text"
                 name="address"
@@ -225,7 +282,15 @@ function App(props) {
           <FormGroup row>
             <Col sm={6}></Col>
             <Label sm={2}>Total Price</Label>
-            <Label sm={4}>{totalCost.toFixed(2)}€</Label>
+            <Label sm={2}>{totalCost.toFixed(2)}€</Label>
+            <Label sm={2}>
+              <PrintComponent
+                cartItemQuantity={cartItemQuantity}
+                totalCost={totalCost}
+                cart={props.cart}
+                checkoutInformation={props.checkoutInformation}
+              ></PrintComponent>
+            </Label>
           </FormGroup>
         </Form>
       </Container>
