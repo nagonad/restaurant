@@ -131,37 +131,52 @@ const renderLieferungOptions = (props) => {
 };
 
 function App(props) {
-  const [phoneNumberValue, setPhoneNumberValue] = useState("");
-  const [costumerInfo, setCostumerInfo] = useState([]);
-  const [costumerName, setCostumerName] = useState("");
-  const [costumerAddress, setCostumerAddress] = useState("");
-
   const [totalCost, setTotalCost] = useState(0);
   const [cartItemQuantity, setCartItemQuantity] = useState(0);
 
-  const onChange = (event) => {
-    setPhoneNumberValue(event.target.value);
+  const finalizeCostumerPhoneNumber = (costumer) => {
+    props.changePhoneNumberValue(costumer.phoneNumber);
+    props.changePhoneNumber(costumer.phoneNumber);
+    props.changeCostumerInfo(costumer);
+    props.changeAddress(costumer.address);
+    props.changeCostumerName(costumer.costumerName);
   };
 
-  const fetchData = () => {
+  // const fetchData = () => {
+  //   let url = "http://localhost:3000/costumerInfo?phoneNumber_like=";
+  //   if (props.phoneNumberValue !== "") {
+  //     url += props.phoneNumberValue;
+  //     fetch(url)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         props.changeCostumerInfo(data);
+  //       });
+  //   } else {
+  //     props.changeCostumerInfo([]);
+  //   }
+  // };
+
+  const fetchData = (phoneNumber) => {
     let url = "http://localhost:3000/costumerInfo?phoneNumber_like=";
-    if (phoneNumberValue !== "") {
-      url += phoneNumberValue;
+    if (phoneNumber !== "") {
+      url += phoneNumber;
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          setCostumerInfo(data);
-          setCostumerName(data.costumerName);
-          setCostumerAddress(data.address);
+          props.changeCostumerInfo(data);
         });
     } else {
-      setCostumerInfo([]);
+      props.changeCostumerInfo([]);
+      props.changeCostumerName("");
+      props.changeAddress("");
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [phoneNumberValue]);
+  const onChange = (e) => {
+    fetchData(e.target.value);
+    props.changePhoneNumberValue(e.target.value);
+    props.changeCheckoutInformation(e);
+  };
 
   let initialCartItemQuantity = 0;
   props.cart.forEach((cartItem) => {
@@ -201,32 +216,42 @@ function App(props) {
               <div className="search-container">
                 <div className="search-inner">
                   <Input
+                    name="phoneNumber"
                     type="number"
-                    value={phoneNumberValue}
+                    value={props.checkoutInformation.phoneNumber}
                     onChange={onChange}
                   />
                 </div>
-                <div className="dropdown">
-                  {costumerInfo.slice(0, 10).map((costumer) =>
-                    costumer.phoneNumber === phoneNumberValue ? null : (
-                      <div
-                        onClick={() =>
-                          setPhoneNumberValue(costumer.phoneNumber)
-                        }
-                        className="dropdown-row"
-                        key={costumer.id}
-                      >
-                        {costumer.phoneNumber}
-                      </div>
+
+                {props.costumerInfo.length > 0
+                  ? props.costumerInfo.map((costumer) =>
+                      costumer.phoneNumber === props.phoneNumberValue ? null : (
+                        <div
+                          onClick={() => finalizeCostumerPhoneNumber(costumer)}
+                          className="dropdown-row"
+                          key={costumer.id}
+                        >
+                          {costumer.phoneNumber}
+                        </div>
+                      )
                     )
-                  )}
-                </div>
+                  : null
+                //   <div
+                //     onClick={() =>
+                //       finalizeCostumerPhoneNumber(props.costumerInfo)
+                //     }
+                //     className="dropdown-row"
+                //     key={props.costumerInfo.id}
+                //   >
+                //     {props.costumerInfo.phoneNumber}
+                //   </div>
+                }
               </div>
             </Col>
             <Label sm={2}>Costumer Name</Label>
             <Col sm={4}>
               <Input
-                value={costumerName}
+                value={props.checkoutInformation.costumerName}
                 onChange={props.changeCheckoutInformation}
                 type="text"
                 name="costumerName"
@@ -238,7 +263,7 @@ function App(props) {
             <Label sm={2}>Adress</Label>
             <Col sm={4}>
               <Input
-                value={costumerAddress}
+                value={props.checkoutInformation.address}
                 onChange={props.changeCheckoutInformation}
                 type="text"
                 name="address"

@@ -29,6 +29,36 @@ export default class App extends Component {
       ort3: 5,
       ort4: 6,
     },
+    costumerInfo: [],
+    phoneNumberValue: "",
+  };
+
+  changeCostumerName = (value) => {
+    let newCheckoutInformation = this.state.checkoutInformation;
+
+    newCheckoutInformation.costumerName = value;
+
+    this.setState({ checkoutInformation: newCheckoutInformation });
+  };
+
+  changeAddress = (value) => {
+    let newCheckoutInformation = this.state.checkoutInformation;
+
+    newCheckoutInformation.address = value;
+
+    this.setState({ checkoutInformation: newCheckoutInformation });
+  };
+
+  changePhoneNumber = (value) => {
+    let newCheckoutInformation = this.state.checkoutInformation;
+
+    newCheckoutInformation.phoneNumber = value;
+
+    this.setState({ checkoutInformation: newCheckoutInformation });
+  };
+
+  changePhoneNumberValue = (value) => {
+    this.setState({ phoneNumberValue: value });
   };
 
   changeDeliveryTarget = (e) => {
@@ -45,6 +75,10 @@ export default class App extends Component {
     newCartItem.extraProductCost = event.target.value;
 
     this.setState({ cart: newCart });
+  };
+
+  changeCostumerInfo = (costumer) => {
+    this.setState({ costumerInfo: costumer });
   };
 
   changeCheckoutInformation = (e) => {
@@ -238,6 +272,13 @@ export default class App extends Component {
               path="/checkout"
               element={
                 <Checkout
+                  changeAddress={this.changeAddress}
+                  changeCostumerName={this.changeCostumerName}
+                  changePhoneNumber={this.changePhoneNumber}
+                  changePhoneNumberValue={this.changePhoneNumberValue}
+                  phoneNumberValue={this.state.phoneNumberValue}
+                  changeCostumerInfo={this.changeCostumerInfo}
+                  costumerInfo={this.state.costumerInfo}
                   locations={this.state.locations}
                   changeDeliveryTarget={this.changeDeliveryTarget}
                   changeCheckoutInformation={this.changeCheckoutInformation}
