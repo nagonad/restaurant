@@ -192,7 +192,7 @@ function App(props) {
     totalcost +=
       cartItem.product.unitPrice[cartItem.productSize] * cartItem.quantity;
     if (cartItem.extraProductCost) {
-      totalcost += parseFloat(cartItem.extraProductCost);
+      totalcost += parseFloat(cartItem.extraProductCost * cartItem.quantity);
     }
   });
 

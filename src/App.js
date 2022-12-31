@@ -114,7 +114,7 @@ export default class App extends Component {
   };
 
   changeCategory = (category) => {
-    this.setState({ currentCategory: category.categoryName });
+    this.setState({ currentCategory: category.categoryname });
     this.getProducts(category.id);
   };
 
@@ -153,9 +153,9 @@ export default class App extends Component {
   };
 
   getProducts = (categoryId) => {
-    let url = "http://localhost:3000/products";
+    let url = "http://localhost:5000/menu";
     if (categoryId) {
-      url += "?categoryId=" + categoryId;
+      url += "/" + categoryId;
     }
 
     fetch(url)
@@ -177,22 +177,23 @@ export default class App extends Component {
     for (let i = 0; i < products.length; i++) {
       controller = false;
       for (let k = 0; k < categorizedProductList.length; k++) {
-        if (products[i].productId === categorizedProductList[k].productId) {
-          if (products[i].productSize === "Klein") {
-            categorizedProductList[k].unitPrice.Klein = products[i].unitPrice;
+        if (products[i].productid === categorizedProductList[k].productId) {
+          if (products[i].productsize === "Klein") {
+            categorizedProductList[k].unitPrice.Klein = products[i].unitprice;
           }
-          if (products[i].productSize === "Mittel") {
-            categorizedProductList[k].unitPrice.Mittel = products[i].unitPrice;
+          if (products[i].productsize === "Mittel") {
+            categorizedProductList[k].unitPrice.Mittel = products[i].unitprice;
           }
-          if (products[i].productSize === "Groß") {
-            categorizedProductList[k].unitPrice.Groß = products[i].unitPrice;
+          if (products[i].productsize === "Groß") {
+            categorizedProductList[k].unitPrice.Groß = products[i].unitprice;
           }
-          if (products[i].productSize === "Grand") {
-            categorizedProductList[k].unitPrice.Grand = products[i].unitPrice;
+          if (products[i].productsize === "Grand") {
+            categorizedProductList[k].unitPrice.Grand = products[i].unitprice;
           }
           controller = true;
         }
       }
+
       if (controller === false) {
         categorizedProductList[categorizedProductList.length] = {
           id: null,
@@ -207,37 +208,39 @@ export default class App extends Component {
             Grand: null,
           },
         };
+
         categorizedProductList[categorizedProductList.length - 1].productId =
-          products[i].productId;
+          products[i].productid;
+
         categorizedProductList[categorizedProductList.length - 1].id =
           products[i].id;
         categorizedProductList[categorizedProductList.length - 1].categoryId =
-          products[i].categoryId;
+          products[i].categoryid;
         categorizedProductList[categorizedProductList.length - 1].productName =
-          products[i].productName;
+          products[i].productname;
         categorizedProductList[
           categorizedProductList.length - 1
-        ].productDescription = products[i].productDescription;
+        ].productDescription = products[i].productdescription;
 
-        if (products[i].productSize === "Klein") {
+        if (products[i].productsize === "Klein") {
           categorizedProductList[
             categorizedProductList.length - 1
-          ].unitPrice.Klein = products[i].unitPrice;
+          ].unitPrice.Klein = products[i].unitprice;
         }
-        if (products[i].productSize === "Mittel") {
+        if (products[i].productsize === "Mittel") {
           categorizedProductList[
             categorizedProductList.length - 1
-          ].unitPrice.Mittel = products[i].unitPrice;
+          ].unitPrice.Mittel = products[i].unitprice;
         }
-        if (products[i].productSize === "Groß") {
+        if (products[i].productsize === "Groß") {
           categorizedProductList[
             categorizedProductList.length - 1
-          ].unitPrice.Groß = products[i].unitPrice;
+          ].unitPrice.Groß = products[i].unitprice;
         }
-        if (products[i].productSize === "Grand") {
+        if (products[i].productsize === "Grand") {
           categorizedProductList[
             categorizedProductList.length - 1
-          ].unitPrice.Grand = products[i].unitPrice;
+          ].unitPrice.Grand = products[i].unitprice;
         }
       }
     }

@@ -1,17 +1,24 @@
 import React from "react";
-import { Table } from "reactstrap";
+import { Table, Col, Row } from "reactstrap";
 
 export default class ComponentToPrint extends React.Component {
   render() {
     return (
-      <div className="px-2 print-source">
+      <div className="px-2 print-source mt-2">
         <div>
-          {this.props.checkoutInformation.delivery ? "Lieferung" : "Abholung"}
+          <div>BISSULA</div>
+          <div>Döner und Pizza Haus</div>
+        </div>
+        <hr className="m-1" />
+        <div style={{ textAlign: "center" }}>
+          <b>
+            {this.props.checkoutInformation.delivery ? "Lieferung" : "Abholung"}
+          </b>
         </div>
         <div>{this.props.checkoutInformation.costumerName}</div>
         <div>{this.props.checkoutInformation.address}</div>
         <div>{this.props.checkoutInformation.phoneNumber}</div>
-
+        <hr className="m-1" />
         <Table>
           <tbody>
             {this.props.cart.map((cartItem) => (
@@ -62,6 +69,7 @@ export default class ComponentToPrint extends React.Component {
             ))}
           </tbody>
         </Table>
+
         <div>{this.props.cartItemQuantity} Artikel</div>
       </div>
     );
