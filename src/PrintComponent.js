@@ -81,27 +81,42 @@ const saveCostumerInfo = (checkoutInformation) => {
     address: checkoutInformation.address,
   };
 
-  let url = "http://localhost:3000/costumerInfo?phoneNumber=";
-  url += checkoutInformation.phoneNumber;
-
-  fetch(url)
+  fetch("http://localhost:5000/costumer_info", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newCostumer),
+  })
     .then((response) => response.json())
     .then((data) => {
-      if (data.length < 1) {
-        fetch("http://localhost:3000/costumerInfo", {
-          method: "POST", // or 'PUT'
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newCostumer),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Success:", data);
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
-      }
+      console.log("Success:", data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
     });
+
+  // let url = "http://localhost:3000/costumerInfo?phoneNumber=";
+  // url += checkoutInformation.phoneNumber;
+
+  // fetch(url)
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     if (data.length < 1) {
+  //       fetch("http://localhost:3000/costumerInfo", {
+  //         method: "POST", // or 'PUT'
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(newCostumer),
+  //       })
+  //         .then((response) => response.json())
+  //         .then((data) => {
+  //           console.log("Success:", data);
+  //         })
+  //         .catch((error) => {
+  //           console.error("Error:", error);
+  //         });
+  //     }
+  //   });
 };

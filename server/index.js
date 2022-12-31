@@ -45,6 +45,17 @@ app.get("/menu/:id", async (req, res) => {
 
 //create costumer
 
+app.post("/costumer_info", async (req, res) => {
+  try {
+    await pool.query(
+      "INSERT INTO costumer_info(phonenumber,costumername,costumeraddress) VALUES($1,$2,$3)",
+      [req.body.phoneNumber, req.body.costumerName, req.body.address]
+    );
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 //get orderHistory
 
 //create orderHistory
