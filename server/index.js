@@ -32,7 +32,7 @@ app.get("/menu/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const categorizedMenu = await pool.query(
-      "SELECT * from menu Where categoryid=$1",
+      "SELECT * from menu Where categoryid = $1",
       [id]
     );
     res.json(categorizedMenu.rows);
@@ -42,6 +42,34 @@ app.get("/menu/:id", async (req, res) => {
 });
 
 //get costumer
+
+app.get("/costumer_info/:phonenumber", async (req, res) => {
+  const { phonenumber } = req.params;
+  try {
+    const costumers = await pool.query(
+      "SELECT * FROM costumer_info WHERE phonenumber = $1",
+      [phonenumber]
+    );
+    res.json(costumers.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+//get likely costumers
+
+app.get("/costumer_info_like/:phonenumber", async (req, res) => {
+  const { phonenumber } = req.params;
+  try {
+    const costumers = await pool.query(
+      "SELECT * FROM costumer_info WHERE phonenumber LIKE $1",
+      [phonenumber + "%"]
+    );
+    res.json(costumers.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
 
 //create costumer
 

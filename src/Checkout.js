@@ -135,29 +135,15 @@ function App(props) {
   const [cartItemQuantity, setCartItemQuantity] = useState(0);
 
   const finalizeCostumerPhoneNumber = (costumer) => {
-    props.changePhoneNumberValue(costumer.phoneNumber);
-    props.changePhoneNumber(costumer.phoneNumber);
+    props.changePhoneNumberValue(costumer.phonenumber);
+    props.changePhoneNumber(costumer.phonenumber);
     props.changeCostumerInfo(costumer);
-    props.changeAddress(costumer.address);
-    props.changeCostumerName(costumer.costumerName);
+    props.changeAddress(costumer.costumeraddress);
+    props.changeCostumerName(costumer.costumername);
   };
 
-  // const fetchData = () => {
-  //   let url = "http://localhost:3000/costumerInfo?phoneNumber_like=";
-  //   if (props.phoneNumberValue !== "") {
-  //     url += props.phoneNumberValue;
-  //     fetch(url)
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         props.changeCostumerInfo(data);
-  //       });
-  //   } else {
-  //     props.changeCostumerInfo([]);
-  //   }
-  // };
-
   const fetchData = (phoneNumber) => {
-    let url = "http://localhost:3000/costumerInfo?phoneNumber_like=";
+    let url = "http://localhost:5000/costumer_info_like/";
     if (phoneNumber !== "") {
       url += phoneNumber;
       fetch(url)
@@ -225,27 +211,17 @@ function App(props) {
 
                 {props.costumerInfo.length > 0
                   ? props.costumerInfo.map((costumer) =>
-                      costumer.phoneNumber === props.phoneNumberValue ? null : (
+                      costumer.phonenumber === props.phoneNumberValue ? null : (
                         <div
                           onClick={() => finalizeCostumerPhoneNumber(costumer)}
                           className="dropdown-row"
                           key={costumer.id}
                         >
-                          {costumer.phoneNumber}
+                          {costumer.phonenumber}
                         </div>
                       )
                     )
-                  : null
-                //   <div
-                //     onClick={() =>
-                //       finalizeCostumerPhoneNumber(props.costumerInfo)
-                //     }
-                //     className="dropdown-row"
-                //     key={props.costumerInfo.id}
-                //   >
-                //     {props.costumerInfo.phoneNumber}
-                //   </div>
-                }
+                  : null}
               </div>
             </Col>
             <Label sm={2}>Costumer Name</Label>
