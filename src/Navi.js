@@ -21,7 +21,7 @@ export default class Navi extends Component {
     return (
       <div>
         <Navbar light expand="md">
-          <NavbarBrand href="/">Selim Restaurant</NavbarBrand>
+          <NavbarBrand href="/">Sel Restaurant</NavbarBrand>
           <NavbarToggler onClick={() => this.toggle()} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav

@@ -18,24 +18,28 @@ export default class CategoryList extends Component {
 
   render() {
     return (
-      <div>
-        CategoryList
-        <ListGroup>
-          {this.state.categories.map((category) => (
-            <ListGroupItem
-              active={
-                category.categoryname === this.props.currentCategory
-                  ? true
-                  : false
-              }
-              key={category.id}
-              onClick={() => this.props.changeCategory(category)}
-            >
-              {category.categoryname}
-            </ListGroupItem>
-          ))}
-        </ListGroup>
-      </div>
+      <>
+        {this.state.categories && (
+          <div>
+            CategoryList
+            <ListGroup>
+              {this.state.categories.map((category) => (
+                <ListGroupItem
+                  active={
+                    category.categoryname === this.props.currentCategory
+                      ? true
+                      : false
+                  }
+                  key={category.id}
+                  onClick={() => this.props.changeCategory(category)}
+                >
+                  {category.categoryname}
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          </div>
+        )}
+      </>
     );
   }
 }
