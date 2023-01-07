@@ -8,7 +8,7 @@ const pool = require("./db");
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, "../build")));
+// app.use(express.static(path.join(__dirname, "../build")));
 
 //get all menu
 app.get("/menu", async (req, res) => {

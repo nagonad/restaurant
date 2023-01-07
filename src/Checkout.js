@@ -133,6 +133,22 @@ const renderLieferungOptions = (props) => {
 function App(props) {
   const [totalCost, setTotalCost] = useState(0);
   const [cartItemQuantity, setCartItemQuantity] = useState(0);
+  const [dateTime, setDateTime] = useState(() => {
+    let currentdate = new Date();
+    let datetime =
+      currentdate.getDate() +
+      "/" +
+      (currentdate.getMonth() + 1) +
+      "/" +
+      currentdate.getFullYear() +
+      "  " +
+      currentdate.getHours() +
+      ":" +
+      (currentdate.getMinutes() < 10
+        ? "0" + currentdate.getMinutes()
+        : currentdate.getMinutes());
+    return datetime;
+  });
 
   const finalizeCostumerPhoneNumber = (costumer) => {
     props.changePhoneNumberValue(costumer.phonenumber);
@@ -168,6 +184,29 @@ function App(props) {
   props.cart.forEach((cartItem) => {
     initialCartItemQuantity += cartItem.quantity;
   });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let currentdate = new Date();
+      let datetime =
+        currentdate.getDate() +
+        "/" +
+        (currentdate.getMonth() + 1) +
+        "/" +
+        currentdate.getFullYear() +
+        " " +
+        "-" +
+        " " +
+        currentdate.getHours() +
+        ":" +
+        (currentdate.getMinutes() < 10
+          ? "0" + currentdate.getMinutes()
+          : currentdate.getMinutes());
+      setDateTime(datetime);
+    });
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     setCartItemQuantity(initialCartItemQuantity);
@@ -290,6 +329,8 @@ function App(props) {
                 totalCost={totalCost}
                 cart={props.cart}
                 checkoutInformation={props.checkoutInformation}
+                dateTime={dateTime}
+                locations={props.locations}
               ></PrintComponent>
             </Label>
           </FormGroup>
