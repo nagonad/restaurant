@@ -8,7 +8,7 @@ const pool = require("./db");
 app.use(cors());
 app.use(express.json());
 
-// app.use(express.static(path.join(__dirname, "../build")));
+app.use(express.static(path.join(__dirname, "../build")));
 
 //get all menu
 app.get("/menu", async (req, res) => {
@@ -89,8 +89,17 @@ app.post("/costumer_info", async (req, res) => {
 
 //get orderHistory
 
+app.get("/order_history", async (req, res) => {
+  try {
+    const orderHistory = await pool.query("select * from order_history");
+    res.json(orderHistory.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 //create orderHistory
-app.post("/orderHistory", async (req, res) => {
+app.post("/order_history", async (req, res) => {
   try {
     await pool.query("INSERT INTO order_history(data) VALUES($1)", [req.body]);
   } catch (error) {

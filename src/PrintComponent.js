@@ -70,7 +70,7 @@ const saveOrderInfo = (
     checkoutInformation: checkoutInformation,
     dateTime: dateTime,
   };
-  fetch("http://localhost:5000/orderHistory", {
+  fetch("http://localhost:5000/order_history", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -124,6 +124,7 @@ const renderLieferungOptions = (props) => {
           <option>ort2</option>
           <option>ort3</option>
           <option>ort4</option>
+          <option>ort5</option>
         </Input>
       </Col>
     </>
@@ -253,8 +254,12 @@ function App(props) {
                       costumer.phonenumber === props.phoneNumberValue ? null : (
                         <div
                           onClick={() => finalizeCostumerPhoneNumber(costumer)}
-                          className="dropdown-row"
                           key={costumer.id}
+                          style={{
+                            padding: "0.2rem 0.75rem",
+                            border: "1px solid #ced4da",
+                            borderRadius: "0.375rem",
+                          }}
                         >
                           {costumer.phonenumber}
                         </div>

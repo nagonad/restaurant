@@ -28,6 +28,7 @@ export default class App extends Component {
       ort2: 4,
       ort3: 5,
       ort4: 6,
+      ort5: 6.5,
     },
     costumerInfo: [],
     phoneNumberValue: "",
