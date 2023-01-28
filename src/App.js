@@ -7,6 +7,7 @@ import { Routes, Route } from "react-router-dom";
 import OrderLayout from "./OrderLayout.js";
 import MenuControl from "./MenuControl";
 import "./App.css";
+import OrderHistoryComponent from "./OrderHistoryComponent.js";
 
 export default class App extends Component {
   state = {
@@ -32,6 +33,7 @@ export default class App extends Component {
     },
     costumerInfo: [],
     phoneNumberValue: "",
+    orderHistory: [],
   };
 
   changeCostumerName = (value) => {
@@ -166,8 +168,41 @@ export default class App extends Component {
         this.categorizeProducts(data);
       });
   };
+
+  getOrderHistory = () => {
+    fetch("http://localhost:5000/order_history")
+      .then((response) => response.json())
+      .then((data) => {
+        let newData = [];
+        let perObject = {};
+        data.map((perData) => {
+          perObject = {};
+          perObject.id = perData.id;
+          perObject.data = JSON.parse(perData.data);
+          perObject.isOpen = false;
+          newData.push(perObject);
+        });
+        this.setState({ orderHistory: newData });
+      });
+  };
+
+  changeIsOpen = (order) => {
+    let orderHistory = this.state.orderHistory;
+    let orderHistoryItem = orderHistory.find(
+      (element) => element.id === order.id
+    );
+    if (order.isOpen === false) {
+      orderHistoryItem.isOpen = true;
+    } else {
+      orderHistoryItem.isOpen = false;
+    }
+
+    this.setState({ orderHistory: orderHistory });
+  };
+
   componentDidMount() {
     this.getProducts();
+    this.getOrderHistory();
   }
 
   categorizeProducts = (products) => {
@@ -261,14 +296,18 @@ export default class App extends Component {
               path="/"
               element={
                 // <MenuControl></MenuControl>
-                <OrderLayout
-                  currentCategory={this.state.currentCategory}
-                  changeCategory={this.changeCategory}
-                  catProducts={this.state.catProducts}
-                  addToCart={this.addToCart}
-                  orderNumber={this.orderNumber}
-                  setOrderNumber={this.setOrderNumber}
-                />
+                // <OrderLayout
+                //   currentCategory={this.state.currentCategory}
+                //   changeCategory={this.changeCategory}
+                //   catProducts={this.state.catProducts}
+                //   addToCart={this.addToCart}
+                //   orderNumber={this.orderNumber}
+                //   setOrderNumber={this.setOrderNumber}
+                // />
+                <OrderHistoryComponent
+                  orderHistory={this.state.orderHistory}
+                  changeIsOpen={this.changeIsOpen}
+                ></OrderHistoryComponent>
               }
             ></Route>
             <Route
