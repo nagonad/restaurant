@@ -12,7 +12,7 @@ export default class ComponentToPrint extends React.Component {
           </div>
           <hr className="m-1" />
           <Row>
-            <Col>
+            <Col md="auto">
               <div>{this.props.dateTime}</div>
             </Col>
             <Col>

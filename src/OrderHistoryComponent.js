@@ -1,37 +1,44 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
 import { Row, Col, Button, Container } from "reactstrap";
 import { AiOutlineEnter, AiOutlineClose } from "react-icons/ai";
 
 export default function OrderHistoryComponent(props) {
+  let [dailyRevenue, setDailyRevenue] = useState(0);
+
   let iconstyles = { fontSize: "22px" };
 
+  useEffect(() => {
+    let daily = 0;
+    getLastDayOrders(props).forEach((order) => {
+      daily += order.data.totalCost;
+    });
+
+    setDailyRevenue(daily);
+  }, [getLastDayOrders(props).length]);
+
   return (
-    <Container
-      className="mb-3 py-3 shadow shadow-intensity-lg border rounded"
-      style={{ border: "2px solid" }}
-    >
+    <Container className="mb-3 py-3 shadow shadow-intensity-lg border rounded">
+      <div>{dailyRevenue.toFixed(2)}€</div>
       {props.orderHistory.map((order) => (
-        <>
+        <Container>
           <Row>
-            <Col>{order.id}</Col>
+            <Col>
+              <AiOutlineEnter
+                style={iconstyles}
+                onClick={() => props.changeIsOpen(order)}
+              ></AiOutlineEnter>
+              {order.id}
+            </Col>
             <Col>{order.data.dateTime}</Col>
             <Col>{order.data.totalCost.toFixed(2)}€</Col>
             <Col>
-              <Row>
-                <Col>
-                  <AiOutlineEnter
-                    onClick={() => props.changeIsOpen(order)}
-                    style={iconstyles}
-                    className="border"
-                  />
-                </Col>
-                <Col>
-                  <AiOutlineClose style={iconstyles} className="border" />
-                </Col>
-              </Row>
+              <AiOutlineClose
+                onClick={() => props.deleteOrder(order)}
+                style={iconstyles}
+              />
             </Col>
           </Row>
-          <Container className="mx-2 shadow-sm  rounded">
+          <Container style={{ boxShadow: "inset 0 0 5px 0 #c7c7c7" }}>
             {order.isOpen && (
               <Row>
                 <Col>{order.data.checkoutInformation.costumerName}</Col>
@@ -54,8 +61,32 @@ export default function OrderHistoryComponent(props) {
                 </Row>
               ))}
           </Container>
-        </>
+        </Container>
       ))}
     </Container>
   );
 }
+
+const getLastDayOrders = (props) => {
+  let date = new Date();
+
+  let day = date.getDate();
+  if (day < 10) {
+    day = "0" + day;
+  }
+
+  let month = date.getMonth() + 1;
+
+  if (month < 10) {
+    month = "0" + month;
+  }
+
+  let year = date.getFullYear();
+
+  let currentDate = day + "/" + month + "/" + year;
+
+  let lastDayOrders = props.orderHistory.filter((order) =>
+    order.data.dateTime.startsWith(currentDate)
+  );
+  return lastDayOrders;
+};

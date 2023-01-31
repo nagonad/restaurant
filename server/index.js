@@ -107,6 +107,18 @@ app.post("/order_history", async (req, res) => {
   }
 });
 
+//delete order History
+
+app.delete("/order_history/:id", async (req, res) => {
+  try {
+    await pool.query("delete from order_history where id = $1", [
+      req.params.id,
+    ]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.listen(5000, () => {
   console.log("server running on server 5000");
 });

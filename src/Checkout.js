@@ -136,18 +136,35 @@ function App(props) {
   const [cartItemQuantity, setCartItemQuantity] = useState(0);
   const [dateTime, setDateTime] = useState(() => {
     let currentdate = new Date();
+
+    let day = currentdate.getDate();
+    if (day < 10) {
+      day = "0" + day;
+    }
+
+    let month = currentdate.getMonth() + 1;
+
+    if (month < 10) {
+      month = "0" + month;
+    }
+
+    let year = currentdate.getFullYear();
+
+    let hours = currentdate.getHours();
+
+    if (hours < 10) {
+      hours = "0" + hours;
+    }
+
+    let minutes = currentdate.getMinutes();
+
+    if (minutes.length < 10) {
+      minutes = "0" + minutes;
+    }
+
     let datetime =
-      currentdate.getDate() +
-      "/" +
-      (currentdate.getMonth() + 1) +
-      "/" +
-      currentdate.getFullYear() +
-      "  " +
-      currentdate.getHours() +
-      ":" +
-      (currentdate.getMinutes() < 10
-        ? "0" + currentdate.getMinutes()
-        : currentdate.getMinutes());
+      day + "/" + month + "/" + year + " - " + hours + ":" + minutes;
+
     return datetime;
   });
 
@@ -189,20 +206,33 @@ function App(props) {
   useEffect(() => {
     const interval = setInterval(() => {
       let currentdate = new Date();
+      let day = currentdate.getDate();
+      if (day < 10) {
+        day = "0" + day;
+      }
+
+      let month = currentdate.getMonth() + 1;
+
+      if (month < 10) {
+        month = "0" + month;
+      }
+
+      let year = currentdate.getFullYear();
+
+      let hours = currentdate.getHours();
+
+      if (hours < 10) {
+        hours = "0" + hours;
+      }
+
+      let minutes = currentdate.getMinutes();
+
+      if (minutes.length < 10) {
+        minutes = "0" + minutes;
+      }
+
       let datetime =
-        currentdate.getDate() +
-        "/" +
-        (currentdate.getMonth() + 1) +
-        "/" +
-        currentdate.getFullYear() +
-        " " +
-        "-" +
-        " " +
-        currentdate.getHours() +
-        ":" +
-        (currentdate.getMinutes() < 10
-          ? "0" + currentdate.getMinutes()
-          : currentdate.getMinutes());
+        day + "/" + month + "/" + year + " - " + hours + ":" + minutes;
       setDateTime(datetime);
     });
 

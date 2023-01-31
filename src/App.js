@@ -186,6 +186,23 @@ export default class App extends Component {
       });
   };
 
+  deleteOrder = (order) => {
+    let url = "http://localhost:5000/order_history/";
+    url += order.id;
+
+    let data = this.state.orderHistory;
+    data = data.filter((c) => c.id !== order.id);
+    this.setState({ orderHistory: data });
+
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+      });
+  };
+
   changeIsOpen = (order) => {
     let orderHistory = this.state.orderHistory;
     let orderHistoryItem = orderHistory.find(
@@ -307,6 +324,7 @@ export default class App extends Component {
                 <OrderHistoryComponent
                   orderHistory={this.state.orderHistory}
                   changeIsOpen={this.changeIsOpen}
+                  deleteOrder={this.deleteOrder}
                 ></OrderHistoryComponent>
               }
             ></Route>
