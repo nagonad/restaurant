@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Row, Col, Button, Container } from "reactstrap";
-import { AiOutlineEnter, AiOutlineClose } from "react-icons/ai";
+import { RxPencil1, RxCrossCircled } from "react-icons/rx";
 
 export default function OrderHistoryComponent(props) {
   let [dailyRevenue, setDailyRevenue] = useState(0);
@@ -9,12 +9,12 @@ export default function OrderHistoryComponent(props) {
 
   useEffect(() => {
     let daily = 0;
-    getLastDayOrders(props).forEach((order) => {
+    getLastDayOrders(props.orderHistory).forEach((order) => {
       daily += order.data.totalCost;
     });
 
     setDailyRevenue(daily);
-  }, [getLastDayOrders(props).length]);
+  }, [props.orderHistory]);
 
   return (
     <Container className="mb-3 py-3 shadow shadow-intensity-lg border rounded">
@@ -23,16 +23,16 @@ export default function OrderHistoryComponent(props) {
         <Container>
           <Row>
             <Col>
-              <AiOutlineEnter
+              <RxPencil1
                 style={iconstyles}
                 onClick={() => props.changeIsOpen(order)}
-              ></AiOutlineEnter>
+              ></RxPencil1>
               {order.id}
             </Col>
             <Col>{order.data.dateTime}</Col>
             <Col>{order.data.totalCost.toFixed(2)}€</Col>
             <Col>
-              <AiOutlineClose
+              <RxCrossCircled
                 onClick={() => props.deleteOrder(order)}
                 style={iconstyles}
               />
@@ -67,7 +67,7 @@ export default function OrderHistoryComponent(props) {
   );
 }
 
-const getLastDayOrders = (props) => {
+const getLastDayOrders = (orderHistory) => {
   let date = new Date();
 
   let day = date.getDate();
@@ -85,7 +85,7 @@ const getLastDayOrders = (props) => {
 
   let currentDate = day + "/" + month + "/" + year;
 
-  let lastDayOrders = props.orderHistory.filter((order) =>
+  let lastDayOrders = orderHistory.filter((order) =>
     order.data.dateTime.startsWith(currentDate)
   );
   return lastDayOrders;

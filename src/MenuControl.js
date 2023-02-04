@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Button, Form, FormGroup, Label, Input, Col } from "reactstrap";
-
+import { Button, Form, FormGroup, Label, Input, Col, Row } from "reactstrap";
+import { RxPencil1, RxCrossCircled } from "react-icons/rx";
 export default class Menu extends Component {
   state = {
     productId: "",
@@ -45,7 +45,7 @@ export default class Menu extends Component {
       });
   };
 
-  render() {
+  renderMenuControl = () => {
     return (
       <Form>
         <FormGroup row>
@@ -127,6 +127,38 @@ export default class Menu extends Component {
 
         <Button onClick={this.saveProduct}>Submit</Button>
       </Form>
+    );
+  };
+
+  render() {
+    return (
+      <>
+        {this.props.products.map((product) => (
+          <>
+            <Row>
+              <Col>{product.id}</Col>
+              <Col>{product.productname}</Col>
+              <Col>{product.productsize}</Col>
+              <Col>{product.unitprice}</Col>
+              <Col>
+                <RxPencil1
+                  onClick={() => this.props.changeMenuControlIsOpen(product)}
+                ></RxPencil1>
+              </Col>
+              <Col>
+                <RxCrossCircled></RxCrossCircled>
+              </Col>
+            </Row>
+            {product.isOpen && (
+              <Row>
+                <Col>{product.productname}</Col>
+                <Col>{product.productsize}</Col>
+                <Col>{product.unitprice}</Col>
+              </Row>
+            )}
+          </>
+        ))}
+      </>
     );
   }
 }

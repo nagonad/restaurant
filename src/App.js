@@ -164,7 +164,8 @@ export default class App extends Component {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        this.setState({ products: data });
+        let newData = data.map((obj) => ({ ...obj, isOpen: false }));
+        this.setState({ products: newData });
         this.categorizeProducts(data);
       });
   };
@@ -175,7 +176,7 @@ export default class App extends Component {
       .then((data) => {
         let newData = [];
         let perObject = {};
-        data.map((perData) => {
+        data.forEach((perData) => {
           perObject = {};
           perObject.id = perData.id;
           perObject.data = JSON.parse(perData.data);
@@ -215,6 +216,20 @@ export default class App extends Component {
     }
 
     this.setState({ orderHistory: orderHistory });
+  };
+
+  changeMenuControlIsOpen = (menuItem) => {
+    let products = this.state.products;
+
+    let product = products.find((c) => c.id === menuItem.id);
+
+    if (product.isOpen) {
+      product.isOpen = false;
+    } else {
+      product.isOpen = true;
+    }
+
+    this.setState({ products: products });
   };
 
   componentDidMount() {
@@ -312,20 +327,14 @@ export default class App extends Component {
               exact
               path="/"
               element={
-                // <MenuControl></MenuControl>
-                // <OrderLayout
-                //   currentCategory={this.state.currentCategory}
-                //   changeCategory={this.changeCategory}
-                //   catProducts={this.state.catProducts}
-                //   addToCart={this.addToCart}
-                //   orderNumber={this.orderNumber}
-                //   setOrderNumber={this.setOrderNumber}
-                // />
-                <OrderHistoryComponent
-                  orderHistory={this.state.orderHistory}
-                  changeIsOpen={this.changeIsOpen}
-                  deleteOrder={this.deleteOrder}
-                ></OrderHistoryComponent>
+                <OrderLayout
+                  currentCategory={this.state.currentCategory}
+                  changeCategory={this.changeCategory}
+                  catProducts={this.state.catProducts}
+                  addToCart={this.addToCart}
+                  orderNumber={this.orderNumber}
+                  setOrderNumber={this.setOrderNumber}
+                />
               }
             ></Route>
             <Route
@@ -349,6 +358,27 @@ export default class App extends Component {
                   cart={this.state.cart}
                   changeExtraProductCost={this.changeExtraProductCost}
                 />
+              }
+            ></Route>
+            <Route
+              exact
+              path="/orderHistory"
+              element={
+                <OrderHistoryComponent
+                  orderHistory={this.state.orderHistory}
+                  changeIsOpen={this.changeIsOpen}
+                  deleteOrder={this.deleteOrder}
+                ></OrderHistoryComponent>
+              }
+            ></Route>
+            <Route
+              exact
+              path="/menuControl"
+              element={
+                <MenuControl
+                  changeMenuControlIsOpen={this.changeMenuControlIsOpen}
+                  products={this.state.products}
+                ></MenuControl>
               }
             ></Route>
           </Routes>
