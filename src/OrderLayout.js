@@ -11,6 +11,7 @@ export default class OrderLayout extends Component {
           <CategoryList
             currentCategory={this.props.currentCategory}
             changeCategory={this.props.changeCategory}
+            categories={this.props.categories}
           />
         </Col>
         <Col xs="9">

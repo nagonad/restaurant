@@ -2,28 +2,14 @@ import React, { Component } from "react";
 import { ListGroup, ListGroupItem } from "reactstrap";
 
 export default class CategoryList extends Component {
-  state = { categories: [] };
-
-  componentDidMount() {
-    this.getCategories();
-  }
-
-  getCategories = () => {
-    fetch("http://localhost:5000/categories")
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({ categories: data });
-      });
-  };
-
   render() {
     return (
       <>
-        {this.state.categories && (
+        {this.props.categories && (
           <div>
             CategoryList
             <ListGroup>
-              {this.state.categories.map((category) => (
+              {this.props.categories.map((category) => (
                 <ListGroupItem
                   active={
                     category.categoryname === this.props.currentCategory

@@ -158,7 +158,7 @@ function App(props) {
 
     let minutes = currentdate.getMinutes();
 
-    if (minutes.length < 10) {
+    if (minutes < 10) {
       minutes = "0" + minutes;
     }
 

@@ -34,6 +34,9 @@ export default class App extends Component {
     costumerInfo: [],
     phoneNumberValue: "",
     orderHistory: [],
+    categories: [],
+    productSizes: ["Klein", "Mittel", "Groß", "Party"],
+    updatedProduct: {},
   };
 
   changeCostumerName = (value) => {
@@ -170,6 +173,85 @@ export default class App extends Component {
       });
   };
 
+  updateProduct = (updatedProduct, productInfo) => {
+    let query = "";
+    if (updatedProduct.unitprice) {
+      updatedProduct.unitprice = updatedProduct.unitprice.replace(/,/g, ".");
+      updatedProduct.unitprice = parseFloat(updatedProduct.unitprice).toFixed(
+        2
+      );
+    }
+
+    if (updatedProduct.categoryid) {
+      let categories = this.state.categories;
+
+      categories.forEach((category) => {
+        if (category.categoryname === updatedProduct.categoryid) {
+          updatedProduct.categoryid = category.id;
+        }
+      });
+    }
+
+    if (updatedProduct.productid) {
+      updatedProduct.productid = parseInt(updatedProduct.productid);
+    }
+
+    for (const property in updatedProduct) {
+      if (typeof updatedProduct[property] === "string") {
+        updatedProduct[property] = "'" + updatedProduct[property] + "'";
+      }
+
+      query += property + "=" + updatedProduct[property] + ", ";
+    }
+    query = query.trim();
+
+    if (query.charAt(query.length - 1) === ",") {
+      query = query.substring(0, query.length - 1);
+    }
+
+    let url = "http://localhost:5000/menu/";
+
+    url += productInfo.id;
+
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ query: query }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+        this.setState({ updatedProduct: {} });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  handleChangeNew = (e) => {
+    let newUpdatedProduct = this.state.updatedProduct;
+
+    if (e.target.value) {
+      newUpdatedProduct[e.target.name] = e.target.value;
+    } else {
+      delete newUpdatedProduct[e.target.name];
+    }
+
+    this.setState({ updatedProduct: newUpdatedProduct });
+  };
+
+  deleteProduct = (product) => {
+    let url = "http://localhost:5000/menu/";
+    url += product.id;
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((res) => console.log(res));
+  };
+
   getOrderHistory = () => {
     fetch("http://localhost:5000/order_history")
       .then((response) => response.json())
@@ -232,9 +314,18 @@ export default class App extends Component {
     this.setState({ products: products });
   };
 
+  getCategories = () => {
+    fetch("http://localhost:5000/categories")
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ categories: data });
+      });
+  };
+
   componentDidMount() {
     this.getProducts();
     this.getOrderHistory();
+    this.getCategories();
   }
 
   categorizeProducts = (products) => {
@@ -334,6 +425,7 @@ export default class App extends Component {
                   addToCart={this.addToCart}
                   orderNumber={this.orderNumber}
                   setOrderNumber={this.setOrderNumber}
+                  categories={this.state.categories}
                 />
               }
             ></Route>
@@ -378,6 +470,12 @@ export default class App extends Component {
                 <MenuControl
                   changeMenuControlIsOpen={this.changeMenuControlIsOpen}
                   products={this.state.products}
+                  deleteProduct={this.deleteProduct}
+                  categories={this.state.categories}
+                  productSizes={this.state.productSizes}
+                  updateProduct={this.updateProduct}
+                  updatedProduct={this.state.updatedProduct}
+                  handleChangeNew={this.handleChangeNew}
                 ></MenuControl>
               }
             ></Route>

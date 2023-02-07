@@ -13,8 +13,37 @@ app.use(express.static(path.join(__dirname, "../build")));
 //get all menu
 app.get("/menu", async (req, res) => {
   try {
-    const menu = await pool.query("SELECT * from menu");
+    const menu = await pool.query(
+      "SELECT * from menu order by productid,unitprice"
+    );
     res.json(menu.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// delete menu item
+
+app.delete("/menu/:id", async (req, res) => {
+  try {
+    await pool.query("delete from menu where id = $1", [req.params.id]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+//update menu item
+
+app.put("/menu/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { query } = req.body;
+
+    console.log(query);
+
+    await pool.query(`UPDATE menu SET ${query} WHERE id = ${id}`);
+
+    res.json("menu item updated");
   } catch (error) {
     console.error(error.message);
   }
@@ -65,7 +94,7 @@ app.get("/costumer_info_like/:phonenumber", async (req, res) => {
   const { phonenumber } = req.params;
   try {
     const costumers = await pool.query(
-      "SELECT * FROM costumer_info WHERE phonenumber LIKE $1",
+      "SELECT * FROM costumer_info WHERE phonenumber LIKE $1 LIMIT 5",
       [phonenumber + "%"]
     );
     res.json(costumers.rows);
@@ -91,7 +120,9 @@ app.post("/costumer_info", async (req, res) => {
 
 app.get("/order_history", async (req, res) => {
   try {
-    const orderHistory = await pool.query("select * from order_history");
+    const orderHistory = await pool.query(
+      " select * from order_history order by id desc"
+    );
     res.json(orderHistory.rows);
   } catch (error) {
     console.error(error.message);
