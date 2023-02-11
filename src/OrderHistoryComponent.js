@@ -20,7 +20,7 @@ export default function OrderHistoryComponent(props) {
     <Container className="mb-3 py-3 shadow shadow-intensity-lg border rounded">
       <div>{dailyRevenue.toFixed(2)}€</div>
       {props.orderHistory.map((order) => (
-        <Container>
+        <Container key={order.id}>
           <Row>
             <Col>
               <RxPencil1

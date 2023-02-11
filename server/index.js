@@ -22,11 +22,44 @@ app.get("/menu", async (req, res) => {
   }
 });
 
+//add menu item
+
+app.post("/menu", async (req, res) => {
+  let values = "";
+  let keys = "";
+
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      values += "'" + req.body[key] + "'";
+    } else {
+      values += req.body[key];
+    }
+
+    values += ",";
+    keys += key + ",";
+  }
+
+  values = values.substring(0, values.length - 1);
+  keys = keys.substring(0, keys.length - 1);
+
+  try {
+    const cevap = await pool.query(
+      `insert into menu(${keys}) values(${values})`
+    );
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 // delete menu item
 
 app.delete("/menu/:id", async (req, res) => {
   try {
-    await pool.query("delete from menu where id = $1", [req.params.id]);
+    const cevap = await pool.query("delete from menu where id = $1", [
+      req.params.id,
+    ]);
+    res.json(cevap.rows);
   } catch (error) {
     console.error(error.message);
   }
@@ -38,8 +71,6 @@ app.put("/menu/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { query } = req.body;
-
-    console.log(query);
 
     await pool.query(`UPDATE menu SET ${query} WHERE id = ${id}`);
 
@@ -107,10 +138,11 @@ app.get("/costumer_info_like/:phonenumber", async (req, res) => {
 
 app.post("/costumer_info", async (req, res) => {
   try {
-    await pool.query(
+    const costumerInfo = await pool.query(
       "INSERT INTO costumer_info(phonenumber,costumername,costumeraddress) VALUES($1,$2,$3)",
       [req.body.phoneNumber, req.body.costumerName, req.body.address]
     );
+    res.json(costumerInfo.rows);
   } catch (error) {
     console.error(error.message);
   }
@@ -132,7 +164,11 @@ app.get("/order_history", async (req, res) => {
 //create orderHistory
 app.post("/order_history", async (req, res) => {
   try {
-    await pool.query("INSERT INTO order_history(data) VALUES($1)", [req.body]);
+    const orderHistory = await pool.query(
+      "INSERT INTO order_history(data) VALUES($1)",
+      [req.body]
+    );
+    res.json(orderHistory.rows);
   } catch (error) {
     console.error(error.message);
   }
@@ -142,9 +178,47 @@ app.post("/order_history", async (req, res) => {
 
 app.delete("/order_history/:id", async (req, res) => {
   try {
-    await pool.query("delete from order_history where id = $1", [
+    const cevap = await pool.query("delete from order_history where id = $1", [
       req.params.id,
     ]);
+    res.json(cevap.json);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+//get sizes
+
+app.get("/size", async (req, res) => {
+  try {
+    const sizes = await pool.query("select * from size");
+    res.json(sizes.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// add size
+
+app.post("/size", async (req, res) => {
+  try {
+    const cevap = await pool.query("insert into size(size) values ($1)", [
+      req.body.size,
+    ]);
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// delete size
+
+app.delete("/size/:id", async (req, res) => {
+  try {
+    const cevap = await pool.query("delete from size where id = $1", [
+      req.params.id,
+    ]);
+    res.json(cevap.rows);
   } catch (error) {
     console.error(error.message);
   }

@@ -1,7 +1,20 @@
 import React, { Component } from "react";
-import { Button, Form, FormGroup, Label, Input, Col, Row } from "reactstrap";
-import { RxPencil1, RxCrossCircled } from "react-icons/rx";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Col,
+  Row,
+  Container,
+} from "reactstrap";
+import { RxPencil1, RxCrossCircled, RxPlusCircled } from "react-icons/rx";
+import { Link } from "react-router-dom";
+
 export default class Menu extends Component {
+  state = { addSizeIsOpen: false };
+
   handleChange = (event) => {
     if (event.target.name === "categoryId") {
       this.setState({ [event.target.name]: event.target.value[0] });
@@ -34,6 +47,10 @@ export default class Menu extends Component {
       .catch((error) => {
         console.error("Error:", error);
       });
+  };
+
+  sizeOnChangeControl = (e) => {
+    console.log(e.target.checked);
   };
 
   renderMenuControl = () => {
@@ -124,13 +141,57 @@ export default class Menu extends Component {
   render() {
     return (
       <>
+        {this.state.addSizeIsOpen && (
+          <Container
+            style={{
+              position: "fixed",
+              height: "100%",
+              width: "50%",
+              zIndex: "10",
+              background: "white",
+              top: "40",
+              right: "0",
+              border: "2px solid",
+            }}
+          >
+            <Form>
+              {this.props.sizes.map((size) => (
+                <FormGroup>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      onChange={this.sizeOnChangeControl}
+                    />
+                    {size.size}
+                  </Label>
+                </FormGroup>
+              ))}
+            </Form>
+            <Button>Save Size</Button>
+            <Button
+              onClick={() => {
+                this.setState({ addSizeIsOpen: false });
+              }}
+            >
+              Cancel
+            </Button>
+          </Container>
+        )}
+        <Row>
+          <Col sm={10}></Col>
+          <Col sm={2}>
+            <Link to={"/menuControl/itemAdd"}>
+              <RxPlusCircled style={{ fontSize: "25px" }}></RxPlusCircled>
+            </Link>
+          </Col>
+        </Row>
+
         {this.props.products.map((product) => (
-          <>
+          <React.Fragment key={product.id}>
             <Row>
               <Col>{product.productid}</Col>
               <Col>{product.productname}</Col>
-              <Col>{product.productsize}</Col>
-              <Col>{product.unitprice}</Col>
+              <Col>{product.unitprice ? product.unitprice : null}</Col>
               <Col>
                 <RxPencil1
                   onClick={() => this.props.changeMenuControlIsOpen(product)}
@@ -144,12 +205,7 @@ export default class Menu extends Component {
                         product.productid +
                           " - " +
                           product.productname +
-                          "(" +
-                          product.productsize +
-                          ") " +
-                          product.unitprice +
-                          "€" +
-                          " - Ürünü silmek istediginize emin misiniz?"
+                          "\nÜrünü silmek istediginize emin misiniz?"
                       )
                     ) {
                       this.props.deleteProduct(product);
@@ -160,66 +216,6 @@ export default class Menu extends Component {
             </Row>
             {product.isOpen && (
               <Form>
-                <FormGroup row>
-                  <Label for="" sm={2}>
-                    Product Name
-                  </Label>
-                  <Col sm={4}>
-                    <Input
-                      type=""
-                      name="productname"
-                      id=""
-                      placeholder={product.productname}
-                      onChange={this.props.handleChangeNew}
-                    />
-                  </Col>
-                  <Label for="" sm={2}>
-                    Product Size
-                  </Label>
-                  <Col sm={4}>
-                    <Input
-                      type="select"
-                      name="productsize"
-                      id=""
-                      placeholder={product.productsize}
-                      onChange={this.props.handleChangeNew}
-                    >
-                      {this.props.productSizes.map((size) => (
-                        <option>{size}</option>
-                      ))}
-                    </Input>
-                  </Col>
-                </FormGroup>
-                <FormGroup row>
-                  <Label for="" sm={2}>
-                    Product Price
-                  </Label>
-                  <Col sm={4}>
-                    <Input
-                      type="number"
-                      name="unitprice"
-                      id=""
-                      placeholder={product.unitprice}
-                      onChange={this.props.handleChangeNew}
-                    ></Input>
-                  </Col>
-                  <Label for="" sm={2}>
-                    Product Category
-                  </Label>
-                  <Col sm={4}>
-                    <Input
-                      type="select"
-                      name="categoryid"
-                      id=""
-                      placeholder=" Product Category"
-                      onChange={this.props.handleChangeNew}
-                    >
-                      {this.props.categories.map((category) => (
-                        <option>{category.categoryname}</option>
-                      ))}
-                    </Input>
-                  </Col>
-                </FormGroup>
                 <FormGroup row>
                   <Label for="" sm={2}>
                     Product Id
@@ -233,22 +229,63 @@ export default class Menu extends Component {
                       onChange={this.props.handleChangeNew}
                     />
                   </Col>
+
                   <Label for="" sm={2}>
-                    Product Description
+                    Product Name
                   </Label>
                   <Col sm={4}>
                     <Input
                       type=""
-                      name="productdescription"
+                      name="productname"
                       id=""
-                      placeholder={product.productdescription}
+                      placeholder={product.productname}
                       onChange={this.props.handleChangeNew}
                     />
                   </Col>
                 </FormGroup>
                 <FormGroup row>
+                  <Label for="" sm={2}>
+                    Product Category
+                  </Label>
+                  <Col sm={4}>
+                    <Input
+                      type="select"
+                      name="categoryid"
+                      id=""
+                      placeholder=" Product Category"
+                      onChange={this.props.handleChangeNew}
+                    >
+                      {this.props.categories.map((category) => (
+                        <option key={category.id}>
+                          {category.categoryname}
+                        </option>
+                      ))}
+                    </Input>
+                  </Col>
+                  <Label for="" sm={2}>
+                    Product Price
+                  </Label>
+                  <Col sm={4}>
+                    <Input
+                      type="number"
+                      name="unitprice"
+                      id=""
+                      placeholder={product.unitprice}
+                      onChange={this.props.handleChangeNew}
+                    ></Input>
+                  </Col>
+                </FormGroup>
+                <hr></hr>
+                <FormGroup row>
                   <Col sm={10}></Col>
                   <Col sm={2}>
+                    <Button
+                      onClick={() => {
+                        this.setState({ addSizeIsOpen: true });
+                      }}
+                    >
+                      Add Size
+                    </Button>
                     <Button
                       onClick={() =>
                         this.props.updateProduct(
@@ -263,7 +300,7 @@ export default class Menu extends Component {
                 </FormGroup>
               </Form>
             )}
-          </>
+          </React.Fragment>
         ))}
       </>
     );

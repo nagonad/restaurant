@@ -8,6 +8,9 @@ import OrderLayout from "./OrderLayout.js";
 import MenuControl from "./MenuControl";
 import "./App.css";
 import OrderHistoryComponent from "./OrderHistoryComponent.js";
+import MenuItemAdd from "./MenuItemAdd.js";
+import MenuList from "./MenuList";
+import SizeControl from "./SizeControl.js";
 
 export default class App extends Component {
   state = {
@@ -37,6 +40,7 @@ export default class App extends Component {
     categories: [],
     productSizes: ["Klein", "Mittel", "Groß", "Party"],
     updatedProduct: {},
+    sizes: [],
   };
 
   changeCostumerName = (value) => {
@@ -173,6 +177,36 @@ export default class App extends Component {
       });
   };
 
+  deleteProduct = (product) => {
+    let url = "http://localhost:5000/menu/";
+    url += product.id;
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then(() => {
+        this.getProducts();
+      });
+  };
+
+  saveProduct = (bodyJson) => {
+    fetch("http://localhost:5000/menu", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyJson),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ updatedProduct: {} });
+        this.getProducts();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   updateProduct = (updatedProduct, productInfo) => {
     let query = "";
     if (updatedProduct.unitprice) {
@@ -223,7 +257,6 @@ export default class App extends Component {
       .then((response) => response.json())
       .then((data) => {
         console.log("Success:", data);
-        this.setState({ updatedProduct: {} });
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -240,16 +273,6 @@ export default class App extends Component {
     }
 
     this.setState({ updatedProduct: newUpdatedProduct });
-  };
-
-  deleteProduct = (product) => {
-    let url = "http://localhost:5000/menu/";
-    url += product.id;
-    fetch(url, {
-      method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then((res) => console.log(res));
   };
 
   getOrderHistory = () => {
@@ -281,8 +304,8 @@ export default class App extends Component {
       method: "DELETE",
     })
       .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
+      .then(() => {
+        this.getOrderHistory();
       });
   };
 
@@ -322,10 +345,45 @@ export default class App extends Component {
       });
   };
 
+  getSize = () => {
+    fetch("http://localhost:5000/size")
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ sizes: data });
+      });
+  };
+
+  saveSize = (size) => {
+    fetch("http://localhost:5000/size", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ size: size }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        this.getSize();
+      });
+  };
+
+  deleteSize = (size) => {
+    let url = "http://localhost:5000/size/" + size.id;
+
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then(() => {
+        this.getSize();
+      });
+  };
+
   componentDidMount() {
     this.getProducts();
     this.getOrderHistory();
     this.getCategories();
+    this.getSize();
   }
 
   categorizeProducts = (products) => {
@@ -476,7 +534,29 @@ export default class App extends Component {
                   updateProduct={this.updateProduct}
                   updatedProduct={this.state.updatedProduct}
                   handleChangeNew={this.handleChangeNew}
+                  sizes={this.state.sizes}
                 ></MenuControl>
+              }
+            ></Route>
+            <Route
+              exact
+              path="/menuControl/itemAdd"
+              element={
+                <MenuItemAdd
+                  categories={this.state.categories}
+                  saveProduct={this.saveProduct}
+                ></MenuItemAdd>
+              }
+            ></Route>
+            <Route
+              exact
+              path="/menuControl/sizeControl"
+              element={
+                <SizeControl
+                  sizes={this.state.sizes}
+                  saveSize={this.saveSize}
+                  deleteSize={this.deleteSize}
+                ></SizeControl>
               }
             ></Route>
           </Routes>
