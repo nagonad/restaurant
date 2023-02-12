@@ -180,12 +180,60 @@ export default class App extends Component {
   deleteProduct = (product) => {
     let url = "http://localhost:5000/menu/";
     url += product.id;
+    let url2 = "http://localhost:5000/product_sizes/";
+    url2 += product.id;
+
     fetch(url, {
       method: "DELETE",
     })
       .then((response) => response.json())
       .then(() => {
         this.getProducts();
+        fetch(url2, {
+          method: "DELETE",
+        })
+          .then((response) => response.json())
+          .then((data) => {});
+      });
+
+    fetch(url2, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {});
+  };
+
+  saveProductSize = (bodyJson) => {
+    fetch("http://localhost:5000/product_sizes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyJson),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        return data;
+      });
+  };
+
+  updateProductSize = (e, bodyJson) => {
+    let url = "http://localhost:5000/product_sizes/";
+
+    url += bodyJson.id;
+
+    let query = `selected=${e.target.checked}`;
+
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: query }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        return data;
       });
   };
 
@@ -201,6 +249,19 @@ export default class App extends Component {
       .then((data) => {
         this.setState({ updatedProduct: {} });
         this.getProducts();
+
+        let bodyJson = [];
+
+        let sizes = this.state.sizes;
+
+        sizes.forEach((size) => {
+          let jsonObj = {};
+          jsonObj.menutableid = data[0].id;
+          jsonObj.sizename = size.size;
+          bodyJson.push(jsonObj);
+        });
+
+        return this.saveProductSize(bodyJson);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -326,9 +387,13 @@ export default class App extends Component {
   changeMenuControlIsOpen = (menuItem) => {
     let products = this.state.products;
 
+    let otherProducts = products.filter((c) => c.id !== menuItem.id);
+
+    otherProducts.map((product) => (product.isOpen = false));
+
     let product = products.find((c) => c.id === menuItem.id);
 
-    if (product.isOpen) {
+    if (product.isOpen === true) {
       product.isOpen = false;
     } else {
       product.isOpen = true;
@@ -535,6 +600,7 @@ export default class App extends Component {
                   updatedProduct={this.state.updatedProduct}
                   handleChangeNew={this.handleChangeNew}
                   sizes={this.state.sizes}
+                  updateProductSize={this.updateProductSize}
                 ></MenuControl>
               }
             ></Route>

@@ -25,26 +25,28 @@ app.get("/menu", async (req, res) => {
 //add menu item
 
 app.post("/menu", async (req, res) => {
-  let values = "";
-  let keys = "";
+  // let values = "";
+  // let keys = "";
 
-  for (const key in req.body) {
-    if (typeof req.body[key] === "string") {
-      values += "'" + req.body[key] + "'";
-    } else {
-      values += req.body[key];
-    }
+  // for (const key in req.body) {
+  //   if (typeof req.body[key] === "string") {
+  //     values += "'" + req.body[key] + "'";
+  //   } else {
+  //     values += req.body[key];
+  //   }
 
-    values += ",";
-    keys += key + ",";
-  }
+  //   values += ",";
+  //   keys += key + ",";
+  // }
 
-  values = values.substring(0, values.length - 1);
-  keys = keys.substring(0, keys.length - 1);
+  // values = values.substring(0, values.length - 1);
+  // keys = keys.substring(0, keys.length - 1);
 
   try {
     const cevap = await pool.query(
-      `insert into menu(${keys}) values(${values})`
+      `insert into menu${getKeys(req.body)} values${getValues(
+        req.body
+      )} returning id`
     );
     res.json(cevap.rows);
   } catch (error) {
@@ -224,6 +226,122 @@ app.delete("/size/:id", async (req, res) => {
   }
 });
 
+// add productsize
+
+app.post("/product_sizes", async (req, res) => {
+  let keys = getKeys(req.body);
+
+  let values = getValues(req.body);
+
+  try {
+    const cevap = await pool.query(
+      `insert into product_sizes${keys} values${values}`
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {}
+});
+
+//delete productsize
+
+app.delete("/product_sizes/:id", async (req, res) => {
+  try {
+    const cevap = await pool.query(
+      "delete from product_sizes where menutableid = $1",
+      [req.params.id]
+    );
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/product_sizes/:id", async (req, res) => {
+  try {
+    const cevap = await pool.query(
+      "select * from product_sizes where menutableid= $1 order by id",
+      [req.params.id]
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/product_sizes/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const { query } = req.body;
+
+  try {
+    const cevap = await pool.query(
+      `UPDATE product_sizes SET ${query} WHERE id = ${id}`
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {}
+});
+
 app.listen(5000, () => {
   console.log("server running on server 5000");
 });
+
+const getKeys = (reqJson) => {
+  let keys = "(";
+
+  if (reqJson.length > 1) {
+    for (const key in reqJson[0]) {
+      keys += key + ",";
+    }
+  } else {
+    for (const key in reqJson) {
+      keys += key + ",";
+    }
+  }
+  keys = keys.substring(0, keys.length - 1);
+
+  keys += ")";
+
+  return keys;
+};
+
+const getValues = (reqJson) => {
+  let values = "";
+
+  let perObj = "(";
+
+  if (!Array.isArray(reqJson)) {
+    for (const key in reqJson) {
+      if (typeof reqJson[key] === "string") {
+        perObj += "'" + reqJson[key] + "'";
+      } else {
+        perObj += reqJson[key];
+      }
+      perObj += ",";
+    }
+    perObj = perObj.substring(0, perObj.length - 1);
+    perObj += "),";
+    values += perObj;
+
+    values = values.substring(0, values.length - 1);
+  } else {
+    reqJson.forEach((obj) => {
+      for (const key in obj) {
+        if (typeof obj[key] === "string") {
+          perObj += "'" + obj[key] + "'";
+        } else {
+          perObj += obj[key];
+        }
+        perObj += ",";
+      }
+      perObj = perObj.substring(0, perObj.length - 1);
+      perObj += "),";
+      values += perObj;
+      perObj = "(";
+    });
+    values = values.substring(0, values.length - 1);
+  }
+
+  return values;
+};

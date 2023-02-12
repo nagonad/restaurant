@@ -13,129 +13,36 @@ import { RxPencil1, RxCrossCircled, RxPlusCircled } from "react-icons/rx";
 import { Link } from "react-router-dom";
 
 export default class Menu extends Component {
-  state = { addSizeIsOpen: false };
+  state = {
+    addSizeIsOpen: false,
 
-  handleChange = (event) => {
-    if (event.target.name === "categoryId") {
-      this.setState({ [event.target.name]: event.target.value[0] });
-    } else if (event.target.name === "productSize") {
-      if (event.target.value === "4-40*60") {
-        this.setState({ [event.target.name]: "Party" });
-      } else {
-        this.setState({
-          [event.target.name]: event.target.value.substring(2),
-        });
-      }
-    } else {
-      this.setState({ [event.target.name]: event.target.value });
-    }
+    selectedProductSizes: [],
   };
 
-  saveProduct = () => {
-    const newProduct = this.state;
-    fetch("http://localhost:3000/products", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newProduct),
-    })
+  getSelectedProduct = (product) => {
+    let url = "http://localhost:5000/product_sizes/";
+
+    url += product.id;
+
+    fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
+        this.setState({ selectedProductSizes: data });
       });
   };
 
-  sizeOnChangeControl = (e) => {
-    console.log(e.target.checked);
-  };
+  changeProductSizeChecked = (product) => {
+    let arr = this.state.selectedProductSizes;
 
-  renderMenuControl = () => {
-    return (
-      <Form>
-        <FormGroup row>
-          <Label sm={2}>Product Id</Label>
-          <Col sm={10}>
-            <Input name="productId" onChange={this.handleChange} />
-          </Col>
-        </FormGroup>
-        <FormGroup row>
-          <Label for="categoryId" sm={2}>
-            Category Id
-          </Label>
-          <Col sm={10}>
-            <Input
-              type="select"
-              name="categoryId"
-              id="CategoryIdSelect"
-              onChange={this.handleChange}
-            >
-              <option>1-</option>
-              <option>2-</option>
-              <option>3-</option>
-              <option>4-</option>
-              <option>5-</option>
-              <option>6-</option>
-              <option>7-</option>
-              <option>8-</option>
-              <option>9-</option>
-            </Input>
-          </Col>
-        </FormGroup>
-        <FormGroup row>
-          <Label for="productName" sm={2}>
-            Product Name
-          </Label>
-          <Col sm={10}>
-            <Input name="productName" onChange={this.handleChange} />
-          </Col>
-        </FormGroup>
-        <FormGroup row>
-          <Label for="unitPrice" sm={2}>
-            Unit Price
-          </Label>
-          <Col sm={10}>
-            <Input name="unitPrice" onChange={this.handleChange} />
-          </Col>
-        </FormGroup>
-        <FormGroup row>
-          <Label for="productDescription" sm={2}>
-            Product Description
-          </Label>
-          <Col sm={10}>
-            <Input
-              type="textarea"
-              name="productDescription"
-              id="exampleText"
-              onChange={this.handleChange}
-            />
-          </Col>
-        </FormGroup>
-        <FormGroup row>
-          <Label for="productSize" sm={2}>
-            Product Size
-          </Label>
-          <Col sm={10}>
-            <Input
-              type="select"
-              name="productSize"
-              id="productSizeSelect"
-              onChange={this.handleChange}
-            >
-              <option>1-Klein</option>
-              <option>2-Mittel</option>
-              <option>3-Groß</option>
-              <option>4-40*60</option>
-            </Input>
-          </Col>
-        </FormGroup>
+    let arrElement = arr.find((c) => c.id === product.id);
 
-        <Button onClick={this.saveProduct}>Submit</Button>
-      </Form>
-    );
+    if (arrElement.selected) {
+      arrElement.selected = false;
+    } else {
+      arrElement.selected = true;
+    }
+
+    this.setState({ selectedProductSizes: arr });
   };
 
   render() {
@@ -155,19 +62,22 @@ export default class Menu extends Component {
             }}
           >
             <Form>
-              {this.props.sizes.map((size) => (
+              {this.state.selectedProductSizes.map((size) => (
                 <FormGroup>
                   <Label check>
                     <Input
+                      defaultChecked={size.selected}
                       type="checkbox"
-                      onChange={this.sizeOnChangeControl}
+                      onChange={(e) => {
+                        this.props.updateProductSize(e, size);
+                        this.changeProductSizeChecked(size);
+                      }}
                     />
-                    {size.size}
+                    {size.sizename}
                   </Label>
                 </FormGroup>
               ))}
             </Form>
-            <Button>Save Size</Button>
             <Button
               onClick={() => {
                 this.setState({ addSizeIsOpen: false });
@@ -194,7 +104,10 @@ export default class Menu extends Component {
               <Col>{product.unitprice ? product.unitprice : null}</Col>
               <Col>
                 <RxPencil1
-                  onClick={() => this.props.changeMenuControlIsOpen(product)}
+                  onClick={() => {
+                    this.getSelectedProduct(product);
+                    this.props.changeMenuControlIsOpen(product);
+                  }}
                 ></RxPencil1>
               </Col>
               <Col>
