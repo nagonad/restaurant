@@ -222,7 +222,35 @@ export default class App extends Component {
 
     url += bodyJson.id;
 
-    let query = `selected=${e.target.checked}`;
+    let query = `selected=${e.target.checked}, unitprice=null`;
+
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: query }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        return data;
+      });
+  };
+
+  updateProductSizeUnitPrice = (e, size) => {
+    let url = "http://localhost:5000/product_sizes/";
+
+    url += size.id;
+
+    let query = "";
+
+    let price = parseFloat(e.target.value).toFixed(2);
+
+    if (!e.target.value || parseFloat(e.target.value) === 0) {
+      query = `unitprice=null`;
+    } else {
+      query = `unitprice=${price}`;
+    }
 
     fetch(url, {
       method: "PUT",
@@ -601,6 +629,7 @@ export default class App extends Component {
                   handleChangeNew={this.handleChangeNew}
                   sizes={this.state.sizes}
                   updateProductSize={this.updateProductSize}
+                  updateProductSizeUnitPrice={this.updateProductSizeUnitPrice}
                 ></MenuControl>
               }
             ></Route>

@@ -15,14 +15,18 @@ import { Link } from "react-router-dom";
 export default class Menu extends Component {
   state = {
     addSizeIsOpen: false,
-
+    selectedProduct: {},
     selectedProductSizes: [],
   };
 
   getSelectedProduct = (product) => {
     let url = "http://localhost:5000/product_sizes/";
 
-    url += product.id;
+    if (product) {
+      url += product.id;
+    } else {
+      url += this.state.selectedProduct.id;
+    }
 
     fetch(url)
       .then((response) => response.json())
@@ -71,6 +75,7 @@ export default class Menu extends Component {
                       onChange={(e) => {
                         this.props.updateProductSize(e, size);
                         this.changeProductSizeChecked(size);
+                        this.getSelectedProduct();
                       }}
                     />
                     {size.sizename}
@@ -105,6 +110,7 @@ export default class Menu extends Component {
               <Col>
                 <RxPencil1
                   onClick={() => {
+                    this.setState({ selectedProduct: product });
                     this.getSelectedProduct(product);
                     this.props.changeMenuControlIsOpen(product);
                   }}
@@ -189,6 +195,27 @@ export default class Menu extends Component {
                   </Col>
                 </FormGroup>
                 <hr></hr>
+
+                {this.state.selectedProductSizes.map((size) =>
+                  size.selected ? (
+                    <FormGroup row>
+                      <Col sm={2}>{size.sizename}</Col>
+                      <Col sm={2}>
+                        <Input
+                          type="number"
+                          placeholder={size.unitprice}
+                          onChange={(e) => {
+                            this.props.updateProductSizeUnitPrice(e, size);
+                          }}
+                        ></Input>
+                      </Col>
+                      <Col sm={2}>
+                        <Button>Add Variant</Button>
+                      </Col>
+                    </FormGroup>
+                  ) : null
+                )}
+
                 <FormGroup row>
                   <Col sm={10}></Col>
                   <Col sm={2}>
