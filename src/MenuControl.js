@@ -49,7 +49,7 @@ export default class Menu extends Component {
     this.setState({ selectedProductSizes: arr });
   };
 
-  render() {
+  renderMenuControl = () => {
     return (
       <>
         {this.state.addSizeIsOpen && (
@@ -67,7 +67,7 @@ export default class Menu extends Component {
           >
             <Form>
               {this.state.selectedProductSizes.map((size) => (
-                <FormGroup>
+                <FormGroup key={size.id}>
                   <Label check>
                     <Input
                       defaultChecked={size.selected}
@@ -198,7 +198,7 @@ export default class Menu extends Component {
 
                 {this.state.selectedProductSizes.map((size) =>
                   size.selected ? (
-                    <FormGroup row>
+                    <FormGroup key={size.id} row>
                       <Col sm={2}>{size.sizename}</Col>
                       <Col sm={2}>
                         <Input
@@ -244,5 +244,13 @@ export default class Menu extends Component {
         ))}
       </>
     );
+  };
+
+  renderVariantControl = () => {
+    return <></>;
+  };
+
+  render() {
+    return this.renderMenuControl();
   }
 }

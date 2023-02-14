@@ -283,6 +283,30 @@ app.put("/product_sizes/:id", async (req, res) => {
   } catch (error) {}
 });
 
+app.post("/variantControl", async (req, res) => {
+  let keys = getKeys(req.body);
+
+  let values = getValues(req.body);
+
+  try {
+    const cevap = pool.query(`insert into variants${keys} values${values}`);
+
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/variantControl", async (req, res) => {
+  try {
+    const cevap = await pool.query("select * from variants");
+
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.listen(5000, () => {
   console.log("server running on server 5000");
 });

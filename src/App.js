@@ -11,6 +11,7 @@ import OrderHistoryComponent from "./OrderHistoryComponent.js";
 import MenuItemAdd from "./MenuItemAdd.js";
 import MenuList from "./MenuList";
 import SizeControl from "./SizeControl.js";
+import VariantControl from "./VariantControl.js";
 
 export default class App extends Component {
   state = {
@@ -41,6 +42,7 @@ export default class App extends Component {
     productSizes: ["Klein", "Mittel", "Groß", "Party"],
     updatedProduct: {},
     sizes: [],
+    variants: {},
   };
 
   changeCostumerName = (value) => {
@@ -265,6 +267,28 @@ export default class App extends Component {
       });
   };
 
+  saveVariant = (bodyJson) => {
+    let url = "http://localhost:5000/variantControl/";
+
+    fetch(url, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyJson),
+    })
+      .then((response) => response.json)
+      .then((data) => {
+        this.getVariants();
+      });
+  };
+
+  getVariants = () => {
+    fetch("http://localhost:5000/variantControl")
+      .then((response) => response.json())
+      .then((data) => this.setState({ variants: data }));
+  };
+
   saveProduct = (bodyJson) => {
     fetch("http://localhost:5000/menu", {
       method: "POST", // or 'PUT'
@@ -477,6 +501,7 @@ export default class App extends Component {
     this.getOrderHistory();
     this.getCategories();
     this.getSize();
+    this.getVariants();
   }
 
   categorizeProducts = (products) => {
@@ -652,6 +677,16 @@ export default class App extends Component {
                   saveSize={this.saveSize}
                   deleteSize={this.deleteSize}
                 ></SizeControl>
+              }
+            ></Route>
+            <Route
+              exact
+              path="/variantControl"
+              element={
+                <VariantControl
+                  variants={this.state.variants}
+                  saveVariant={this.saveVariant}
+                ></VariantControl>
               }
             ></Route>
           </Routes>

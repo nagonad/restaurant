@@ -30,10 +30,11 @@ export default class Navi extends Component {
               style={{ width: "100%" }}
             >
               <NavItem>
-                <Link className="nav-link" to="/menuControl/sizeControl">
-                  Size Control
+                <Link className="nav-link" to="/variantControl">
+                  Variant Control
                 </Link>
               </NavItem>
+
               <NavItem>
                 <Link className="nav-link" to="/orderHistory">
                   Order History
