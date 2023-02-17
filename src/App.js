@@ -43,6 +43,7 @@ export default class App extends Component {
     updatedProduct: {},
     sizes: [],
     variants: {},
+    sizeVariant: [],
   };
 
   changeCostumerName = (value) => {
@@ -182,8 +183,6 @@ export default class App extends Component {
   deleteProduct = (product) => {
     let url = "http://localhost:5000/menu/";
     url += product.id;
-    let url2 = "http://localhost:5000/product_sizes/";
-    url2 += product.id;
 
     fetch(url, {
       method: "DELETE",
@@ -191,18 +190,7 @@ export default class App extends Component {
       .then((response) => response.json())
       .then(() => {
         this.getProducts();
-        fetch(url2, {
-          method: "DELETE",
-        })
-          .then((response) => response.json())
-          .then((data) => {});
       });
-
-    fetch(url2, {
-      method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then((data) => {});
   };
 
   saveProductSize = (bodyJson) => {
@@ -267,6 +255,20 @@ export default class App extends Component {
       });
   };
 
+  deleteVariant = (variant) => {
+    let url = "http://localhost:5000/variantControl/";
+
+    url += variant.id;
+
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        this.getVariants();
+      });
+  };
+
   saveVariant = (bodyJson) => {
     let url = "http://localhost:5000/variantControl/";
 
@@ -287,6 +289,61 @@ export default class App extends Component {
     fetch("http://localhost:5000/variantControl")
       .then((response) => response.json())
       .then((data) => this.setState({ variants: data }));
+  };
+
+  updateVariant = (variant, editedVariant) => {
+    let url = "http://localhost:5000/variantControl/";
+
+    url += variant.id;
+
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editedVariant),
+    })
+      .then((response) => response.json())
+      .then((data) => this.getVariants());
+  };
+
+  saveSizeVariant = (variantid, size) => {
+    let obj = {};
+
+    obj.variantid = variantid;
+    obj.productsizeid = size.id;
+
+    let url = "http://localhost:5000/productSizeVariant";
+
+    fetch(url, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+    })
+      .then((response) => response.json)
+      .then((data) => {
+        console.log("eklendi");
+      });
+  };
+
+  getSizeVariant = () => {
+    let url = "http://localhost:5000/productSizeVariant/";
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => this.setState({ sizeVariant: data }));
+  };
+
+  getSizeVariantById = (id) => {
+    let url = "http://localhost:5000/productSizeVariant/";
+
+    url += id;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => data);
   };
 
   saveProduct = (bodyJson) => {
@@ -369,7 +426,7 @@ export default class App extends Component {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
+        this.getProducts();
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -502,6 +559,7 @@ export default class App extends Component {
     this.getCategories();
     this.getSize();
     this.getVariants();
+    this.getSizeVariant();
   }
 
   categorizeProducts = (products) => {
@@ -655,6 +713,9 @@ export default class App extends Component {
                   sizes={this.state.sizes}
                   updateProductSize={this.updateProductSize}
                   updateProductSizeUnitPrice={this.updateProductSizeUnitPrice}
+                  variants={this.state.variants}
+                  saveSizeVariant={this.saveSizeVariant}
+                  getSizeVariantById={this.getSizeVariantById}
                 ></MenuControl>
               }
             ></Route>
@@ -686,6 +747,8 @@ export default class App extends Component {
                 <VariantControl
                   variants={this.state.variants}
                   saveVariant={this.saveVariant}
+                  deleteVariant={this.deleteVariant}
+                  updateVariant={this.updateVariant}
                 ></VariantControl>
               }
             ></Route>

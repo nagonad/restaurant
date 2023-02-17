@@ -11,12 +11,15 @@ import {
 } from "reactstrap";
 import { RxPencil1, RxCrossCircled, RxPlusCircled } from "react-icons/rx";
 import { Link } from "react-router-dom";
+import AddSize from "./AddSize";
+import AddVariant from "./AddVariant";
 
 export default class Menu extends Component {
   state = {
-    addSizeIsOpen: false,
+    addSizeIsOpen: 0,
     selectedProduct: {},
     selectedProductSizes: [],
+    selectedSize: {},
   };
 
   getSelectedProduct = (product) => {
@@ -34,6 +37,9 @@ export default class Menu extends Component {
         this.setState({ selectedProductSizes: data });
       });
   };
+  changeAddSizeIsOpen = (value) => {
+    this.setState({ addSizeIsOpen: value });
+  };
 
   changeProductSizeChecked = (product) => {
     let arr = this.state.selectedProductSizes;
@@ -42,6 +48,7 @@ export default class Menu extends Component {
 
     if (arrElement.selected) {
       arrElement.selected = false;
+      arrElement.unitprice = null;
     } else {
       arrElement.selected = true;
     }
@@ -49,10 +56,40 @@ export default class Menu extends Component {
     this.setState({ selectedProductSizes: arr });
   };
 
+  renderPopScreen = () => {
+    switch (this.state.addSizeIsOpen) {
+      case 1:
+        return (
+          <AddSize
+            selectedProductSizes={this.state.selectedProductSizes}
+            updateProductSize={this.props.updateProductSize}
+            changeProductSizeChecked={this.changeProductSizeChecked}
+            addSizeIsOpen={this.state.addSizeIsOpen}
+            changeAddSizeIsOpen={this.changeAddSizeIsOpen}
+          ></AddSize>
+        );
+
+      case 2:
+        return (
+          <AddVariant
+            selectedProduct={this.state.selectedProduct}
+            selectedSize={this.state.selectedSize}
+            variants={this.props.variants}
+            saveSizeVariant={this.props.saveSizeVariant}
+            getSizeVariantById={this.props.getSizeVariantById}
+            changeAddSizeIsOpen={this.changeAddSizeIsOpen}
+          ></AddVariant>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   renderMenuControl = () => {
     return (
       <>
-        {this.state.addSizeIsOpen && (
+        {this.state.addSizeIsOpen !== 0 && (
           <Container
             style={{
               position: "fixed",
@@ -60,22 +97,30 @@ export default class Menu extends Component {
               width: "50%",
               zIndex: "10",
               background: "white",
-              top: "40",
+              top: "0",
               right: "0",
               border: "2px solid",
+              overflowY: "scroll",
             }}
           >
-            <Form>
+            {this.renderPopScreen()}
+            {/* <AddSize
+              selectedProductSizes={this.state.selectedProductSizes}
+              updateProductSize={this.props.updateProductSize}
+              changeProductSizeChecked={this.changeProductSizeChecked}
+              addSizeIsOpen={this.state.addSizeIsOpen}
+              changeAddSizeIsOpen={this.changeAddSizeIsOpen}
+            ></AddSize> */}
+            {/* <Form>
               {this.state.selectedProductSizes.map((size) => (
                 <FormGroup key={size.id}>
                   <Label check>
                     <Input
-                      defaultChecked={size.selected}
+                      checked={size.selected}
                       type="checkbox"
                       onChange={(e) => {
                         this.props.updateProductSize(e, size);
                         this.changeProductSizeChecked(size);
-                        this.getSelectedProduct();
                       }}
                     />
                     {size.sizename}
@@ -89,7 +134,7 @@ export default class Menu extends Component {
               }}
             >
               Cancel
-            </Button>
+            </Button> */}
           </Container>
         )}
         <Row>
@@ -172,7 +217,7 @@ export default class Menu extends Component {
                       name="categoryid"
                       id=""
                       placeholder=" Product Category"
-                      onChange={this.props.handleChangeNew}
+                      onClick={this.props.handleChangeNew}
                     >
                       {this.props.categories.map((category) => (
                         <option key={category.id}>
@@ -210,7 +255,14 @@ export default class Menu extends Component {
                         ></Input>
                       </Col>
                       <Col sm={2}>
-                        <Button>Add Variant</Button>
+                        <Button
+                          onClick={() => {
+                            this.setState({ selectedSize: size });
+                            this.setState({ addSizeIsOpen: 2 });
+                          }}
+                        >
+                          Add Variant
+                        </Button>
                       </Col>
                     </FormGroup>
                   ) : null
@@ -221,7 +273,7 @@ export default class Menu extends Component {
                   <Col sm={2}>
                     <Button
                       onClick={() => {
-                        this.setState({ addSizeIsOpen: true });
+                        this.setState({ addSizeIsOpen: 1 });
                       }}
                     >
                       Add Size

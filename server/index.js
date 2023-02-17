@@ -244,17 +244,19 @@ app.post("/product_sizes", async (req, res) => {
 
 //delete productsize
 
-app.delete("/product_sizes/:id", async (req, res) => {
-  try {
-    const cevap = await pool.query(
-      "delete from product_sizes where menutableid = $1",
-      [req.params.id]
-    );
-    res.json(cevap.rows);
-  } catch (error) {
-    console.error(error.message);
-  }
-});
+// app.delete("/product_sizes/:id", async (req, res) => {
+//   try {
+//     const cevap = await pool.query(
+//       "delete from product_sizes where menutableid = $1",
+//       [req.params.id]
+//     );
+//     res.json(cevap.rows);
+//   } catch (error) {
+//     console.error(error.message);
+//   }
+// });
+
+// get product's sizes
 
 app.get("/product_sizes/:id", async (req, res) => {
   try {
@@ -268,6 +270,8 @@ app.get("/product_sizes/:id", async (req, res) => {
     console.error(error.message);
   }
 });
+
+// update product's sizes
 
 app.put("/product_sizes/:id", async (req, res) => {
   const { id } = req.params;
@@ -283,6 +287,8 @@ app.put("/product_sizes/:id", async (req, res) => {
   } catch (error) {}
 });
 
+// post variants
+
 app.post("/variantControl", async (req, res) => {
   let keys = getKeys(req.body);
 
@@ -297,10 +303,91 @@ app.post("/variantControl", async (req, res) => {
   }
 });
 
+// get variants
+
 app.get("/variantControl", async (req, res) => {
   try {
-    const cevap = await pool.query("select * from variants");
+    const cevap = await pool.query(
+      "select * from variants order by price,variantname"
+    );
 
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+//delete variants
+
+app.delete("/variantControl/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(`delete from variants where id=${id}`);
+
+    res.json(cevap);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+//update variants
+
+app.put("/variantControl/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const query = getUpdateQuery(req.body);
+
+  try {
+    const cevap = await pool.query(
+      `update variants set ${query} where id=${id}`
+    );
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// post variants to product's sizes
+
+app.post("/productSizeVariant", async (req, res) => {
+  let keys = getKeys(req.body);
+
+  let values = getValues(req.body);
+
+  try {
+    const cevap = pool.query(
+      `insert into product_size_variants${keys} values${values}`
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// get product size variants
+
+app.get("/productSizeVariant", async (req, res) => {
+  try {
+    const cevap = await pool.query(
+      "select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.id = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid "
+    );
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// get product size variants by id
+
+app.get("/productSizeVariant/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.id = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid where productsizeid=${id}`
+    );
     res.json(cevap.rows);
   } catch (error) {
     console.error(error.message);
@@ -368,4 +455,16 @@ const getValues = (reqJson) => {
   }
 
   return values;
+};
+
+const getUpdateQuery = (obj) => {
+  let query = "";
+
+  for (const key in obj) {
+    query += key + "='" + obj[key] + "',";
+  }
+
+  query = query.substring(0, query.length - 1);
+
+  return query;
 };
