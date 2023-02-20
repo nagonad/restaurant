@@ -323,9 +323,7 @@ export default class App extends Component {
       body: JSON.stringify(obj),
     })
       .then((response) => response.json)
-      .then((data) => {
-        console.log("eklendi");
-      });
+      .then((data) => {});
   };
 
   getSizeVariant = () => {
@@ -344,6 +342,18 @@ export default class App extends Component {
     fetch(url)
       .then((response) => response.json())
       .then((data) => data);
+  };
+
+  deleteSizeVariant = (id) => {
+    let url = "http://localhost:5000/productSizeVariant/";
+
+    url += id;
+
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {});
   };
 
   saveProduct = (bodyJson) => {
@@ -716,6 +726,7 @@ export default class App extends Component {
                   variants={this.state.variants}
                   saveSizeVariant={this.saveSizeVariant}
                   getSizeVariantById={this.getSizeVariantById}
+                  deleteSizeVariant={this.deleteSizeVariant}
                 ></MenuControl>
               }
             ></Route>

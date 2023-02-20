@@ -394,6 +394,22 @@ app.get("/productSizeVariant/:id", async (req, res) => {
   }
 });
 
+//delete product size's variant
+
+app.delete("/productSizeVariant/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `delete from product_size_variants where sizevariantid=${id}`
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.listen(5000, () => {
   console.log("server running on server 5000");
 });

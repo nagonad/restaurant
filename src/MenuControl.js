@@ -78,6 +78,7 @@ export default class Menu extends Component {
             saveSizeVariant={this.props.saveSizeVariant}
             getSizeVariantById={this.props.getSizeVariantById}
             changeAddSizeIsOpen={this.changeAddSizeIsOpen}
+            deleteSizeVariant={this.props.deleteSizeVariant}
           ></AddVariant>
         );
 

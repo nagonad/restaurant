@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import {
-  FormGroup,
-  Label,
-  Input,
-  Container,
-  Col,
-  Form,
-  Button,
-} from "reactstrap";
+import { FormGroup, Input, Container, Button, Table } from "reactstrap";
+import { RxCrossCircled } from "react-icons/rx";
 
 export default function AddVariant(props) {
   const [selectedSize, setSelectedSize] = useState();
 
+  const [count, setCount] = useState(0);
+
+  const [availibleVariants, setAvailibleVariants] = useState();
+
   const handleChange = (variant) => {
     props.saveSizeVariant(variant.id, props.selectedSize);
+  };
+
+  const clickHandle = () => {
+    setCount((prevState) => {
+      return prevState + 1;
+    });
   };
 
   useEffect(() => {
@@ -23,13 +26,29 @@ export default function AddVariant(props) {
 
     fetch(url)
       .then((response) => response.json())
-      .then((data) => setSelectedSize(data));
-  }, [props.selectedSize]);
+      .then((data) => {
+        setSelectedSize(data);
+
+        let searchCriteriaArr = [];
+
+        data.forEach((variant) => {
+          searchCriteriaArr.push(variant.variantid);
+        });
+
+        let remainingVar = [];
+
+        remainingVar = props.variants.filter(
+          (c) => !searchCriteriaArr.includes(c.id)
+        );
+
+        setAvailibleVariants(remainingVar);
+      });
+  }, [props.selectedSize, count, props.variants]);
 
   return (
     <>
       <h3>
-        {props.selectedProduct.productname} - {props.selectedSize.sizename}{" "}
+        {props.selectedProduct.productname} - {props.selectedSize.sizename}
         <Button
           onClick={() => {
             props.changeAddSizeIsOpen(0);
@@ -39,27 +58,55 @@ export default function AddVariant(props) {
         </Button>
       </h3>
 
-      <Container style={{ display: "flex" }}>
-        <Form style={{ width: "50%" }}>
-          {selectedSize
-            ? selectedSize.map((variant) => (
-                <FormGroup>
-                  <Label sm={4} check>
-                    <Input checked={variant.variantselected}></Input>
-                    {variant.variantname}
-                  </Label>
-                </FormGroup>
-              ))
-            : null}
-        </Form>
-        <FormGroup style={{ width: "50%" }}>
-          {props.variants.map((variant) => (
-            <div onClick={() => handleChange(variant)}>
-              {variant.variantname} - {variant.price}€
-            </div>
-          ))}
-        </FormGroup>
-      </Container>
+      {selectedSize ? (
+        <Container style={{ display: "flex" }}>
+          <Container style={{ width: "50%" }}>
+            <Table striped>
+              <tbody>
+                {selectedSize.map((variant) => (
+                  <tr key={variant.sizevariantid}>
+                    <td>
+                      <Input
+                        type="checkbox"
+                        checked={variant.variantselected}
+                        onChange={() => {
+                          console.log("lol");
+                        }}
+                      ></Input>
+                    </td>
+                    <td>
+                      {variant.variantname} - {variant.price}
+                    </td>
+                    <td>
+                      <RxCrossCircled
+                        onClick={() => {
+                          props.deleteSizeVariant(variant.sizevariantid);
+                          clickHandle();
+                        }}
+                      ></RxCrossCircled>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Container>
+          <Container style={{ width: "50%" }}>
+            <FormGroup style={{ width: "50%" }}>
+              {availibleVariants.map((variant) => (
+                <div
+                  key={variant.id}
+                  onClick={() => {
+                    handleChange(variant);
+                    clickHandle();
+                  }}
+                >
+                  {variant.variantname} - {variant.price}€
+                </div>
+              ))}
+            </FormGroup>
+          </Container>
+        </Container>
+      ) : null}
     </>
   );
 }
