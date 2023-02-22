@@ -12,6 +12,7 @@ import MenuItemAdd from "./MenuItemAdd.js";
 import MenuList from "./MenuList";
 import SizeControl from "./SizeControl.js";
 import VariantControl from "./VariantControl.js";
+import VariantGroupControl from "./VariantGroupControl.js";
 
 export default class App extends Component {
   state = {
@@ -354,6 +355,58 @@ export default class App extends Component {
     })
       .then((response) => response.json())
       .then((data) => {});
+  };
+
+  saveVariantGroup = (obj) => {
+    let url = "http://localhost:5000/variantGroupControl";
+
+    const promise = fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+    });
+
+    return promise;
+  };
+
+  getVariantGroup = () => {
+    let url = "http://localhost:5000/variantGroupControl";
+
+    const cevap = fetch(url);
+
+    return cevap;
+  };
+
+  deleteVariantGroup = (variantGroup) => {
+    const id = variantGroup.variantgroupid;
+
+    let url = "http://localhost:5000/variantGroupControl/";
+
+    url += id;
+
+    const cevap = fetch(url, {
+      method: "DELETE",
+    });
+
+    return cevap;
+  };
+
+  updateVariantGroup = (variantGroup, editedVariantGroup) => {
+    let url = "http://localhost:5000/variantGroupControl/";
+
+    url += variantGroup.variantgroupid;
+
+    const cevap = fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editedVariantGroup),
+    });
+
+    return cevap;
   };
 
   saveProduct = (bodyJson) => {
@@ -761,6 +814,18 @@ export default class App extends Component {
                   deleteVariant={this.deleteVariant}
                   updateVariant={this.updateVariant}
                 ></VariantControl>
+              }
+            ></Route>
+            <Route
+              exact
+              path="/VariantGroupControl"
+              element={
+                <VariantGroupControl
+                  saveVariantGroup={this.saveVariantGroup}
+                  getVariantGroup={this.getVariantGroup}
+                  deleteVariantGroup={this.deleteVariantGroup}
+                  updateVariantGroup={this.updateVariantGroup}
+                ></VariantGroupControl>
               }
             ></Route>
           </Routes>
