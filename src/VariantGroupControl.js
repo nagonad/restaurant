@@ -75,7 +75,7 @@ export default function VariantGroupControl(props) {
 
   useEffect(() => {
     getVG();
-  });
+  }, []);
 
   return (
     <>

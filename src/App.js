@@ -13,6 +13,7 @@ import MenuList from "./MenuList";
 import SizeControl from "./SizeControl.js";
 import VariantControl from "./VariantControl.js";
 import VariantGroupControl from "./VariantGroupControl.js";
+import VariantGroupCostumize from "./VariantGroupCostumize.js";
 
 export default class App extends Component {
   state = {
@@ -371,8 +372,12 @@ export default class App extends Component {
     return promise;
   };
 
-  getVariantGroup = () => {
-    let url = "http://localhost:5000/variantGroupControl";
+  getVariantGroup = (variantGroup) => {
+    let url = "http://localhost:5000/variantGroupControl/";
+
+    if (variantGroup) {
+      url += variantGroup.variantgroupid;
+    }
 
     const cevap = fetch(url);
 
@@ -404,6 +409,37 @@ export default class App extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(editedVariantGroup),
+    });
+
+    return cevap;
+  };
+
+  saveVariantGroupVariant = (variantGroup, variant) => {
+    let query = {
+      variantgroupid: variantGroup.variantgroupid,
+      variantid: variant.id,
+    };
+
+    let url = "http://localhost:5000/variantGroupVariants";
+
+    const cevap = fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+    });
+
+    return cevap;
+  };
+
+  deleteVariantGroupVariant = (vgv) => {
+    let url = "http://localhost:5000/variantGroupVariants/";
+
+    url += vgv.vgvid;
+
+    const cevap = fetch(url, {
+      method: "DELETE",
     });
 
     return cevap;
@@ -826,6 +862,18 @@ export default class App extends Component {
                   deleteVariantGroup={this.deleteVariantGroup}
                   updateVariantGroup={this.updateVariantGroup}
                 ></VariantGroupControl>
+              }
+            ></Route>
+            <Route
+              exact
+              path="/variantGroupCostumize"
+              element={
+                <VariantGroupCostumize
+                  getVariantGroup={this.getVariantGroup}
+                  variants={this.state.variants}
+                  saveVariantGroupVariant={this.saveVariantGroupVariant}
+                  deleteVariantGroupVariant={this.deleteVariantGroupVariant}
+                ></VariantGroupCostumize>
               }
             ></Route>
           </Routes>

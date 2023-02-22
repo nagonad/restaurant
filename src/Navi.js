@@ -30,6 +30,11 @@ export default class Navi extends Component {
               style={{ width: "100%" }}
             >
               <NavItem>
+                <Link className="nav-link" to="/variantGroupCostumize">
+                  Variant Group Costumize
+                </Link>
+              </NavItem>
+              <NavItem>
                 <Link className="nav-link" to="/variantGroupControl">
                   Variant Group Control
                 </Link>

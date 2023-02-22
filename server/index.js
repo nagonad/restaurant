@@ -444,10 +444,52 @@ app.put("/variantGroupControl/:id", async (req, res) => {
   let query = getUpdateQuery(req.body);
 
   try {
-    const cevap = pool.query(
+    const cevap = await pool.query(
       `update variant_group set ${query} where variantgroupid=${id}`
     );
 
+    res.json(cevap);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/variantGroupControl/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `select * from variant_group inner join variant_group_variants on variant_group_variants.variantgroupid  = variant_group.variantgroupid inner join variants on variants.id= variant_group_variants.variantid where variant_group.variantgroupid =${id}`
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    res.sendStatus(500);
+  }
+});
+
+app.post("/variantGroupVariants", async (req, res) => {
+  let keys = getKeys(req.body);
+
+  let values = getValues(req.body);
+
+  try {
+    const cevap = await pool.query(
+      `insert into variant_group_variants${keys} values${values}`
+    );
+    res.json(cevap);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.delete("/variantGroupVariants/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `delete from variant_group_variants where vgvid=${id}`
+    );
     res.json(cevap);
   } catch (error) {
     console.error(error.message);
