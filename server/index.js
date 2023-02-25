@@ -397,6 +397,22 @@ app.delete("/productSizeVariant/:id", async (req, res) => {
   }
 });
 
+// delete product size's varíant by variantgroupid
+
+app.delete("/productSizeVariantNewTry/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `delete from product_size_variants where variantgroupid=${id}`
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    res.sendStatus(500);
+  }
+});
+
 // post variant group
 
 app.post("/variantGroupControl", async (req, res) => {

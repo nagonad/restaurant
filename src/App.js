@@ -368,6 +368,17 @@ export default class App extends Component {
       .then((data) => {});
   };
 
+  deleteSizeVariantNewTry = (psvgelement) => {
+    let url = "http://localhost:5000/productSizeVariantNewTry/";
+
+    url += psvgelement.variantgroupid;
+
+    const cevap = fetch(url, {
+      method: "DELETE",
+    });
+    return cevap;
+  };
+
   saveVariantGroup = (obj) => {
     let url = "http://localhost:5000/variantGroupControl";
 
@@ -886,6 +897,7 @@ export default class App extends Component {
                   }
                   getVariantGroupVariant={this.getVariantGroupVariant}
                   saveSizeVariantNewTry={this.saveSizeVariantNewTry}
+                  deleteSizeVariantNewTry={this.deleteSizeVariantNewTry}
                 ></MenuControl>
               }
             ></Route>

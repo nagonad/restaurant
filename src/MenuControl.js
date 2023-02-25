@@ -97,6 +97,7 @@ export default class Menu extends Component {
             }
             getVariantGroupVariant={this.props.getVariantGroupVariant}
             saveSizeVariantNewTry={this.props.saveSizeVariantNewTry}
+            deleteSizeVariantNewTry={this.props.deleteSizeVariantNewTry}
           ></AddVariantGroup>
         );
 

@@ -34,6 +34,7 @@ export default function AddVariantGroup(props) {
             if (data) {
               data.forEach((datum) => {
                 let obj = {
+                  variantgroupid: variantGroup.variantgroupid,
                   productsizeid: props.selectedSize.id,
                   variantid: datum.variantid,
                 };
@@ -56,13 +57,15 @@ export default function AddVariantGroup(props) {
   };
 
   const deletePsvg = (psvgelement) => {
-    props.deleteProductSizeVariantGroup(psvgelement).then(() => getPSVG());
+    props.deleteProductSizeVariantGroup(psvgelement).then(() => {
+      getPSVG();
+      props.deleteSizeVariantNewTry(psvgelement);
+    });
   };
 
   useEffect(() => {
-    let searchCriteriaArr = [];
-
-    if (psvg) {
+    if (psvg && variantGroups) {
+      let searchCriteriaArr = [];
       psvg.forEach((vg) => {
         searchCriteriaArr.push(vg.variantgroupid);
       });
