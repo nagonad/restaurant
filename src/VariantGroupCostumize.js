@@ -29,20 +29,6 @@ export default function VariantGroupCostumize(props) {
         .then((res) => res.json())
         .then((data) => {
           setVariantGroupById(data);
-
-          let searchCriteriaArr = [];
-
-          data.forEach((vgv) => {
-            searchCriteriaArr.push(vgv.id);
-          });
-
-          let remainingVar = [];
-
-          remainingVar = props.variants.filter(
-            (c) => !searchCriteriaArr.includes(c.id)
-          );
-
-          setAvailibleVariants(remainingVar);
         });
     } else {
       props
@@ -63,6 +49,24 @@ export default function VariantGroupCostumize(props) {
       .saveVariantGroupVariant(selectedVariantGroup, variant)
       .then(() => getVG(selectedVariantGroup));
   };
+
+  useEffect(() => {
+    let searchCriteriaArr = [];
+
+    if (variantGroupById) {
+      variantGroupById.forEach((vgv) => {
+        searchCriteriaArr.push(vgv.id);
+      });
+
+      let remainingVar = [];
+
+      remainingVar = props.variants.filter(
+        (c) => !searchCriteriaArr.includes(c.id)
+      );
+
+      setAvailibleVariants(remainingVar);
+    }
+  }, [variantGroupById, props.variants]);
 
   useEffect(() => {
     getVG();

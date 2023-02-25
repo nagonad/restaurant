@@ -280,11 +280,9 @@ export default class App extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(bodyJson),
-    })
-      .then((response) => response.json)
-      .then((data) => {
-        this.getVariants();
-      });
+    }).then((data) => {
+      this.getVariants();
+    });
   };
 
   getVariants = () => {
@@ -323,9 +321,21 @@ export default class App extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(obj),
-    })
-      .then((response) => response.json)
-      .then((data) => {});
+    });
+  };
+
+  saveSizeVariantNewTry = (obj) => {
+    let url = "http://localhost:5000/productSizeVariant";
+
+    const cevap = fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+    });
+
+    return cevap;
   };
 
   getSizeVariant = () => {
@@ -433,10 +443,62 @@ export default class App extends Component {
     return cevap;
   };
 
+  getVariantGroupVariant = (variantGroup) => {
+    let url = "http://localhost:5000/variantGroupVariants/";
+    url += variantGroup.variantgroupid;
+
+    const cevap = fetch(url);
+
+    return cevap;
+  };
+
   deleteVariantGroupVariant = (vgv) => {
     let url = "http://localhost:5000/variantGroupVariants/";
 
     url += vgv.vgvid;
+
+    const cevap = fetch(url, {
+      method: "DELETE",
+    });
+
+    return cevap;
+  };
+
+  saveProductSizeVariantGroup = (productSize, variantGroup) => {
+    let query = {
+      productsizeid: productSize.id,
+      variantgroupid: variantGroup.variantgroupid,
+    };
+
+    let url = "http://localhost:5000/productSizeVariantGroup";
+
+    const cevap = fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+    });
+
+    return cevap;
+  };
+
+  getProductSizeVariantGroup = (productSize) => {
+    let url = "http://localhost:5000/productSizeVariantGroup/";
+
+    if (productSize) {
+      url += productSize.id;
+    }
+
+    const cevap = fetch(url);
+
+    return cevap;
+  };
+
+  deleteProductSizeVariantGroup = (psvg) => {
+    let url = "http://localhost:5000/productSizeVariantGroup/";
+
+    url += psvg.productsizevariantgroupid;
 
     const cevap = fetch(url, {
       method: "DELETE",
@@ -816,6 +878,14 @@ export default class App extends Component {
                   saveSizeVariant={this.saveSizeVariant}
                   getSizeVariantById={this.getSizeVariantById}
                   deleteSizeVariant={this.deleteSizeVariant}
+                  getVariantGroup={this.getVariantGroup}
+                  saveProductSizeVariantGroup={this.saveProductSizeVariantGroup}
+                  getProductSizeVariantGroup={this.getProductSizeVariantGroup}
+                  deleteProductSizeVariantGroup={
+                    this.deleteProductSizeVariantGroup
+                  }
+                  getVariantGroupVariant={this.getVariantGroupVariant}
+                  saveSizeVariantNewTry={this.saveSizeVariantNewTry}
                 ></MenuControl>
               }
             ></Route>

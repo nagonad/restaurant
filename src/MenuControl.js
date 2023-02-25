@@ -13,6 +13,7 @@ import { RxPencil1, RxCrossCircled, RxPlusCircled } from "react-icons/rx";
 import { Link } from "react-router-dom";
 import AddSize from "./AddSize";
 import AddVariant from "./AddVariant";
+import AddVariantGroup from "./AddVariantGroup";
 
 export default class Menu extends Component {
   state = {
@@ -82,6 +83,23 @@ export default class Menu extends Component {
           ></AddVariant>
         );
 
+      case 3:
+        return (
+          <AddVariantGroup
+            getVariantGroup={this.props.getVariantGroup}
+            selectedSize={this.state.selectedSize}
+            selectedProduct={this.state.selectedProduct}
+            changeAddSizeIsOpen={this.changeAddSizeIsOpen}
+            saveProductSizeVariantGroup={this.props.saveProductSizeVariantGroup}
+            getProductSizeVariantGroup={this.props.getProductSizeVariantGroup}
+            deleteProductSizeVariantGroup={
+              this.props.deleteProductSizeVariantGroup
+            }
+            getVariantGroupVariant={this.props.getVariantGroupVariant}
+            saveSizeVariantNewTry={this.props.saveSizeVariantNewTry}
+          ></AddVariantGroup>
+        );
+
       default:
         return null;
     }
@@ -105,37 +123,6 @@ export default class Menu extends Component {
             }}
           >
             {this.renderPopScreen()}
-            {/* <AddSize
-              selectedProductSizes={this.state.selectedProductSizes}
-              updateProductSize={this.props.updateProductSize}
-              changeProductSizeChecked={this.changeProductSizeChecked}
-              addSizeIsOpen={this.state.addSizeIsOpen}
-              changeAddSizeIsOpen={this.changeAddSizeIsOpen}
-            ></AddSize> */}
-            {/* <Form>
-              {this.state.selectedProductSizes.map((size) => (
-                <FormGroup key={size.id}>
-                  <Label check>
-                    <Input
-                      checked={size.selected}
-                      type="checkbox"
-                      onChange={(e) => {
-                        this.props.updateProductSize(e, size);
-                        this.changeProductSizeChecked(size);
-                      }}
-                    />
-                    {size.sizename}
-                  </Label>
-                </FormGroup>
-              ))}
-            </Form>
-            <Button
-              onClick={() => {
-                this.setState({ addSizeIsOpen: false });
-              }}
-            >
-              Cancel
-            </Button> */}
           </Container>
         )}
         <Row>
@@ -265,11 +252,21 @@ export default class Menu extends Component {
                           Add Variant
                         </Button>
                       </Col>
+                      <Col sm={2}>
+                        <Button
+                          onClick={() => {
+                            this.setState({ selectedSize: size });
+                            this.setState({ addSizeIsOpen: 3 });
+                          }}
+                        >
+                          Add Variant Group
+                        </Button>
+                      </Col>
                     </FormGroup>
                   ) : null
                 )}
 
-                <FormGroup row>
+                <FormGroup>
                   <Col sm={10}></Col>
                   <Col sm={2}>
                     <Button

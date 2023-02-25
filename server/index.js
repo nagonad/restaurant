@@ -483,12 +483,68 @@ app.post("/variantGroupVariants", async (req, res) => {
   }
 });
 
+app.get("/variantGroupVariants/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `select * from variant_group_variants where variantgroupid=${id} `
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    res.sendStatus(500);
+  }
+});
+
 app.delete("/variantGroupVariants/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
     const cevap = await pool.query(
       `delete from variant_group_variants where vgvid=${id}`
+    );
+    res.json(cevap);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/productSizeVariantGroup", async (req, res) => {
+  let keys = getKeys(req.body);
+
+  let values = getValues(req.body);
+
+  try {
+    const cevap = await pool.query(
+      `insert into product_size_variant_groups${keys} values${values}`
+    );
+    res.json(cevap);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/productSizeVariantGroup/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `select * from product_size_variant_groups inner join product_sizes on product_sizes.id=product_size_variant_groups.productsizeid inner join variant_group on variant_group.variantgroupid=product_size_variant_groups.variantgroupid where product_size_variant_groups.productsizeid = ${id}`
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    res.sendStatus(500);
+  }
+});
+
+app.delete("/productSizeVariantGroup/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const cevap = await pool.query(
+      `delete from product_size_variant_groups where productsizevariantgroupid=${id}`
     );
     res.json(cevap);
   } catch (error) {
