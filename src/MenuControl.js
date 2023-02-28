@@ -23,21 +23,15 @@ export default class Menu extends Component {
     selectedSize: {},
   };
 
-  getSelectedProduct = (product) => {
-    let url = "http://localhost:5000/product_sizes/";
-
-    if (product) {
-      url += product.id;
-    } else {
-      url += this.state.selectedProduct.id;
-    }
-
-    fetch(url)
+  getSP = (product) => {
+    this.props
+      .getSelectedProduct(product)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ selectedProductSizes: data });
       });
   };
+
   changeAddSizeIsOpen = (value) => {
     this.setState({ addSizeIsOpen: value });
   };
@@ -108,7 +102,7 @@ export default class Menu extends Component {
 
   renderMenuControl = () => {
     return (
-      <>
+      <div style={{ width: "100%", overflow: "hidden" }}>
         {this.state.addSizeIsOpen !== 0 && (
           <Container
             style={{
@@ -145,7 +139,7 @@ export default class Menu extends Component {
                 <RxPencil1
                   onClick={() => {
                     this.setState({ selectedProduct: product });
-                    this.getSelectedProduct(product);
+                    this.getSP(product);
                     this.props.changeMenuControlIsOpen(product);
                   }}
                 ></RxPencil1>
@@ -293,7 +287,7 @@ export default class Menu extends Component {
             )}
           </React.Fragment>
         ))}
-      </>
+      </div>
     );
   };
 

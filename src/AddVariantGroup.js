@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { RxCrossCircled } from "react-icons/rx";
 
-import { Button } from "reactstrap";
+import { Button } from "@mui/material";
 
 export default function AddVariantGroup(props) {
   const [variantGroups, setVariantGroups] = useState();

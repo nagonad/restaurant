@@ -19,7 +19,7 @@ export default class Navi extends Component {
 
   render() {
     return (
-      <div>
+      <>
         <Navbar light expand="md">
           <NavbarBrand href="/">Sel Restaurant</NavbarBrand>
           <NavbarToggler onClick={() => this.toggle()} />
@@ -72,7 +72,7 @@ export default class Navi extends Component {
             </Nav>
           </Collapse>
         </Navbar>
-      </div>
+      </>
     );
   }
 }

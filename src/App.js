@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { Container, Row } from "reactstrap";
 import Checkout from "./Checkout.js";
 import { Routes, Route } from "react-router-dom";
-import OrderLayout from "./OrderLayout.js";
+
 import MenuControl from "./MenuControl";
 import "./App.css";
 import OrderHistoryComponent from "./OrderHistoryComponent.js";
@@ -14,12 +14,12 @@ import SizeControl from "./SizeControl.js";
 import VariantControl from "./VariantControl.js";
 import VariantGroupControl from "./VariantGroupControl.js";
 import VariantGroupCostumize from "./VariantGroupCostumize.js";
+import CreateOrder from "./CreateOrder";
 
 export default class App extends Component {
   state = {
     currentCategory: "",
     products: [],
-    catProducts: [],
     cart: [],
     orderNumber: 0,
     checkoutInformation: {
@@ -41,7 +41,6 @@ export default class App extends Component {
     phoneNumberValue: "",
     orderHistory: [],
     categories: [],
-    productSizes: ["Klein", "Mittel", "Groß", "Party"],
     updatedProduct: {},
     sizes: [],
     variants: {},
@@ -178,7 +177,6 @@ export default class App extends Component {
       .then((data) => {
         let newData = data.map((obj) => ({ ...obj, isOpen: false }));
         this.setState({ products: newData });
-        this.categorizeProducts(data);
       });
   };
 
@@ -193,6 +191,20 @@ export default class App extends Component {
       .then(() => {
         this.getProducts();
       });
+  };
+
+  getSelectedProduct = (product) => {
+    let url = "http://localhost:5000/product_sizes/";
+
+    if (product) {
+      url += product.id;
+    } else {
+      url += this.state.selectedProduct.id;
+    }
+
+    const cevap = fetch(url);
+
+    return cevap;
   };
 
   saveProductSize = (bodyJson) => {
@@ -351,9 +363,9 @@ export default class App extends Component {
 
     url += id;
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => data);
+    const cevap = fetch(url);
+
+    return cevap;
   };
 
   deleteSizeVariant = (id) => {
@@ -732,235 +744,231 @@ export default class App extends Component {
     this.getSize();
     this.getVariants();
     this.getSizeVariant();
+    document.body.style = "background: #E7EBF0;";
   }
 
-  categorizeProducts = (products) => {
-    let categorizedProductList = [];
+  // categorizeProducts = (products) => {
+  //   let categorizedProductList = [];
 
-    let controller;
+  //   let controller;
 
-    for (let i = 0; i < products.length; i++) {
-      controller = false;
-      for (let k = 0; k < categorizedProductList.length; k++) {
-        if (products[i].productid === categorizedProductList[k].productId) {
-          if (products[i].productsize === "Klein") {
-            categorizedProductList[k].unitPrice.Klein = products[i].unitprice;
-          }
-          if (products[i].productsize === "Mittel") {
-            categorizedProductList[k].unitPrice.Mittel = products[i].unitprice;
-          }
-          if (products[i].productsize === "Groß") {
-            categorizedProductList[k].unitPrice.Groß = products[i].unitprice;
-          }
-          if (products[i].productsize === "Grand") {
-            categorizedProductList[k].unitPrice.Grand = products[i].unitprice;
-          }
-          controller = true;
-        }
-      }
+  //   for (let i = 0; i < products.length; i++) {
+  //     controller = false;
+  //     for (let k = 0; k < categorizedProductList.length; k++) {
+  //       if (products[i].productid === categorizedProductList[k].productId) {
+  //         if (products[i].productsize === "Klein") {
+  //           categorizedProductList[k].unitPrice.Klein = products[i].unitprice;
+  //         }
+  //         if (products[i].productsize === "Mittel") {
+  //           categorizedProductList[k].unitPrice.Mittel = products[i].unitprice;
+  //         }
+  //         if (products[i].productsize === "Groß") {
+  //           categorizedProductList[k].unitPrice.Groß = products[i].unitprice;
+  //         }
+  //         if (products[i].productsize === "Grand") {
+  //           categorizedProductList[k].unitPrice.Grand = products[i].unitprice;
+  //         }
+  //         controller = true;
+  //       }
+  //     }
 
-      if (controller === false) {
-        categorizedProductList[categorizedProductList.length] = {
-          id: null,
-          productName: null,
-          productId: null,
-          categoryId: null,
-          productDescription: null,
-          unitPrice: {
-            Klein: null,
-            Mittel: null,
-            Groß: null,
-            Grand: null,
-          },
-        };
+  //     if (controller === false) {
+  //       categorizedProductList[categorizedProductList.length] = {
+  //         id: null,
+  //         productName: null,
+  //         productId: null,
+  //         categoryId: null,
+  //         productDescription: null,
+  //         unitPrice: {
+  //           Klein: null,
+  //           Mittel: null,
+  //           Groß: null,
+  //           Grand: null,
+  //         },
+  //       };
 
-        categorizedProductList[categorizedProductList.length - 1].productId =
-          products[i].productid;
+  //       categorizedProductList[categorizedProductList.length - 1].productId =
+  //         products[i].productid;
 
-        categorizedProductList[categorizedProductList.length - 1].id =
-          products[i].id;
-        categorizedProductList[categorizedProductList.length - 1].categoryId =
-          products[i].categoryid;
-        categorizedProductList[categorizedProductList.length - 1].productName =
-          products[i].productname;
-        categorizedProductList[
-          categorizedProductList.length - 1
-        ].productDescription = products[i].productdescription;
+  //       categorizedProductList[categorizedProductList.length - 1].id =
+  //         products[i].id;
+  //       categorizedProductList[categorizedProductList.length - 1].categoryId =
+  //         products[i].categoryid;
+  //       categorizedProductList[categorizedProductList.length - 1].productName =
+  //         products[i].productname;
+  //       categorizedProductList[
+  //         categorizedProductList.length - 1
+  //       ].productDescription = products[i].productdescription;
 
-        if (products[i].productsize === "Klein") {
-          categorizedProductList[
-            categorizedProductList.length - 1
-          ].unitPrice.Klein = products[i].unitprice;
-        }
-        if (products[i].productsize === "Mittel") {
-          categorizedProductList[
-            categorizedProductList.length - 1
-          ].unitPrice.Mittel = products[i].unitprice;
-        }
-        if (products[i].productsize === "Groß") {
-          categorizedProductList[
-            categorizedProductList.length - 1
-          ].unitPrice.Groß = products[i].unitprice;
-        }
-        if (products[i].productsize === "Grand") {
-          categorizedProductList[
-            categorizedProductList.length - 1
-          ].unitPrice.Grand = products[i].unitprice;
-        }
-      }
-    }
+  //       if (products[i].productsize === "Klein") {
+  //         categorizedProductList[
+  //           categorizedProductList.length - 1
+  //         ].unitPrice.Klein = products[i].unitprice;
+  //       }
+  //       if (products[i].productsize === "Mittel") {
+  //         categorizedProductList[
+  //           categorizedProductList.length - 1
+  //         ].unitPrice.Mittel = products[i].unitprice;
+  //       }
+  //       if (products[i].productsize === "Groß") {
+  //         categorizedProductList[
+  //           categorizedProductList.length - 1
+  //         ].unitPrice.Groß = products[i].unitprice;
+  //       }
+  //       if (products[i].productsize === "Grand") {
+  //         categorizedProductList[
+  //           categorizedProductList.length - 1
+  //         ].unitPrice.Grand = products[i].unitprice;
+  //       }
+  //     }
+  //   }
 
-    this.setState({ catProducts: categorizedProductList });
-  };
+  //   this.setState({ catProducts: categorizedProductList });
+  // };
 
   render() {
     return (
-      <Container>
+      <div>
         <Navi removeFromCart={this.removeFromCart} cart={this.state.cart} />
 
-        <Row>
-          <Routes>
-            <Route
-              exact
-              path="/"
-              element={
-                <OrderLayout
-                  currentCategory={this.state.currentCategory}
-                  changeCategory={this.changeCategory}
-                  catProducts={this.state.catProducts}
-                  addToCart={this.addToCart}
-                  orderNumber={this.orderNumber}
-                  setOrderNumber={this.setOrderNumber}
-                  categories={this.state.categories}
-                />
-              }
-            ></Route>
-            <Route
-              exact
-              path="/checkout"
-              element={
-                <Checkout
-                  changeAddress={this.changeAddress}
-                  changeCostumerName={this.changeCostumerName}
-                  changePhoneNumber={this.changePhoneNumber}
-                  changePhoneNumberValue={this.changePhoneNumberValue}
-                  phoneNumberValue={this.state.phoneNumberValue}
-                  changeCostumerInfo={this.changeCostumerInfo}
-                  costumerInfo={this.state.costumerInfo}
-                  locations={this.state.locations}
-                  changeDeliveryTarget={this.changeDeliveryTarget}
-                  changeCheckoutInformation={this.changeCheckoutInformation}
-                  checkoutInformation={this.state.checkoutInformation}
-                  removeFromCart={this.removeFromCart}
-                  handleSelect={this.handleSelect}
-                  cart={this.state.cart}
-                  changeExtraProductCost={this.changeExtraProductCost}
-                />
-              }
-            ></Route>
-            <Route
-              exact
-              path="/orderHistory"
-              element={
-                <OrderHistoryComponent
-                  orderHistory={this.state.orderHistory}
-                  changeIsOpen={this.changeIsOpen}
-                  deleteOrder={this.deleteOrder}
-                ></OrderHistoryComponent>
-              }
-            ></Route>
-            <Route
-              exact
-              path="/menuControl"
-              element={
-                <MenuControl
-                  changeMenuControlIsOpen={this.changeMenuControlIsOpen}
-                  products={this.state.products}
-                  deleteProduct={this.deleteProduct}
-                  categories={this.state.categories}
-                  productSizes={this.state.productSizes}
-                  updateProduct={this.updateProduct}
-                  updatedProduct={this.state.updatedProduct}
-                  handleChangeNew={this.handleChangeNew}
-                  sizes={this.state.sizes}
-                  updateProductSize={this.updateProductSize}
-                  updateProductSizeUnitPrice={this.updateProductSizeUnitPrice}
-                  variants={this.state.variants}
-                  saveSizeVariant={this.saveSizeVariant}
-                  getSizeVariantById={this.getSizeVariantById}
-                  deleteSizeVariant={this.deleteSizeVariant}
-                  getVariantGroup={this.getVariantGroup}
-                  saveProductSizeVariantGroup={this.saveProductSizeVariantGroup}
-                  getProductSizeVariantGroup={this.getProductSizeVariantGroup}
-                  deleteProductSizeVariantGroup={
-                    this.deleteProductSizeVariantGroup
-                  }
-                  getVariantGroupVariant={this.getVariantGroupVariant}
-                  saveSizeVariantNewTry={this.saveSizeVariantNewTry}
-                  deleteSizeVariantNewTry={this.deleteSizeVariantNewTry}
-                ></MenuControl>
-              }
-            ></Route>
-            <Route
-              exact
-              path="/menuControl/itemAdd"
-              element={
-                <MenuItemAdd
-                  categories={this.state.categories}
-                  saveProduct={this.saveProduct}
-                ></MenuItemAdd>
-              }
-            ></Route>
-            <Route
-              exact
-              path="/menuControl/sizeControl"
-              element={
-                <SizeControl
-                  sizes={this.state.sizes}
-                  saveSize={this.saveSize}
-                  deleteSize={this.deleteSize}
-                ></SizeControl>
-              }
-            ></Route>
-            <Route
-              exact
-              path="/variantControl"
-              element={
-                <VariantControl
-                  variants={this.state.variants}
-                  saveVariant={this.saveVariant}
-                  deleteVariant={this.deleteVariant}
-                  updateVariant={this.updateVariant}
-                ></VariantControl>
-              }
-            ></Route>
-            <Route
-              exact
-              path="/VariantGroupControl"
-              element={
-                <VariantGroupControl
-                  saveVariantGroup={this.saveVariantGroup}
-                  getVariantGroup={this.getVariantGroup}
-                  deleteVariantGroup={this.deleteVariantGroup}
-                  updateVariantGroup={this.updateVariantGroup}
-                ></VariantGroupControl>
-              }
-            ></Route>
-            <Route
-              exact
-              path="/variantGroupCostumize"
-              element={
-                <VariantGroupCostumize
-                  getVariantGroup={this.getVariantGroup}
-                  variants={this.state.variants}
-                  saveVariantGroupVariant={this.saveVariantGroupVariant}
-                  deleteVariantGroupVariant={this.deleteVariantGroupVariant}
-                ></VariantGroupCostumize>
-              }
-            ></Route>
-          </Routes>
-        </Row>
-      </Container>
+        <Routes>
+          <Route
+            exact
+            path="/"
+            element={
+              <CreateOrder
+                products={this.state.products}
+                getSelectedProduct={this.getSelectedProduct}
+                getSizeVariantById={this.getSizeVariantById}
+              />
+            }
+          ></Route>
+          <Route
+            exact
+            path="/checkout"
+            element={
+              <Checkout
+                changeAddress={this.changeAddress}
+                changeCostumerName={this.changeCostumerName}
+                changePhoneNumber={this.changePhoneNumber}
+                changePhoneNumberValue={this.changePhoneNumberValue}
+                phoneNumberValue={this.state.phoneNumberValue}
+                changeCostumerInfo={this.changeCostumerInfo}
+                costumerInfo={this.state.costumerInfo}
+                locations={this.state.locations}
+                changeDeliveryTarget={this.changeDeliveryTarget}
+                changeCheckoutInformation={this.changeCheckoutInformation}
+                checkoutInformation={this.state.checkoutInformation}
+                removeFromCart={this.removeFromCart}
+                handleSelect={this.handleSelect}
+                cart={this.state.cart}
+                changeExtraProductCost={this.changeExtraProductCost}
+              />
+            }
+          ></Route>
+          <Route
+            exact
+            path="/orderHistory"
+            element={
+              <OrderHistoryComponent
+                orderHistory={this.state.orderHistory}
+                changeIsOpen={this.changeIsOpen}
+                deleteOrder={this.deleteOrder}
+              ></OrderHistoryComponent>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/menuControl"
+            element={
+              <MenuControl
+                changeMenuControlIsOpen={this.changeMenuControlIsOpen}
+                products={this.state.products}
+                deleteProduct={this.deleteProduct}
+                categories={this.state.categories}
+                productSizes={this.state.productSizes}
+                updateProduct={this.updateProduct}
+                updatedProduct={this.state.updatedProduct}
+                handleChangeNew={this.handleChangeNew}
+                sizes={this.state.sizes}
+                getSelectedProduct={this.getSelectedProduct}
+                updateProductSize={this.updateProductSize}
+                updateProductSizeUnitPrice={this.updateProductSizeUnitPrice}
+                variants={this.state.variants}
+                saveSizeVariant={this.saveSizeVariant}
+                getSizeVariantById={this.getSizeVariantById}
+                deleteSizeVariant={this.deleteSizeVariant}
+                getVariantGroup={this.getVariantGroup}
+                saveProductSizeVariantGroup={this.saveProductSizeVariantGroup}
+                getProductSizeVariantGroup={this.getProductSizeVariantGroup}
+                deleteProductSizeVariantGroup={
+                  this.deleteProductSizeVariantGroup
+                }
+                getVariantGroupVariant={this.getVariantGroupVariant}
+                saveSizeVariantNewTry={this.saveSizeVariantNewTry}
+                deleteSizeVariantNewTry={this.deleteSizeVariantNewTry}
+              ></MenuControl>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/menuControl/itemAdd"
+            element={
+              <MenuItemAdd
+                categories={this.state.categories}
+                saveProduct={this.saveProduct}
+              ></MenuItemAdd>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/menuControl/sizeControl"
+            element={
+              <SizeControl
+                sizes={this.state.sizes}
+                saveSize={this.saveSize}
+                deleteSize={this.deleteSize}
+              ></SizeControl>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/variantControl"
+            element={
+              <VariantControl
+                variants={this.state.variants}
+                saveVariant={this.saveVariant}
+                deleteVariant={this.deleteVariant}
+                updateVariant={this.updateVariant}
+              ></VariantControl>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/VariantGroupControl"
+            element={
+              <VariantGroupControl
+                saveVariantGroup={this.saveVariantGroup}
+                getVariantGroup={this.getVariantGroup}
+                deleteVariantGroup={this.deleteVariantGroup}
+                updateVariantGroup={this.updateVariantGroup}
+              ></VariantGroupControl>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/variantGroupCostumize"
+            element={
+              <VariantGroupCostumize
+                getVariantGroup={this.getVariantGroup}
+                variants={this.state.variants}
+                saveVariantGroupVariant={this.saveVariantGroupVariant}
+                deleteVariantGroupVariant={this.deleteVariantGroupVariant}
+              ></VariantGroupCostumize>
+            }
+          ></Route>
+        </Routes>
+      </div>
     );
   }
 }
