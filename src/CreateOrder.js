@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import Slide from "@mui/material/Slide";
 import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
+import { RemoveRounded, AddRounded } from "@mui/icons-material";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -34,6 +35,12 @@ export default function CreateOrder(props) {
 
   const [openSecond, setOpenSecond] = React.useState(false);
 
+  const [kundeDialog, setKundeDialog] = React.useState(false);
+
+  const [cartTotalCost, setCartTotalCost] = React.useState();
+
+  const [cartItemOrderNumber, setCartItemOrderNumber] = React.useState(1);
+
   const [selectedSizeForCart, setSelectedSizeForCart] = React.useState();
 
   const [selectedProductForCart, setSelectedProductForCart] = React.useState();
@@ -43,6 +50,10 @@ export default function CreateOrder(props) {
   const [variants, setVariants] = React.useState();
 
   const [cart, setCart] = React.useState([]);
+
+  const incrementCartItemOrderNumber = () => {
+    setCartItemOrderNumber((prev) => prev + 1);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -102,6 +113,10 @@ export default function CreateOrder(props) {
 
     let cartObj = {};
 
+    cartObj.orderNumber = cartItemOrderNumber;
+
+    cartObj.quantity = 1;
+
     cartObj.size = selectedSizeForCart;
 
     cartObj.product = selectedProductForCart;
@@ -120,10 +135,116 @@ export default function CreateOrder(props) {
 
     newCart.push(cartObj);
 
-    console.log(newCart);
+    // console.log("cart: " + newCart);
+
+    setCart(newCart);
+    incrementCartItemOrderNumber();
+  };
+
+  const renderCartItem = (cartItem) => {
+    let str1 = <Box sx={{ fontWeight: "bold" }}>{cartItem.quantity}x</Box>;
+    let str2 = (
+      <Box>
+        {cartItem.product.productid} {cartItem.product.productname}{" "}
+        {cartItem.size.sizename !== "SingleSize"
+          ? `(${cartItem.size.sizename})`
+          : null}
+      </Box>
+    );
+    let str3 = "";
+    if (cartItem.variants) {
+      cartItem.variants.forEach((variant) => {
+        str3 += variant.variantname + ",";
+      });
+
+      str3 = str3.substring(0, str3.length - 1);
+    }
+
+    let str4 = <Box sx={{ fontStyle: "italic" }}>{str3}</Box>;
+
+    let str5 = (
+      <Box marginLeft={"auto"} marginRight={1}>
+        <RemoveRounded
+          onClick={() => minusQuantity(cartItem)}
+          sx={{ fontSize: "30px" }}
+        ></RemoveRounded>
+        <AddRounded
+          onClick={() => plusQuantity(cartItem)}
+          sx={{ fontSize: "30px" }}
+        ></AddRounded>
+      </Box>
+    );
+
+    let str6 = (
+      <Box paddingX={2}>
+        {str2}
+        {str4 ? str4 : null}
+      </Box>
+    );
+
+    let str7 = (
+      <Box sx={{ display: "flex", width: "100%" }}>
+        {str1}
+        {str6}
+        {str5}
+      </Box>
+    );
+
+    return <>{str7}</>;
+  };
+
+  const plusQuantity = (cartItem) => {
+    let newCart = cart.map((a) => {
+      return { ...a };
+    });
+
+    let newCartItem = newCart.find(
+      (c) => c.orderNumber === cartItem.orderNumber
+    );
+
+    newCartItem.quantity += 1;
 
     setCart(newCart);
   };
+
+  const minusQuantity = (cartItem) => {
+    let newCart = cart.map((a) => {
+      return { ...a };
+    });
+
+    let newCartItem = newCart.find(
+      (c) => c.orderNumber === cartItem.orderNumber
+    );
+
+    newCartItem.quantity -= 1;
+
+    if (newCartItem.quantity === 0) {
+      newCart.splice(newCart.indexOf(newCartItem), 1);
+    }
+
+    setCart(newCart);
+  };
+
+  React.useEffect(() => {
+    let totalCost = 0;
+
+    cart.forEach((cartItem) => {
+      let araTotal = 0;
+
+      araTotal += parseFloat(cartItem.size.unitprice);
+
+      if (cartItem.variants) {
+        cartItem.variants.forEach((variant) => {
+          araTotal += parseFloat(variant.price);
+        });
+      }
+
+      araTotal = araTotal * cartItem.quantity;
+
+      totalCost += araTotal;
+    });
+    setCartTotalCost(totalCost);
+  }, [cart, cart.length]);
 
   return (
     <Grid>
@@ -145,7 +266,12 @@ export default function CreateOrder(props) {
                 <CloseIcon />
               </IconButton>
               <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                Sound
+                {selectedProduct ? (
+                  <>
+                    {selectedProductForCart.productid} -{" "}
+                    {selectedProductForCart.productname}
+                  </>
+                ) : null}
               </Typography>
             </Toolbar>
           </AppBar>
@@ -174,7 +300,7 @@ export default function CreateOrder(props) {
           <Dialog
             fullScreen
             open={openSecond}
-            onClose={handleClose}
+            onClose={() => setOpenSecond(false)}
             TransitionComponent={Transition}
           >
             <AppBar sx={{ position: "relative" }}>
@@ -192,7 +318,19 @@ export default function CreateOrder(props) {
                   variant="h6"
                   component="div"
                 >
-                  Ses
+                  {selectedProductForCart ? (
+                    <>
+                      {selectedProductForCart.productid} -{" "}
+                      {selectedProductForCart.productname}{" "}
+                      {selectedSizeForCart ? (
+                        <>
+                          {selectedSizeForCart.sizename !== "SingleSize"
+                            ? `(${selectedSizeForCart.sizename})`
+                            : null}
+                        </>
+                      ) : null}
+                    </>
+                  ) : null}
                 </Typography>
                 <Button
                   autoFocus
@@ -201,7 +339,7 @@ export default function CreateOrder(props) {
                     saveItemToTheCart();
                   }}
                 >
-                  save
+                  Save
                 </Button>
               </Toolbar>
             </AppBar>
@@ -228,8 +366,43 @@ export default function CreateOrder(props) {
           </Dialog>
         </Dialog>
       </div>
+      <Dialog
+        fullScreen
+        open={kundeDialog}
+        onClose={() => {
+          setKundeDialog(false);
+        }}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: "relative" }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={() => {
+                setKundeDialog(false);
+              }}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              Kunde Info
+            </Typography>
+            <Button
+              autoFocus
+              color="inherit"
+              onClick={() => {
+                console.log("save");
+              }}
+            >
+              save
+            </Button>
+          </Toolbar>
+        </AppBar>
+      </Dialog>
       <Box sx={{ display: "flex" }}>
-        <Box sx={{ width: "75%" }}>
+        <Box sx={{ width: "70%" }}>
           <Grid
             container
             rowSpacing={2}
@@ -259,23 +432,50 @@ export default function CreateOrder(props) {
 
         <Paper
           sx={{
-            width: "25%",
+            width: "30%",
             height: "100vh",
             position: "fixed",
             right: "0",
             top: "0",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <Typography variant="h6" align="center" marginY={2}>
             Dein Bestellung
+            {cartTotalCost ? ` - ${cartTotalCost.toFixed(2)}€` : null}
           </Typography>
           <Divider></Divider>
           {cart.map((cartItem) => (
-            <Box padding={1}>
-              {cartItem.product.productid} - {cartItem.product.productname} - (
-              {cartItem.size.sizename})
+            <Box key={cartItem.orderNumber} padding={1} sx={{ width: "100%" }}>
+              {renderCartItem(cartItem)}
+              <Divider></Divider>
             </Box>
           ))}
+
+          <Box
+            sx={{
+              display: "flex",
+              marginTop: "auto",
+              flexDirection: "column",
+            }}
+            padding={2}
+          >
+            <Divider></Divider>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+              }}
+              marginTop={2}
+            >
+              <Button onClick={() => setKundeDialog(true)} variant="contained">
+                Kunde Info
+              </Button>
+              <Button variant="contained">Drücken</Button>
+            </Box>
+          </Box>
         </Paper>
       </Box>
     </Grid>

@@ -44,10 +44,6 @@ export default function MenuItemAdd(props) {
 
     bodyJson.productname = productname;
 
-    if (unitprice) {
-      bodyJson.unitprice = parseFloat(unitprice).toFixed(2);
-    }
-
     props.saveProduct(bodyJson);
   };
 
@@ -97,16 +93,6 @@ export default function MenuItemAdd(props) {
                 type="text"
                 name="productname"
                 id=""
-                onChange={handleChange}
-              ></Input>
-            </Col>
-
-            <Label sm={2}> Product Price</Label>
-
-            <Col sm={4}>
-              <Input
-                type="number"
-                name="unitprice"
                 onChange={handleChange}
               ></Input>
             </Col>

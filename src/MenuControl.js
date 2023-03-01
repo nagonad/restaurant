@@ -209,18 +209,6 @@ export default class Menu extends Component {
                       ))}
                     </Input>
                   </Col>
-                  <Label for="" sm={2}>
-                    Product Price
-                  </Label>
-                  <Col sm={4}>
-                    <Input
-                      type="number"
-                      name="unitprice"
-                      id=""
-                      placeholder={product.unitprice}
-                      onChange={this.props.handleChangeNew}
-                    ></Input>
-                  </Col>
                 </FormGroup>
                 <hr></hr>
 
