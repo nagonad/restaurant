@@ -15,7 +15,18 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Slide from "@mui/material/Slide";
 import CloseIcon from "@mui/icons-material/Close";
+import Delete from "@mui/icons-material/Delete";
 import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import {
+  Autocomplete,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  InputAdornment,
+} from "@mui/material";
+
 import { RemoveRounded, AddRounded } from "@mui/icons-material";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -35,9 +46,25 @@ export default function CreateOrder(props) {
 
   const [openSecond, setOpenSecond] = React.useState(false);
 
+  const [checkoutControl, setCheckoutControl] = React.useState(false);
+
+  const [delivery, setDelivery] = React.useState();
+
+  const [deliveryCost, setDeliveryCost] = React.useState("");
+
+  const [costumerObj, setCostumerObj] = React.useState();
+
+  const [phoneNumberInputValue, setPhoneNumberInputValue] = React.useState();
+
+  const [costumerName, setCostumerName] = React.useState();
+
+  const [costumerAddress, setCostumerAddress] = React.useState();
+
+  const [phoneNumbers, setPhoneNumbers] = React.useState();
+
   const [kundeDialog, setKundeDialog] = React.useState(false);
 
-  const [cartTotalCost, setCartTotalCost] = React.useState();
+  const [cartTotalCost, setCartTotalCost] = React.useState(0);
 
   const [cartItemOrderNumber, setCartItemOrderNumber] = React.useState(1);
 
@@ -123,19 +150,26 @@ export default function CreateOrder(props) {
 
     let cartObjVariants = [];
 
+    let cost = 0;
+
+    cost += parseFloat(cartObj.size.unitprice);
+
     variants.forEach((variant) => {
       if (variant.orderSelected) {
+        cost += parseFloat(variant.price);
         cartObjVariants.push(variant);
       }
     });
 
     cartObj.variants = cartObjVariants;
 
+    cartObj.cartItemCost = cost;
+
+    cartObj.cartItemTotalCost = cost;
+
     let newCart = cart;
 
     newCart.push(cartObj);
-
-    // console.log("cart: " + newCart);
 
     setCart(newCart);
     incrementCartItemOrderNumber();
@@ -204,6 +238,9 @@ export default function CreateOrder(props) {
 
     newCartItem.quantity += 1;
 
+    newCartItem.cartItemTotalCost =
+      newCartItem.cartItemCost * newCartItem.quantity;
+
     setCart(newCart);
   };
 
@@ -218,6 +255,9 @@ export default function CreateOrder(props) {
 
     newCartItem.quantity -= 1;
 
+    newCartItem.cartItemTotalCost =
+      newCartItem.cartItemCost * newCartItem.quantity;
+
     if (newCartItem.quantity === 0) {
       newCart.splice(newCart.indexOf(newCartItem), 1);
     }
@@ -225,26 +265,153 @@ export default function CreateOrder(props) {
     setCart(newCart);
   };
 
+  const handleChangePhoneNumber = (e, value) => {
+    if (!checkoutControl) {
+      setCheckoutControl(true);
+    }
+
+    if (value) {
+      setCostumerObj(value);
+      setPhoneNumberInputValue(value.phonenumber);
+      setCostumerName(value.costumername);
+      setCostumerAddress(value.costumeraddress);
+    } else {
+      setCostumerObj(null);
+      setPhoneNumberInputValue(null);
+      setCostumerName(null);
+      setCostumerAddress(null);
+    }
+  };
+
+  const handleDelivery = (e) => {
+    if (!checkoutControl) {
+      setCheckoutControl(true);
+    }
+
+    setDeliveryCost("");
+    setDelivery(e);
+  };
+
+  const deleteCheckoutInfo = () => {
+    setCheckoutControl(false);
+
+    setCostumerObj(null);
+    setCostumerName(null);
+    setCostumerAddress(null);
+    setPhoneNumberInputValue(null);
+    setDeliveryCost(null);
+    setDelivery();
+  };
+
+  const renderCheckoutInfo = () => {
+    let str1 = "";
+
+    if (phoneNumberInputValue) {
+      str1 += phoneNumberInputValue + ", ";
+    }
+    if (costumerAddress) {
+      str1 += costumerAddress + ", ";
+    }
+
+    if (costumerName) {
+      str1 += costumerName + ", ";
+    }
+
+    if (str1.length > 0) {
+      str1 = str1.trim();
+      str1 = str1.substring(0, str1.length - 1);
+    }
+
+    if (checkoutControl) {
+      let str = (
+        <>
+          <Divider></Divider>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box
+              component="div"
+              sx={{
+                fontStyle: "oblique",
+                overflow: "hidden",
+              }}
+            >
+              {str1}
+            </Box>
+            <Box>
+              <Delete
+                onClick={() => deleteCheckoutInfo()}
+                sx={{ marginRight: 1 }}
+              ></Delete>
+            </Box>
+          </Box>
+        </>
+      );
+
+      return str;
+    } else {
+      return null;
+    }
+  };
+
+  const finalizeOrder = () => {
+    if (cart.length > 0) {
+      let order = {};
+
+      if (costumerObj) {
+        order.costumerid = costumerObj.id;
+      }
+
+      if (delivery === 1) {
+        order.delivery = 1;
+      } else {
+        order.delivery = 2;
+      }
+
+      if (deliveryCost) {
+        order.deliverycost = deliveryCost;
+      }
+
+      if (cartTotalCost) {
+        order.cartcost = cartTotalCost;
+      }
+
+      order.cart = JSON.stringify(cart);
+
+      order.orderdate = new Date().toISOString().slice(0, 10);
+
+      order.ordertime = new Date().toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "numeric",
+        minute: "numeric",
+      });
+
+      props.saveOrder(order);
+    } else {
+      alert("Sepetiniz bos");
+    }
+  };
+
   React.useEffect(() => {
     let totalCost = 0;
 
     cart.forEach((cartItem) => {
-      let araTotal = 0;
-
-      araTotal += parseFloat(cartItem.size.unitprice);
-
-      if (cartItem.variants) {
-        cartItem.variants.forEach((variant) => {
-          araTotal += parseFloat(variant.price);
-        });
-      }
-
-      araTotal = araTotal * cartItem.quantity;
-
-      totalCost += araTotal;
+      totalCost += cartItem.cartItemTotalCost;
     });
+
+    if (deliveryCost) {
+      totalCost += deliveryCost;
+    }
+
     setCartTotalCost(totalCost);
-  }, [cart, cart.length]);
+  }, [cart, cart.length, deliveryCost]);
+
+  React.useEffect(() => {
+    props
+      .getCostumerInfo()
+      .then((resp) => resp.json())
+      .then((data) => {
+        setPhoneNumbers(data);
+      });
+  }, []);
 
   return (
     <Grid>
@@ -381,6 +548,7 @@ export default function CreateOrder(props) {
               color="inherit"
               onClick={() => {
                 setKundeDialog(false);
+                deleteCheckoutInfo();
               }}
               aria-label="close"
             >
@@ -393,13 +561,107 @@ export default function CreateOrder(props) {
               autoFocus
               color="inherit"
               onClick={() => {
-                console.log("save");
+                setKundeDialog(false);
               }}
             >
               save
             </Button>
           </Toolbar>
         </AppBar>
+        <Grid paddingTop={2} container>
+          <Grid item xs={12} md={4}>
+            <ListItem>
+              {phoneNumbers ? (
+                <>
+                  <Autocomplete
+                    id="free-solo-demo"
+                    freeSolo
+                    sx={{ width: 300 }}
+                    onChange={(e, value) => handleChangePhoneNumber(e, value)}
+                    options={phoneNumbers}
+                    getOptionLabel={(option) => option.phonenumber}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        onChange={(e) => handleChangePhoneNumber(e)}
+                        label="Phone Number"
+                      />
+                    )}
+                  />
+                </>
+              ) : null}
+            </ListItem>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <ListItem xs={4}>
+              <TextField
+                sx={{ width: 300 }}
+                label="Kunde Name"
+                variant="outlined"
+                value={costumerName || ""}
+                onChange={(e) => setCostumerName(e.target.value)}
+              />
+            </ListItem>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <ListItem xs={4}>
+              <TextField
+                sx={{ width: 300 }}
+                label="Address"
+                variant="outlined"
+                value={costumerAddress || ""}
+                onChange={(e) => setCostumerAddress(e.target.value)}
+              />
+            </ListItem>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <ListItem xs={4}>
+              <FormControl sx={{ width: 300 }}>
+                <InputLabel id="demo-simple-select-label">
+                  Lieferung oder Abholung
+                </InputLabel>
+                <Select
+                  label="Lieferung oder Abholung"
+                  value={delivery || ""}
+                  onChange={(e) => handleDelivery(e.target.value)}
+                >
+                  <MenuItem value={1}>Lieferung</MenuItem>
+                  <MenuItem value={2}>Abholung</MenuItem>
+                </Select>
+              </FormControl>
+            </ListItem>
+          </Grid>
+          {delivery === 1 ? (
+            <Grid item xs={12} md={4}>
+              <ListItem xs={4}>
+                <FormControl sx={{ width: 300 }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Lieferung Kosten
+                  </InputLabel>
+                  <Select
+                    startAdornment={
+                      <InputAdornment position="start">€</InputAdornment>
+                    }
+                    value={deliveryCost}
+                    label="Lieferung Kosten"
+                    onChange={(e) => setDeliveryCost(e.target.value)}
+                  >
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={2}>2</MenuItem>
+                    <MenuItem value={3}>3</MenuItem>
+                    <MenuItem value={4}>4</MenuItem>
+                    <MenuItem value={5}>5</MenuItem>
+                    <MenuItem value={6}>6</MenuItem>
+                    <MenuItem value={7}>7</MenuItem>
+                    <MenuItem value={8}>8</MenuItem>
+                    <MenuItem value={9}>9</MenuItem>
+                  </Select>
+                </FormControl>
+              </ListItem>
+            </Grid>
+          ) : null}
+        </Grid>
+        <Divider />
       </Dialog>
       <Box sx={{ display: "flex" }}>
         <Box sx={{ width: "70%" }}>
@@ -442,7 +704,7 @@ export default function CreateOrder(props) {
           }}
         >
           <Typography variant="h6" align="center" marginY={2}>
-            Dein Bestellung
+            Deine Bestellung
             {cartTotalCost ? ` - ${cartTotalCost.toFixed(2)}€` : null}
           </Typography>
           <Divider></Divider>
@@ -459,21 +721,23 @@ export default function CreateOrder(props) {
               marginTop: "auto",
               flexDirection: "column",
             }}
-            padding={2}
           >
-            <Divider></Divider>
+            <Box padding={1}>{renderCheckoutInfo()}</Box>
+            <Divider sx={{ borderBottomWidth: 5 }}></Divider>
 
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-around",
               }}
-              marginTop={2}
+              margin={2}
             >
               <Button onClick={() => setKundeDialog(true)} variant="contained">
                 Kunde Info
               </Button>
-              <Button variant="contained">Drücken</Button>
+              <Button variant="contained" onClick={() => finalizeOrder()}>
+                Drücken
+              </Button>
             </Box>
           </Box>
         </Paper>

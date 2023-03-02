@@ -47,123 +47,136 @@ export default class App extends Component {
     sizeVariant: [],
   };
 
-  changeCostumerName = (value) => {
-    let newCheckoutInformation = this.state.checkoutInformation;
+  // changeCostumerName = (value) => {
+  //   let newCheckoutInformation = this.state.checkoutInformation;
 
-    newCheckoutInformation.costumerName = value;
+  //   newCheckoutInformation.costumerName = value;
 
-    this.setState({ checkoutInformation: newCheckoutInformation });
+  //   this.setState({ checkoutInformation: newCheckoutInformation });
+  // };
+
+  // changeAddress = (value) => {
+  //   let newCheckoutInformation = this.state.checkoutInformation;
+
+  //   newCheckoutInformation.address = value;
+
+  //   this.setState({ checkoutInformation: newCheckoutInformation });
+  // };
+
+  // changePhoneNumber = (value) => {
+  //   let newCheckoutInformation = this.state.checkoutInformation;
+
+  //   newCheckoutInformation.phoneNumber = value;
+
+  //   this.setState({ checkoutInformation: newCheckoutInformation });
+  // };
+
+  // changePhoneNumberValue = (value) => {
+  //   this.setState({ phoneNumberValue: value });
+  // };
+
+  // changeDeliveryTarget = (e) => {
+  //   let newCheckoutInformation = this.state.checkoutInformation;
+
+  //   newCheckoutInformation.deliveryTarget = e.target.value;
+
+  //   this.setState({ checkoutInformation: newCheckoutInformation });
+  // };
+
+  // changeExtraProductCost = (event, orderNumber) => {
+  //   let newCart = this.state.cart;
+  //   let newCartItem = newCart.find((c) => c.orderNumber === orderNumber);
+  //   newCartItem.extraProductCost = event.target.value;
+
+  //   this.setState({ cart: newCart });
+  // };
+
+  // changeCostumerInfo = (costumer) => {
+  //   this.setState({ costumerInfo: costumer });
+  // };
+
+  // changeCheckoutInformation = (e) => {
+  //   let newCheckoutInformation = this.state.checkoutInformation;
+
+  //   if (e.target.name === "delivery") {
+  //     if (e.target.value === "Lieferung") {
+  //       newCheckoutInformation[e.target.name] = true;
+  //       newCheckoutInformation.deliveryTarget = Object.keys(
+  //         this.state.locations
+  //       )[0];
+  //     }
+  //     if (e.target.value === "Abholung") {
+  //       newCheckoutInformation[e.target.name] = false;
+  //       newCheckoutInformation.deliveryTarget = "";
+  //     }
+  //   } else {
+  //     newCheckoutInformation[e.target.name] = e.target.value;
+  //   }
+
+  //   this.setState({ checkoutInformation: newCheckoutInformation });
+  // };
+
+  // setOrderNumber = () => {
+  //   this.setState({ orderNumber: this.state.orderNumber + 1 });
+  // };
+
+  // removeFromCart = (product) => {
+  //   let newCart = this.state.cart.filter(
+  //     (c) => c.orderNumber !== product.orderNumber
+  //   );
+  //   this.setState({ cart: newCart });
+  // };
+
+  // addToCart = (product, productSize, orderNote) => {
+  //   let newCart = this.state.cart;
+  //   var addedItem = newCart.find((c) => {
+  //     return (
+  //       c.product.productId === product.productId &&
+  //       c.productSize === productSize &&
+  //       c.orderNote === orderNote
+  //     );
+  //   });
+  //   if (addedItem) {
+  //     if (addedItem.quantity < 9) {
+  //       addedItem.quantity += 1;
+  //     } else {
+  //       addedItem.quantity = 9;
+  //     }
+  //   } else {
+  //     newCart.push({
+  //       product: product,
+  //       quantity: 1,
+  //       orderNote: orderNote,
+  //       productSize: productSize,
+  //       orderNumber: this.state.orderNumber,
+  //     });
+  //   }
+
+  //   this.setState({ cart: newCart });
+  // };
+
+  // handleSelect = (e, orderNumber) => {
+  //   let newCart = this.state.cart;
+  //   let newCartElement = newCart.find((c) => c.orderNumber === orderNumber);
+  //   newCartElement.quantity = parseInt(e.target.value);
+  //   this.setState({ cart: newCart });
+  // };
+
+  getCostumerInfo = () => {
+    let url = "http://localhost:5000/costumer_info/";
+
+    const cevap = fetch(url);
+
+    return cevap;
   };
 
-  changeAddress = (value) => {
-    let newCheckoutInformation = this.state.checkoutInformation;
+  getCostumerInfoLike = (number) => {
+    let url = "http://localhost:5000/costumer_info_like/";
+    url += number;
 
-    newCheckoutInformation.address = value;
+    const cevap = fetch(url);
 
-    this.setState({ checkoutInformation: newCheckoutInformation });
-  };
-
-  changePhoneNumber = (value) => {
-    let newCheckoutInformation = this.state.checkoutInformation;
-
-    newCheckoutInformation.phoneNumber = value;
-
-    this.setState({ checkoutInformation: newCheckoutInformation });
-  };
-
-  changePhoneNumberValue = (value) => {
-    this.setState({ phoneNumberValue: value });
-  };
-
-  changeDeliveryTarget = (e) => {
-    let newCheckoutInformation = this.state.checkoutInformation;
-
-    newCheckoutInformation.deliveryTarget = e.target.value;
-
-    this.setState({ checkoutInformation: newCheckoutInformation });
-  };
-
-  changeExtraProductCost = (event, orderNumber) => {
-    let newCart = this.state.cart;
-    let newCartItem = newCart.find((c) => c.orderNumber === orderNumber);
-    newCartItem.extraProductCost = event.target.value;
-
-    this.setState({ cart: newCart });
-  };
-
-  changeCostumerInfo = (costumer) => {
-    this.setState({ costumerInfo: costumer });
-  };
-
-  changeCheckoutInformation = (e) => {
-    let newCheckoutInformation = this.state.checkoutInformation;
-
-    if (e.target.name === "delivery") {
-      if (e.target.value === "Lieferung") {
-        newCheckoutInformation[e.target.name] = true;
-        newCheckoutInformation.deliveryTarget = Object.keys(
-          this.state.locations
-        )[0];
-      }
-      if (e.target.value === "Abholung") {
-        newCheckoutInformation[e.target.name] = false;
-        newCheckoutInformation.deliveryTarget = "";
-      }
-    } else {
-      newCheckoutInformation[e.target.name] = e.target.value;
-    }
-
-    this.setState({ checkoutInformation: newCheckoutInformation });
-  };
-
-  setOrderNumber = () => {
-    this.setState({ orderNumber: this.state.orderNumber + 1 });
-  };
-
-  removeFromCart = (product) => {
-    let newCart = this.state.cart.filter(
-      (c) => c.orderNumber !== product.orderNumber
-    );
-    this.setState({ cart: newCart });
-  };
-
-  changeCategory = (category) => {
-    this.setState({ currentCategory: category.categoryname });
-    this.getProducts(category.id);
-  };
-
-  addToCart = (product, productSize, orderNote) => {
-    let newCart = this.state.cart;
-    var addedItem = newCart.find((c) => {
-      return (
-        c.product.productId === product.productId &&
-        c.productSize === productSize &&
-        c.orderNote === orderNote
-      );
-    });
-    if (addedItem) {
-      if (addedItem.quantity < 9) {
-        addedItem.quantity += 1;
-      } else {
-        addedItem.quantity = 9;
-      }
-    } else {
-      newCart.push({
-        product: product,
-        quantity: 1,
-        orderNote: orderNote,
-        productSize: productSize,
-        orderNumber: this.state.orderNumber,
-      });
-    }
-
-    this.setState({ cart: newCart });
-  };
-  handleSelect = (e, orderNumber) => {
-    let newCart = this.state.cart;
-    let newCartElement = newCart.find((c) => c.orderNumber === orderNumber);
-    newCartElement.quantity = parseInt(e.target.value);
-    this.setState({ cart: newCart });
+    return cevap;
   };
 
   getProducts = (categoryId) => {
@@ -638,12 +651,26 @@ export default class App extends Component {
         data.forEach((perData) => {
           perObject = {};
           perObject.id = perData.id;
-          perObject.data = JSON.parse(perData.data);
+
           perObject.isOpen = false;
           newData.push(perObject);
         });
         this.setState({ orderHistory: newData });
       });
+  };
+
+  saveOrder = (order) => {
+    let url = "http://localhost:5000/order_history";
+
+    const cevap = fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(order),
+    });
+
+    return cevap;
   };
 
   deleteOrder = (order) => {
@@ -840,6 +867,9 @@ export default class App extends Component {
                 products={this.state.products}
                 getSelectedProduct={this.getSelectedProduct}
                 getSizeVariantById={this.getSizeVariantById}
+                getCostumerInfo={this.getCostumerInfo}
+                getCostumerInfoLike={this.getCostumerInfoLike}
+                saveOrder={this.saveOrder}
               />
             }
           ></Route>

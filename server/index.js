@@ -89,18 +89,28 @@ app.get("/menu/:id", async (req, res) => {
 
 //get costumer
 
-app.get("/costumer_info/:phonenumber", async (req, res) => {
-  const { phonenumber } = req.params;
+app.get("/costumer_info", async (req, res) => {
   try {
-    const costumers = await pool.query(
-      "SELECT * FROM costumer_info WHERE phonenumber = $1",
-      [phonenumber]
-    );
-    res.json(costumers.rows);
+    const cevap = await pool.query("select * from costumer_info");
+
+    res.json(cevap.rows);
   } catch (error) {
     res.sendStatus(500);
   }
 });
+
+// app.get("/costumer_info/:phonenumber", async (req, res) => {
+//   const { phonenumber } = req.params;
+//   try {
+//     const costumers = await pool.query(
+//       "SELECT * FROM costumer_info WHERE phonenumber = $1",
+//       [phonenumber]
+//     );
+//     res.json(costumers.rows);
+//   } catch (error) {
+//     res.sendStatus(500);
+//   }
+// });
 
 //get likely costumers
 
@@ -108,7 +118,7 @@ app.get("/costumer_info_like/:phonenumber", async (req, res) => {
   const { phonenumber } = req.params;
   try {
     const costumers = await pool.query(
-      "SELECT * FROM costumer_info WHERE phonenumber LIKE $1 LIMIT 5",
+      "SELECT * FROM costumer_info WHERE phonenumber LIKE $1 limit 10",
       [phonenumber + "%"]
     );
     res.json(costumers.rows);
@@ -146,10 +156,13 @@ app.get("/order_history", async (req, res) => {
 
 //create orderHistory
 app.post("/order_history", async (req, res) => {
+  const keys = getKeys(req.body);
+
+  const values = getValues(req.body);
+
   try {
     const orderHistory = await pool.query(
-      "INSERT INTO order_history(data) VALUES($1)",
-      [req.body]
+      `INSERT INTO order_history${keys} VALUES${values}`
     );
     res.json(orderHistory.rows);
   } catch (error) {
