@@ -28,6 +28,7 @@ import {
 } from "@mui/material";
 
 import { RemoveRounded, AddRounded } from "@mui/icons-material";
+import PrintComponent from "./PrintComponent";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -47,6 +48,8 @@ export default function CreateOrder(props) {
   const [openSecond, setOpenSecond] = React.useState(false);
 
   const [checkoutControl, setCheckoutControl] = React.useState(false);
+
+  const [finalOrderObj, setFinalOrderOjb] = React.useState();
 
   const [delivery, setDelivery] = React.useState();
 
@@ -354,37 +357,11 @@ export default function CreateOrder(props) {
 
   const finalizeOrder = () => {
     if (cart.length > 0) {
-      let order = {};
+      let obj = finalOrderObj;
 
-      if (costumerObj) {
-        order.costumerid = costumerObj.id;
-      }
+      obj.cart = JSON.stringify(obj.cart);
 
-      if (delivery === 1) {
-        order.delivery = 1;
-      } else {
-        order.delivery = 2;
-      }
-
-      if (deliveryCost) {
-        order.deliverycost = deliveryCost;
-      }
-
-      if (cartTotalCost) {
-        order.cartcost = cartTotalCost;
-      }
-
-      order.cart = JSON.stringify(cart);
-
-      order.orderdate = new Date().toISOString().slice(0, 10);
-
-      order.ordertime = new Date().toLocaleTimeString("en-US", {
-        hour12: false,
-        hour: "numeric",
-        minute: "numeric",
-      });
-
-      props.saveOrder(order);
+      props.saveOrder(obj).then(() => window.location.reload(false));
     } else {
       alert("Sepetiniz bos");
     }
@@ -402,6 +379,43 @@ export default function CreateOrder(props) {
     }
 
     setCartTotalCost(totalCost);
+
+    if (cart.length > 0) {
+      let order = {};
+
+      if (costumerObj) {
+        order.costumerid = costumerObj.id;
+      }
+
+      if (delivery === 1) {
+        order.delivery = 1;
+      } else {
+        order.delivery = 2;
+      }
+
+      if (deliveryCost) {
+        order.deliverycost = deliveryCost;
+        order.cartcost = cartTotalCost - deliveryCost;
+      } else {
+        order.cartcost = cartTotalCost;
+      }
+
+      order.totalCost = cartTotalCost;
+
+      order.cart = cart;
+
+      order.orderdate = new Date().toISOString().slice(0, 10);
+
+      order.ordertime = new Date().toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "numeric",
+        minute: "numeric",
+      });
+
+      console.log(order);
+
+      setFinalOrderOjb(order);
+    }
   }, [cart, cart.length, deliveryCost]);
 
   React.useEffect(() => {
@@ -735,9 +749,19 @@ export default function CreateOrder(props) {
               <Button onClick={() => setKundeDialog(true)} variant="contained">
                 Kunde Info
               </Button>
-              <Button variant="contained" onClick={() => finalizeOrder()}>
-                Drücken
-              </Button>
+              {cart.length > 0 ? (
+                <PrintComponent
+                  costumerName={costumerName}
+                  costumerAddress={costumerAddress}
+                  phoneNumberInputValue={phoneNumberInputValue}
+                  finalOrderObj={finalOrderObj}
+                  finalizeOrder={finalizeOrder}
+                ></PrintComponent>
+              ) : (
+                <Button variant="contained" onClick={() => finalizeOrder()}>
+                  Drücken
+                </Button>
+              )}
             </Box>
           </Box>
         </Paper>
