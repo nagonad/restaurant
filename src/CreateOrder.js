@@ -69,6 +69,8 @@ export default function CreateOrder(props) {
 
   const [cartTotalCost, setCartTotalCost] = React.useState(0);
 
+  const [orderTotalCost, setOrderTotalCost] = React.useState(0);
+
   const [cartItemOrderNumber, setCartItemOrderNumber] = React.useState(1);
 
   const [selectedSizeForCart, setSelectedSizeForCart] = React.useState();
@@ -155,8 +157,6 @@ export default function CreateOrder(props) {
 
     let cost = 0;
 
-    cost += parseFloat(cartObj.size.unitprice);
-
     variants.forEach((variant) => {
       if (variant.orderSelected) {
         cost += parseFloat(variant.price);
@@ -166,9 +166,11 @@ export default function CreateOrder(props) {
 
     cartObj.variants = cartObjVariants;
 
-    cartObj.cartItemCost = cost;
+    cartObj.cartItemCost = parseFloat(cartObj.size.unitprice);
 
-    cartObj.cartItemTotalCost = cost;
+    cartObj.cartItemTotalCost = parseFloat(cartObj.size.unitprice) + cost;
+
+    cartObj.cartItemVariantsCost = cost;
 
     let newCart = cart;
 
@@ -242,7 +244,8 @@ export default function CreateOrder(props) {
     newCartItem.quantity += 1;
 
     newCartItem.cartItemTotalCost =
-      newCartItem.cartItemCost * newCartItem.quantity;
+      (newCartItem.cartItemCost + newCartItem.cartItemVariantsCost) *
+      newCartItem.quantity;
 
     setCart(newCart);
   };
@@ -259,7 +262,8 @@ export default function CreateOrder(props) {
     newCartItem.quantity -= 1;
 
     newCartItem.cartItemTotalCost =
-      newCartItem.cartItemCost * newCartItem.quantity;
+      (newCartItem.cartItemCost + newCartItem.cartItemVariantsCost) *
+      newCartItem.quantity;
 
     if (newCartItem.quantity === 0) {
       newCart.splice(newCart.indexOf(newCartItem), 1);
@@ -368,17 +372,15 @@ export default function CreateOrder(props) {
   };
 
   React.useEffect(() => {
-    let totalCost = 0;
+    let cartTotalCost = 0;
 
     cart.forEach((cartItem) => {
-      totalCost += cartItem.cartItemTotalCost;
+      cartTotalCost += parseFloat(cartItem.cartItemTotalCost);
     });
 
-    if (deliveryCost) {
-      totalCost += deliveryCost;
-    }
+    setCartTotalCost(cartTotalCost);
 
-    setCartTotalCost(totalCost);
+    setOrderTotalCost(cartTotalCost + deliveryCost);
 
     if (cart.length > 0) {
       let order = {};
@@ -395,12 +397,11 @@ export default function CreateOrder(props) {
 
       if (deliveryCost) {
         order.deliverycost = deliveryCost;
-        order.cartcost = cartTotalCost - deliveryCost;
-      } else {
-        order.cartcost = cartTotalCost;
       }
 
-      order.totalCost = cartTotalCost;
+      order.cartcost = cartTotalCost;
+
+      order.totalcost = cartTotalCost + deliveryCost;
 
       order.cart = cart;
 
@@ -412,7 +413,7 @@ export default function CreateOrder(props) {
         minute: "numeric",
       });
 
-      console.log(order);
+      // console.log(order);
 
       setFinalOrderOjb(order);
     }
@@ -719,7 +720,9 @@ export default function CreateOrder(props) {
         >
           <Typography variant="h6" align="center" marginY={2}>
             Deine Bestellung
-            {cartTotalCost ? ` - ${cartTotalCost.toFixed(2)}€` : null}
+            {orderTotalCost && orderTotalCost > 0
+              ? ` - ${parseFloat(orderTotalCost).toFixed(2)}€`
+              : null}
           </Typography>
           <Divider></Divider>
           {cart.map((cartItem) => (

@@ -18,30 +18,11 @@ import CreateOrder from "./CreateOrder";
 
 export default class App extends Component {
   state = {
-    currentCategory: "",
     products: [],
     cart: [],
-    orderNumber: 0,
-    checkoutInformation: {
-      phoneNumber: "",
-      costumerName: "",
-      address: "",
-      checkoutNote: "",
-      delivery: false,
-      deliveryTarget: "",
-    },
-    locations: {
-      ort1: 3,
-      ort2: 4,
-      ort3: 5,
-      ort4: 6,
-      ort5: 6.5,
-    },
-    costumerInfo: [],
-    phoneNumberValue: "",
-    orderHistory: [],
+
     categories: [],
-    updatedProduct: {},
+
     sizes: [],
     variants: {},
     sizeVariant: [],
@@ -643,20 +624,11 @@ export default class App extends Component {
   };
 
   getOrderHistory = () => {
-    fetch("http://localhost:5000/order_history")
-      .then((response) => response.json())
-      .then((data) => {
-        let newData = [];
-        let perObject = {};
-        data.forEach((perData) => {
-          perObject = {};
-          perObject.id = perData.id;
+    let url = "http://localhost:5000/order_history";
 
-          perObject.isOpen = false;
-          newData.push(perObject);
-        });
-        this.setState({ orderHistory: newData });
-      });
+    const cevap = fetch(url);
+
+    return cevap;
   };
 
   saveOrder = (order) => {
@@ -688,20 +660,6 @@ export default class App extends Component {
       .then(() => {
         this.getOrderHistory();
       });
-  };
-
-  changeIsOpen = (order) => {
-    let orderHistory = this.state.orderHistory;
-    let orderHistoryItem = orderHistory.find(
-      (element) => element.id === order.id
-    );
-    if (order.isOpen === false) {
-      orderHistoryItem.isOpen = true;
-    } else {
-      orderHistoryItem.isOpen = false;
-    }
-
-    this.setState({ orderHistory: orderHistory });
   };
 
   changeMenuControlIsOpen = (menuItem) => {
@@ -901,8 +859,7 @@ export default class App extends Component {
             path="/orderHistory"
             element={
               <OrderHistoryComponent
-                orderHistory={this.state.orderHistory}
-                changeIsOpen={this.changeIsOpen}
+                getOrderHistory={this.getOrderHistory}
                 deleteOrder={this.deleteOrder}
               ></OrderHistoryComponent>
             }

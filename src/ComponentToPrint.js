@@ -12,6 +12,59 @@ const useStyles = makeStyles({
   },
 });
 
+const renderVariants = (cartItem) => {
+  let str = "";
+
+  cartItem.variants.forEach((variant) => {
+    str += variant.variantname + ", ";
+  });
+
+  str = str.trim();
+
+  str = str.substring(0, str.length - 1);
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "row" }}>
+      <Box sx={{ fontStyle: "italic" }}>{cartItem.variants ? str : null}</Box>
+      {cartItem.cartItemVariantsCost ? (
+        <Box sx={{ marginLeft: "auto" }}>
+          {cartItem.cartItemVariantsCost.toFixed(2)}€
+        </Box>
+      ) : null}
+    </Box>
+  );
+};
+
+const renderCart = (props) => {
+  return (
+    <Box paddingBottom={4} paddingTop={2}>
+      {props.finalOrderObj.cart.map((cartItem) => (
+        <Box
+          key={cartItem.orderNumber}
+          paddingTop={1}
+          sx={{ display: "flex", flexDirection: "row" }}
+        >
+          <Box paddingRight={1} sx={{ fontWeight: "bold" }}>
+            {cartItem.quantity}x
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <Box sx={{ display: "flex", flexDirection: "row" }}>
+              <Box>
+                {cartItem.product.productid} {cartItem.product.productname}{" "}
+                {cartItem.size.sizename !== "SingleSize"
+                  ? cartItem.size.sizename
+                  : null}
+              </Box>
+              <Box sx={{ marginLeft: "auto" }}>{cartItem.size.unitprice}€</Box>
+            </Box>
+            {renderVariants(cartItem)}
+          </Box>
+        </Box>
+      ))}
+    </Box>
+  );
+};
+
 const ComponentToPrint = forwardRef((props, ref) => {
   const classes = useStyles();
 
@@ -49,12 +102,44 @@ const ComponentToPrint = forwardRef((props, ref) => {
             {props.finalOrderObj.delivery === 1 ? "Lieferung" : "Abholung"}
           </Box>
         </Box>
-        <Box>{props.costumerName}</Box>
-        <Box>{props.costumerAddress}</Box>
-        <Box>{props.phoneNumberInputValue}</Box>
+        <Box sx={{ fontStyle: "italic" }}>{props.costumerName}</Box>
+        <Box sx={{ fontStyle: "italic" }}>{props.costumerAddress}</Box>
+        <Box sx={{ fontStyle: "italic" }}>{props.phoneNumberInputValue}</Box>
       </Box>
       <Divider></Divider>
-      {/* <Box>
+
+      <Divider></Divider>
+      {renderCart(props)}
+      <Divider></Divider>
+      <Box paddingTop={2}>{props.finalOrderObj.cart.length} Artikel</Box>
+      <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+        {props.finalOrderObj.delivery === 1 ? (
+          <Box sx={{ display: "flex" }}>
+            <Box>Lieferpesen </Box>
+            <Box sx={{ marginLeft: "auto", display: "flex" }}>
+              <Box sx={{ fontSize: "12px", marginTop: "4px" }}>(inkl.MwSt)</Box>
+              <Box>{`${props.finalOrderObj.deliverycost.toFixed(2)}€`}</Box>
+            </Box>
+          </Box>
+        ) : null}
+        <Box sx={{ display: "flex" }}>
+          <Box>Speisen</Box>
+          <Box sx={{ marginLeft: "auto", display: "flex" }}>
+            <Box sx={{ fontSize: "12px", marginTop: "4px" }}>(inkl.MwSt)</Box>
+            <Box>{`${props.finalOrderObj.cartcost.toFixed(2)}€`}</Box>
+          </Box>
+        </Box>
+        <Box sx={{ display: "flex" }}>
+          <Box>Gesamptpreis</Box>
+          <Box sx={{ marginLeft: "auto", display: "flex" }}>
+            <Box sx={{ fontSize: "12px", marginTop: "4px" }}>(inkl.MwSt)</Box>
+            <Box>
+              {`${parseFloat(props.finalOrderObj.totalcost).toFixed(2)}€`}
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      <Box paddingTop={3}>
         <Typography
           sx={{ fontSize: "7px", fontWeight: "light", lineHeight: "8px" }}
         >
@@ -62,38 +147,6 @@ const ComponentToPrint = forwardRef((props, ref) => {
           DSGVO
           https://www.datenschutz-grundverordnung.eu/grundverordnung/art-6-ds-gvo/
         </Typography>
-      </Box> */}
-      <Divider></Divider>
-      <Box>
-        {props.finalOrderObj.cart.map((cartItem) => (
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
-            <Box paddingRight={1} sx={{ fontWeight: "bold" }}>
-              {cartItem.quantity}x
-            </Box>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", width: "100%" }}
-            >
-              <Box sx={{ display: "flex", flexDirection: "row" }}>
-                <Box>
-                  {cartItem.product.productid} {cartItem.product.productname}{" "}
-                  {cartItem.size.sizename !== "SingleSize"
-                    ? cartItem.size.sizename
-                    : null}
-                </Box>
-                <Box sx={{ marginLeft: "auto" }}>
-                  {cartItem.size.unitprice}€
-                </Box>
-              </Box>
-              <Box sx={{ fontStyle: "italic" }}>
-                {cartItem.variants
-                  ? cartItem.variants.map(
-                      (variant) => `${variant.variantname},`
-                    )
-                  : null}
-              </Box>
-            </Box>
-          </Box>
-        ))}
       </Box>
     </Box>
   );

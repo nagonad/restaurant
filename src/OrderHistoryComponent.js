@@ -1,92 +1,148 @@
-import { React, useState, useEffect } from "react";
-import { Row, Col, Button, Container } from "reactstrap";
-import { RxPencil1, RxCrossCircled } from "react-icons/rx";
+import * as React from "react";
+import PropTypes from "prop-types";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
-export default function OrderHistoryComponent(props) {
-  let [dailyRevenue, setDailyRevenue] = useState(0);
+function createData(name, calories, fat, carbs, protein, price) {
+  return {
+    name,
+    calories,
+    fat,
+    carbs,
+    protein,
+    price,
+    history: [
+      {
+        date: "2020-01-05",
+        customerId: "11091700",
+        amount: 3,
+      },
+      {
+        date: "2020-01-02",
+        customerId: "Anonymous",
+        amount: 1,
+      },
+    ],
+  };
+}
 
-  let iconstyles = { fontSize: "22px" };
-
-  useEffect(() => {
-    let daily = 0;
-    getLastDayOrders(props.orderHistory).forEach((order) => {
-      daily += order.data.totalCost;
-    });
-
-    setDailyRevenue(daily);
-  }, [props.orderHistory]);
+function Row(props) {
+  const { row } = props;
+  const [open, setOpen] = React.useState(false);
 
   return (
-    <Container className="mb-3 py-3 shadow shadow-intensity-lg border rounded">
-      <div>{dailyRevenue.toFixed(2)}€</div>
-      {props.orderHistory.map((order) => (
-        <Container key={order.id}>
-          <Row>
-            <Col>
-              <RxPencil1
-                style={iconstyles}
-                onClick={() => props.changeIsOpen(order)}
-              ></RxPencil1>
-              {order.id}
-            </Col>
-            <Col>{order.data.dateTime}</Col>
-            <Col>{order.data.totalCost.toFixed(2)}€</Col>
-            <Col>
-              <RxCrossCircled
-                onClick={() => props.deleteOrder(order)}
-                style={iconstyles}
-              />
-            </Col>
-          </Row>
-          <Container style={{ boxShadow: "inset 0 0 5px 0 #c7c7c7" }}>
-            {order.isOpen && (
-              <Row>
-                <Col>{order.data.checkoutInformation.costumerName}</Col>
-                <Col>{order.data.checkoutInformation.address}</Col>
-                <Col>{order.data.checkoutInformation.phoneNumber}</Col>
-                <Col>
-                  {order.data.checkoutInformation.delivery
-                    ? "Lieferung: " +
-                      order.data.checkoutInformation.deliveryTarget
-                    : "Abholung"}
-                </Col>
-              </Row>
-            )}
-            {order.isOpen &&
-              order.data.cart.map((cartItem) => (
-                <Row>
-                  <Col>{cartItem.product.productName}</Col>
-                  <Col>{cartItem.productSize}</Col>
-                  <Col>{cartItem.quantity}</Col>
-                </Row>
-              ))}
-          </Container>
-        </Container>
-      ))}
-    </Container>
+    <React.Fragment>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {row.name}
+        </TableCell>
+        <TableCell align="right">{row.calories}</TableCell>
+        <TableCell align="right">{row.fat}</TableCell>
+        <TableCell align="right">{row.carbs}</TableCell>
+        <TableCell align="right">{row.protein}</TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                History
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Customer</TableCell>
+                    <TableCell align="right">Amount</TableCell>
+                    <TableCell align="right">Total price ($)</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {row.history.map((historyRow) => (
+                    <TableRow key={historyRow.date}>
+                      <TableCell component="th" scope="row">
+                        {historyRow.date}
+                      </TableCell>
+                      <TableCell>{historyRow.customerId}</TableCell>
+                      <TableCell align="right">{historyRow.amount}</TableCell>
+                      <TableCell align="right">
+                        {Math.round(historyRow.amount * row.price * 100) / 100}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
   );
 }
 
-const getLastDayOrders = (orderHistory) => {
-  let date = new Date();
+const rows = [
+  createData("Frozen yoghurt", 159, 6.0, 24, 4.0, 3.99),
+  createData("Ice cream sandwich", 237, 9.0, 37, 4.3, 4.99),
+  createData("Eclair", 262, 16.0, 24, 6.0, 3.79),
+  createData("Cupcake", 305, 3.7, 67, 4.3, 2.5),
+  createData("Gingerbread", 356, 16.0, 49, 3.9, 1.5),
+];
 
-  let day = date.getDate();
-  if (day < 10) {
-    day = "0" + day;
-  }
+export default function OrderHistoryComponent(props) {
+  const [orderHistory, setOrderHistory] = React.useState();
 
-  let month = date.getMonth() + 1;
+  React.useEffect(() => {
+    props
+      .getOrderHistory()
+      .then((resp) => resp.json())
+      .then((data) => {
+        console.log(data);
+        setOrderHistory(data);
+      });
+  }, []);
 
-  if (month < 10) {
-    month = "0" + month;
-  }
-
-  let year = date.getFullYear();
-
-  let currentDate = day + "/" + month + "/" + year;
-
-  let lastDayOrders = orderHistory.filter((order) =>
-    order.data.dateTime.startsWith(currentDate)
+  return (
+    <TableContainer
+      sx={{ width: "80%", marginLeft: "auto", marginRight: "auto" }}
+      component={Paper}
+    >
+      <Table aria-label="collapsible table">
+        <TableHead>
+          <TableRow>
+            <TableCell />
+            <TableCell>#</TableCell>
+            <TableCell align="right">Delivery</TableCell>
+            <TableCell align="right">Date</TableCell>
+            <TableCell align="right">Time</TableCell>
+            <TableCell align="right">Total Cost</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <Row key={row.name} row={row} />
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
-  return lastDayOrders;
-};
+}
