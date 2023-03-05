@@ -1,5 +1,5 @@
 import * as React from "react";
-import PropTypes from "prop-types";
+
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -13,34 +13,36 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-
-function createData(name, calories, fat, carbs, protein, price) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: "2020-01-05",
-        customerId: "11091700",
-        amount: 3,
-      },
-      {
-        date: "2020-01-02",
-        customerId: "Anonymous",
-        amount: 1,
-      },
-    ],
-  };
-}
+import Delete from "@mui/icons-material/Delete";
 
 function Row(props) {
   const { row } = props;
+  const cart = JSON.parse(props.row.cart);
   const [open, setOpen] = React.useState(false);
 
+  // React.useEffect(() => {
+  //   console.log(row);
+  // });
+
+  const renderVariants = (cartItem) => {
+    let str = "";
+
+    if (cartItem.variants) {
+      cartItem.variants.forEach((variant) => {
+        str += variant.variantname + ", ";
+      });
+
+      str = str.trim();
+
+      str = str.substring(0, str.length - 1);
+    }
+
+    return str;
+  };
+
+  const deleteOrder = () => {
+    props.deleteOrder(row).then(() => props.getOrders());
+  };
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
@@ -54,39 +56,74 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {row.orderhistoryid}
         </TableCell>
-        <TableCell align="right">{row.calories}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell>
+        <TableCell align="right">{row.ordertime}</TableCell>
+        <TableCell align="right">{row.orderdate.substring(0, 10)}</TableCell>
+        <TableCell align="right">
+          {row.delivery === "1" ? "Lieferung" : "Abholung"}
+        </TableCell>
+        <TableCell align="right">
+          {row.deliverycost ? parseFloat(row.deliverycost).toFixed(2) : ""}
+        </TableCell>
+        <TableCell align="right">
+          {parseFloat(row.totalcost).toFixed(2)}
+        </TableCell>
+        <TableCell align="right">
+          <Delete
+            onClick={() => {
+              deleteOrder();
+            }}
+          ></Delete>
+        </TableCell>
       </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+      <TableRow sx={{ backgroundColor: "#e7ebf0" }}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
+              {row.delivery === "1" ? (
+                <Typography variant="h6" gutterBottom component="div">
+                  {row.costumername}, {row.costumeraddress}, {row.phonenumber}
+                </Typography>
+              ) : null}
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
+                    <TableCell>#</TableCell>
+                    <TableCell>Quantity</TableCell>
+                    <TableCell>Product Name</TableCell>
+                    <TableCell align="right">Product Size</TableCell>
+                    <TableCell align="right">Product Price</TableCell>
+                    <TableCell align="right">Variants</TableCell>
+                    <TableCell align="right">Variants Price</TableCell>
+                    <TableCell align="right">Total price</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
+                  {cart.map((cartItem) => (
+                    <TableRow key={cartItem.orderNumber}>
                       <TableCell component="th" scope="row">
-                        {historyRow.date}
+                        {cartItem.orderNumber}
                       </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
+                      <TableCell>{cartItem.quantity}</TableCell>
+                      <TableCell>{cartItem.product.productname}</TableCell>
+
                       <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
+                        {cartItem.size.sizename}
+                      </TableCell>
+                      <TableCell align="right">
+                        {cartItem.size.unitprice}
+                      </TableCell>
+                      <TableCell align="right">
+                        {renderVariants(cartItem)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {cartItem.cartItemVariantsCost
+                          ? cartItem.cartItemVariantsCost.toFixed(2)
+                          : null}
+                      </TableCell>
+                      <TableCell align="right">
+                        {cartItem.cartItemTotalCost.toFixed(2)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -100,26 +137,21 @@ function Row(props) {
   );
 }
 
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0, 3.99),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3, 4.99),
-  createData("Eclair", 262, 16.0, 24, 6.0, 3.79),
-  createData("Cupcake", 305, 3.7, 67, 4.3, 2.5),
-  createData("Gingerbread", 356, 16.0, 49, 3.9, 1.5),
-];
-
 export default function OrderHistoryComponent(props) {
   const [orderHistory, setOrderHistory] = React.useState();
 
   React.useEffect(() => {
+    getOrders();
+  }, []);
+
+  const getOrders = () => {
     props
       .getOrderHistory()
       .then((resp) => resp.json())
       .then((data) => {
-        console.log(data);
         setOrderHistory(data);
       });
-  }, []);
+  };
 
   return (
     <TableContainer
@@ -131,16 +163,25 @@ export default function OrderHistoryComponent(props) {
           <TableRow>
             <TableCell />
             <TableCell>#</TableCell>
-            <TableCell align="right">Delivery</TableCell>
-            <TableCell align="right">Date</TableCell>
             <TableCell align="right">Time</TableCell>
+            <TableCell align="right">Date</TableCell>
+            <TableCell align="right">Delivery</TableCell>
+            <TableCell align="right">Delivery Cost</TableCell>
             <TableCell align="right">Total Cost</TableCell>
+            <TableCell align="right">#</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
-          ))}
+          {orderHistory
+            ? orderHistory.map((row) => (
+                <Row
+                  key={row.orderhistoryid}
+                  row={row}
+                  deleteOrder={props.deleteOrder}
+                  getOrders={getOrders}
+                />
+              ))
+            : null}
         </TableBody>
       </Table>
     </TableContainer>

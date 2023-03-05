@@ -29,6 +29,7 @@ import {
 
 import { RemoveRounded, AddRounded } from "@mui/icons-material";
 import PrintComponent from "./PrintComponent";
+import CreateOrderAppBar from "./CreateOrderAppBar";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -429,60 +430,14 @@ export default function CreateOrder(props) {
   }, []);
 
   return (
-    <Grid>
-      <div>
-        <Dialog
-          fullScreen
-          open={open}
-          onClose={handleClose}
-          TransitionComponent={Transition}
-        >
-          <AppBar sx={{ position: "relative" }}>
-            <Toolbar>
-              <IconButton
-                edge="start"
-                color="inherit"
-                onClick={handleClose}
-                aria-label="close"
-              >
-                <CloseIcon />
-              </IconButton>
-              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                {selectedProduct ? (
-                  <>
-                    {selectedProductForCart.productid} -{" "}
-                    {selectedProductForCart.productname}
-                  </>
-                ) : null}
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <List>
-            {selectedProduct
-              ? selectedProduct.map((size) => (
-                  <div key={size.id}>
-                    <ListItem
-                      onClick={() => {
-                        setSelectedSizeForCart(size);
-                        getSV(size);
-                        setOpenSecond(true);
-                      }}
-                      button
-                    >
-                      <ListItemText
-                        primary={size.sizename}
-                        secondary={size.unitprice}
-                      />
-                    </ListItem>
-                    <Divider />
-                  </div>
-                ))
-              : null}
-          </List>
+    <>
+      <CreateOrderAppBar></CreateOrderAppBar>
+      <Grid>
+        <div>
           <Dialog
             fullScreen
-            open={openSecond}
-            onClose={() => setOpenSecond(false)}
+            open={open}
+            onClose={handleClose}
             TransitionComponent={Transition}
           >
             <AppBar sx={{ position: "relative" }}>
@@ -490,7 +445,7 @@ export default function CreateOrder(props) {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  onClick={() => setOpenSecond(false)}
+                  onClick={handleClose}
                   aria-label="close"
                 >
                   <CloseIcon />
@@ -500,275 +455,341 @@ export default function CreateOrder(props) {
                   variant="h6"
                   component="div"
                 >
-                  {selectedProductForCart ? (
+                  {selectedProduct ? (
                     <>
                       {selectedProductForCart.productid} -{" "}
-                      {selectedProductForCart.productname}{" "}
-                      {selectedSizeForCart ? (
-                        <>
-                          {selectedSizeForCart.sizename !== "SingleSize"
-                            ? `(${selectedSizeForCart.sizename})`
-                            : null}
-                        </>
-                      ) : null}
+                      {selectedProductForCart.productname}
                     </>
                   ) : null}
                 </Typography>
-                <Button
-                  autoFocus
-                  color="inherit"
-                  onClick={() => {
-                    saveItemToTheCart();
-                  }}
-                >
-                  Save
-                </Button>
               </Toolbar>
             </AppBar>
-            <Grid container spacing={{ xs: 2, md: 3 }} padding={2}>
-              {variants
-                ? variants.map((variant) => (
-                    <Grid item xs={6} sm={4} md={3} key={variant.sizevariantid}>
-                      <Item
-                        sx={{
-                          boxShadow: variant.orderSelected
-                            ? "inset 0 0 10px rgba(0, 0, 0, 0.5)"
-                            : "",
-                        }}
+            <List>
+              {selectedProduct
+                ? selectedProduct.map((size) => (
+                    <div key={size.id}>
+                      <ListItem
                         onClick={() => {
-                          setOrderSelect(variant);
+                          setSelectedSizeForCart(size);
+                          getSV(size);
+                          setOpenSecond(true);
                         }}
+                        button
                       >
-                        <div>{variant.variantname}</div>
-                      </Item>
-                    </Grid>
+                        <ListItemText
+                          primary={size.sizename}
+                          secondary={size.unitprice}
+                        />
+                      </ListItem>
+                      <Divider />
+                    </div>
                   ))
                 : null}
-            </Grid>
+            </List>
+            <Dialog
+              fullScreen
+              open={openSecond}
+              onClose={() => setOpenSecond(false)}
+              TransitionComponent={Transition}
+            >
+              <AppBar sx={{ position: "relative" }}>
+                <Toolbar>
+                  <IconButton
+                    edge="start"
+                    color="inherit"
+                    onClick={() => setOpenSecond(false)}
+                    aria-label="close"
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                  <Typography
+                    sx={{ ml: 2, flex: 1 }}
+                    variant="h6"
+                    component="div"
+                  >
+                    {selectedProductForCart ? (
+                      <>
+                        {selectedProductForCart.productid} -{" "}
+                        {selectedProductForCart.productname}{" "}
+                        {selectedSizeForCart ? (
+                          <>
+                            {selectedSizeForCart.sizename !== "SingleSize"
+                              ? `(${selectedSizeForCart.sizename})`
+                              : null}
+                          </>
+                        ) : null}
+                      </>
+                    ) : null}
+                  </Typography>
+                  <Button
+                    autoFocus
+                    color="inherit"
+                    onClick={() => {
+                      saveItemToTheCart();
+                    }}
+                  >
+                    Save
+                  </Button>
+                </Toolbar>
+              </AppBar>
+              <Grid container spacing={{ xs: 2, md: 3 }} padding={2}>
+                {variants
+                  ? variants.map((variant) => (
+                      <Grid
+                        item
+                        xs={6}
+                        sm={4}
+                        md={3}
+                        key={variant.sizevariantid}
+                      >
+                        <Item
+                          sx={{
+                            boxShadow: variant.orderSelected
+                              ? "inset 0 0 10px rgba(0, 0, 0, 0.5)"
+                              : "",
+                          }}
+                          onClick={() => {
+                            setOrderSelect(variant);
+                          }}
+                        >
+                          <div>{variant.variantname}</div>
+                        </Item>
+                      </Grid>
+                    ))
+                  : null}
+              </Grid>
+            </Dialog>
           </Dialog>
-        </Dialog>
-      </div>
-      <Dialog
-        fullScreen
-        open={kundeDialog}
-        onClose={() => {
-          setKundeDialog(false);
-        }}
-        TransitionComponent={Transition}
-      >
-        <AppBar sx={{ position: "relative" }}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={() => {
-                setKundeDialog(false);
-                deleteCheckoutInfo();
-              }}
-              aria-label="close"
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Kunde Info
-            </Typography>
-            <Button
-              autoFocus
-              color="inherit"
-              onClick={() => {
-                setKundeDialog(false);
-              }}
-            >
-              save
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Grid paddingTop={2} container>
-          <Grid item xs={12} md={4}>
-            <ListItem>
-              {phoneNumbers ? (
-                <>
-                  <Autocomplete
-                    id="free-solo-demo"
-                    freeSolo
-                    sx={{ width: 300 }}
-                    onChange={(e, value) => handleChangePhoneNumber(e, value)}
-                    options={phoneNumbers}
-                    getOptionLabel={(option) => option.phonenumber}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        onChange={(e) => handleChangePhoneNumber(e)}
-                        label="Phone Number"
-                      />
-                    )}
-                  />
-                </>
-              ) : null}
-            </ListItem>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <ListItem xs={4}>
-              <TextField
-                sx={{ width: 300 }}
-                label="Kunde Name"
-                variant="outlined"
-                value={costumerName || ""}
-                onChange={(e) => setCostumerName(e.target.value)}
-              />
-            </ListItem>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <ListItem xs={4}>
-              <TextField
-                sx={{ width: 300 }}
-                label="Address"
-                variant="outlined"
-                value={costumerAddress || ""}
-                onChange={(e) => setCostumerAddress(e.target.value)}
-              />
-            </ListItem>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <ListItem xs={4}>
-              <FormControl sx={{ width: 300 }}>
-                <InputLabel id="demo-simple-select-label">
-                  Lieferung oder Abholung
-                </InputLabel>
-                <Select
-                  label="Lieferung oder Abholung"
-                  value={delivery || ""}
-                  onChange={(e) => handleDelivery(e.target.value)}
-                >
-                  <MenuItem value={1}>Lieferung</MenuItem>
-                  <MenuItem value={2}>Abholung</MenuItem>
-                </Select>
-              </FormControl>
-            </ListItem>
-          </Grid>
-          {delivery === 1 ? (
+        </div>
+        <Dialog
+          fullScreen
+          open={kundeDialog}
+          onClose={() => {
+            setKundeDialog(false);
+          }}
+          TransitionComponent={Transition}
+        >
+          <AppBar sx={{ position: "relative" }}>
+            <Toolbar>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={() => {
+                  setKundeDialog(false);
+                  deleteCheckoutInfo();
+                }}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                Kunde Info
+              </Typography>
+              <Button
+                autoFocus
+                color="inherit"
+                onClick={() => {
+                  setKundeDialog(false);
+                }}
+              >
+                save
+              </Button>
+            </Toolbar>
+          </AppBar>
+          <Grid paddingTop={2} container>
+            <Grid item xs={12} md={4}>
+              <ListItem>
+                {phoneNumbers ? (
+                  <>
+                    <Autocomplete
+                      id="free-solo-demo"
+                      freeSolo
+                      sx={{ width: 300 }}
+                      onChange={(e, value) => handleChangePhoneNumber(e, value)}
+                      options={phoneNumbers}
+                      getOptionLabel={(option) => option.phonenumber}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          onChange={(e) => handleChangePhoneNumber(e)}
+                          label="Phone Number"
+                        />
+                      )}
+                    />
+                  </>
+                ) : null}
+              </ListItem>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <ListItem xs={4}>
+                <TextField
+                  sx={{ width: 300 }}
+                  label="Kunde Name"
+                  variant="outlined"
+                  value={costumerName || ""}
+                  onChange={(e) => setCostumerName(e.target.value)}
+                />
+              </ListItem>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <ListItem xs={4}>
+                <TextField
+                  sx={{ width: 300 }}
+                  label="Address"
+                  variant="outlined"
+                  value={costumerAddress || ""}
+                  onChange={(e) => setCostumerAddress(e.target.value)}
+                />
+              </ListItem>
+            </Grid>
             <Grid item xs={12} md={4}>
               <ListItem xs={4}>
                 <FormControl sx={{ width: 300 }}>
                   <InputLabel id="demo-simple-select-label">
-                    Lieferung Kosten
+                    Lieferung oder Abholung
                   </InputLabel>
                   <Select
-                    startAdornment={
-                      <InputAdornment position="start">€</InputAdornment>
-                    }
-                    value={deliveryCost}
-                    label="Lieferung Kosten"
-                    onChange={(e) => setDeliveryCost(e.target.value)}
+                    label="Lieferung oder Abholung"
+                    value={delivery || ""}
+                    onChange={(e) => handleDelivery(e.target.value)}
                   >
-                    <MenuItem value={1}>1</MenuItem>
-                    <MenuItem value={2}>2</MenuItem>
-                    <MenuItem value={3}>3</MenuItem>
-                    <MenuItem value={4}>4</MenuItem>
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={6}>6</MenuItem>
-                    <MenuItem value={7}>7</MenuItem>
-                    <MenuItem value={8}>8</MenuItem>
-                    <MenuItem value={9}>9</MenuItem>
+                    <MenuItem value={1}>Lieferung</MenuItem>
+                    <MenuItem value={2}>Abholung</MenuItem>
                   </Select>
                 </FormControl>
               </ListItem>
             </Grid>
-          ) : null}
-        </Grid>
-        <Divider />
-      </Dialog>
-      <Box sx={{ display: "flex" }}>
-        <Box sx={{ width: "70%" }}>
-          <Grid
-            container
-            rowSpacing={2}
-            paddingX={2}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-          >
-            {props.products.map((product) => (
-              <React.Fragment key={product.id}>
-                <Grid
-                  onClick={() => {
-                    setSelectedProductForCart(product);
-                    getSP(product);
-                    handleClickOpen(true);
-                  }}
-                  item
-                  xs={6}
-                  md={4}
-                >
-                  <Item>
-                    {product.productid} - {product.productname}
-                  </Item>
-                </Grid>
-              </React.Fragment>
-            ))}
+            {delivery === 1 ? (
+              <Grid item xs={12} md={4}>
+                <ListItem xs={4}>
+                  <FormControl sx={{ width: 300 }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Lieferung Kosten
+                    </InputLabel>
+                    <Select
+                      startAdornment={
+                        <InputAdornment position="start">€</InputAdornment>
+                      }
+                      value={deliveryCost}
+                      label="Lieferung Kosten"
+                      onChange={(e) => setDeliveryCost(e.target.value)}
+                    >
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                      <MenuItem value={4}>4</MenuItem>
+                      <MenuItem value={5}>5</MenuItem>
+                      <MenuItem value={6}>6</MenuItem>
+                      <MenuItem value={7}>7</MenuItem>
+                      <MenuItem value={8}>8</MenuItem>
+                      <MenuItem value={9}>9</MenuItem>
+                    </Select>
+                  </FormControl>
+                </ListItem>
+              </Grid>
+            ) : null}
           </Grid>
-        </Box>
+          <Divider />
+        </Dialog>
+        <Box paddingTop={2} sx={{ display: "flex" }}>
+          <Box sx={{ width: "70%" }}>
+            <Grid
+              container
+              rowSpacing={2}
+              paddingX={2}
+              columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+            >
+              {props.products.map((product) => (
+                <React.Fragment key={product.id}>
+                  <Grid
+                    onClick={() => {
+                      setSelectedProductForCart(product);
+                      getSP(product);
+                      handleClickOpen(true);
+                    }}
+                    item
+                    xs={6}
+                    md={4}
+                  >
+                    <Item>
+                      {product.productid} - {product.productname}
+                    </Item>
+                  </Grid>
+                </React.Fragment>
+              ))}
+            </Grid>
+          </Box>
 
-        <Paper
-          sx={{
-            width: "30%",
-            height: "100vh",
-            position: "fixed",
-            right: "0",
-            top: "0",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Typography variant="h6" align="center" marginY={2}>
-            Deine Bestellung
-            {orderTotalCost && orderTotalCost > 0
-              ? ` - ${parseFloat(orderTotalCost).toFixed(2)}€`
-              : null}
-          </Typography>
-          <Divider></Divider>
-          {cart.map((cartItem) => (
-            <Box key={cartItem.orderNumber} padding={1} sx={{ width: "100%" }}>
-              {renderCartItem(cartItem)}
-              <Divider></Divider>
-            </Box>
-          ))}
-
-          <Box
+          <Paper
             sx={{
+              width: "30%",
+              height: "100vh",
+              position: "fixed",
+              right: "0",
+              top: "0",
               display: "flex",
-              marginTop: "auto",
               flexDirection: "column",
             }}
           >
-            <Box padding={1}>{renderCheckoutInfo()}</Box>
-            <Divider sx={{ borderBottomWidth: 5 }}></Divider>
+            <Typography variant="h6" align="center" marginY={2}>
+              Deine Bestellung
+              {orderTotalCost && orderTotalCost > 0
+                ? ` - ${parseFloat(orderTotalCost).toFixed(2)}€`
+                : null}
+            </Typography>
+            <Divider></Divider>
+            {cart.map((cartItem) => (
+              <Box
+                key={cartItem.orderNumber}
+                padding={1}
+                sx={{ width: "100%" }}
+              >
+                {renderCartItem(cartItem)}
+                <Divider></Divider>
+              </Box>
+            ))}
 
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-around",
+                marginTop: "auto",
+                flexDirection: "column",
               }}
-              margin={2}
             >
-              <Button onClick={() => setKundeDialog(true)} variant="contained">
-                Kunde Info
-              </Button>
-              {cart.length > 0 ? (
-                <PrintComponent
-                  costumerName={costumerName}
-                  costumerAddress={costumerAddress}
-                  phoneNumberInputValue={phoneNumberInputValue}
-                  finalOrderObj={finalOrderObj}
-                  finalizeOrder={finalizeOrder}
-                ></PrintComponent>
-              ) : (
-                <Button variant="contained" onClick={() => finalizeOrder()}>
-                  Drücken
+              <Box padding={1}>{renderCheckoutInfo()}</Box>
+              <Divider sx={{ borderBottomWidth: 5 }}></Divider>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                }}
+                margin={2}
+              >
+                <Button
+                  onClick={() => setKundeDialog(true)}
+                  variant="contained"
+                >
+                  Kunde Info
                 </Button>
-              )}
+                {cart.length > 0 ? (
+                  <PrintComponent
+                    costumerName={costumerName}
+                    costumerAddress={costumerAddress}
+                    phoneNumberInputValue={phoneNumberInputValue}
+                    finalOrderObj={finalOrderObj}
+                    finalizeOrder={finalizeOrder}
+                  ></PrintComponent>
+                ) : (
+                  <Button variant="contained" onClick={() => finalizeOrder()}>
+                    Drücken
+                  </Button>
+                )}
+              </Box>
             </Box>
-          </Box>
-        </Paper>
-      </Box>
-    </Grid>
+          </Paper>
+        </Box>
+      </Grid>
+    </>
   );
 }

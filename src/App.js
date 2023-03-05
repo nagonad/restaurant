@@ -647,19 +647,13 @@ export default class App extends Component {
 
   deleteOrder = (order) => {
     let url = "http://localhost:5000/order_history/";
-    url += order.id;
+    url += order.orderhistoryid;
 
-    let data = this.state.orderHistory;
-    data = data.filter((c) => c.id !== order.id);
-    this.setState({ orderHistory: data });
-
-    fetch(url, {
+    const cevap = fetch(url, {
       method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then(() => {
-        this.getOrderHistory();
-      });
+    });
+
+    return cevap;
   };
 
   changeMenuControlIsOpen = (menuItem) => {
@@ -729,7 +723,7 @@ export default class App extends Component {
     this.getSize();
     this.getVariants();
     this.getSizeVariant();
-    document.body.style = "background: #E7EBF0;";
+    document.body.style = "background: #F7F8FA;";
   }
 
   // categorizeProducts = (products) => {
@@ -814,7 +808,7 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <Navi removeFromCart={this.removeFromCart} cart={this.state.cart} />
+        {/* <Navi removeFromCart={this.removeFromCart} cart={this.state.cart} /> */}
 
         <Routes>
           <Route

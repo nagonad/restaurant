@@ -146,7 +146,7 @@ app.post("/costumer_info", async (req, res) => {
 app.get("/order_history", async (req, res) => {
   try {
     const orderHistory = await pool.query(
-      " select * from order_history order by id desc"
+      " select * from order_history left join costumer_info on order_history.costumerid=costumer_info.id order by order_history.orderhistoryid desc"
     );
     res.json(orderHistory.rows);
   } catch (error) {
@@ -174,9 +174,10 @@ app.post("/order_history", async (req, res) => {
 
 app.delete("/order_history/:id", async (req, res) => {
   try {
-    const cevap = await pool.query("delete from order_history where id = $1", [
-      req.params.id,
-    ]);
+    const cevap = await pool.query(
+      "delete from order_history where orderhistoryid = $1",
+      [req.params.id]
+    );
     res.json(cevap.json);
   } catch (error) {
     res.sendStatus(500);
