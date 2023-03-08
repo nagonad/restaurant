@@ -20,12 +20,15 @@ export default class App extends Component {
   state = {
     products: [],
     cart: [],
-
     categories: [],
-
     sizes: [],
     variants: {},
     sizeVariant: [],
+    sideBarOpen: false,
+  };
+
+  setSideBarOpen = (open) => {
+    this.setState({ sideBarOpen: open });
   };
 
   // changeCostumerName = (value) => {
@@ -161,9 +164,9 @@ export default class App extends Component {
   };
 
   getProducts = (categoryId) => {
-    let url = "http://localhost:5000/menu";
+    let url = "http://localhost:5000/menu/";
     if (categoryId) {
-      url += "/" + categoryId;
+      url += categoryId;
     }
 
     fetch(url)
@@ -808,7 +811,10 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        {/* <Navi removeFromCart={this.removeFromCart} cart={this.state.cart} /> */}
+        <Navi
+          sideBarOpen={this.state.sideBarOpen}
+          setSideBarOpen={this.setSideBarOpen}
+        />
 
         <Routes>
           <Route
@@ -816,12 +822,14 @@ export default class App extends Component {
             path="/"
             element={
               <CreateOrder
+                getProducts={this.getProducts}
                 products={this.state.products}
                 getSelectedProduct={this.getSelectedProduct}
                 getSizeVariantById={this.getSizeVariantById}
                 getCostumerInfo={this.getCostumerInfo}
                 getCostumerInfoLike={this.getCostumerInfoLike}
                 saveOrder={this.saveOrder}
+                categories={this.state.categories}
               />
             }
           ></Route>

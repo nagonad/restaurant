@@ -118,7 +118,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
             <Box>Lieferpesen </Box>
             <Box sx={{ marginLeft: "auto", display: "flex" }}>
               <Box sx={{ fontSize: "12px", marginTop: "4px" }}>(inkl.MwSt)</Box>
-              <Box>{`${props.finalOrderObj.deliverycost.toFixed(2)}€`}</Box>
+              <Box>{`${props.finalOrderObj.deliverycost?.toFixed(2)}€`}</Box>
             </Box>
           </Box>
         ) : null}

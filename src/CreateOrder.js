@@ -292,10 +292,6 @@ export default function CreateOrder(props) {
   };
 
   const handleDelivery = (e) => {
-    if (!checkoutControl) {
-      setCheckoutControl(true);
-    }
-
     setDeliveryCost("");
     setDelivery(e);
   };
@@ -323,6 +319,10 @@ export default function CreateOrder(props) {
 
     if (costumerName) {
       str1 += costumerName + ", ";
+    }
+
+    if (delivery === 1) {
+      str1 += `Lieferung(${deliveryCost}€)` + ", ";
     }
 
     if (str1.length > 0) {
@@ -431,7 +431,10 @@ export default function CreateOrder(props) {
 
   return (
     <>
-      <CreateOrderAppBar></CreateOrderAppBar>
+      <CreateOrderAppBar
+        getProducts={props.getProducts}
+        categories={props.categories}
+      ></CreateOrderAppBar>
       <Grid>
         <div>
           <Dialog
@@ -589,6 +592,7 @@ export default function CreateOrder(props) {
                 autoFocus
                 color="inherit"
                 onClick={() => {
+                  setCheckoutControl(true);
                   setKundeDialog(false);
                 }}
               >

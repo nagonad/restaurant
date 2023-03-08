@@ -66,7 +66,9 @@ app.put("/menu/:id", async (req, res) => {
 //get categories
 app.get("/categories", async (req, res) => {
   try {
-    const menu = await pool.query("SELECT * from categories");
+    const menu = await pool.query(
+      "SELECT * from categories order by sequenceorder"
+    );
     res.json(menu.rows);
   } catch (error) {
     res.sendStatus(500);
