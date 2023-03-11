@@ -15,9 +15,74 @@ import { Swiper, SwiperSlide } from "swiper/react";
 export default function CreateOrderAppBar(props) {
   const [selectedCategory, setSelectedCategory] = React.useState();
 
+  const [href, setHref] = React.useState();
+
+  const renderAppBar = () => {
+    if (!href) {
+      return (
+        <>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={() => {
+              setSelectedCategory(null);
+              props.getProducts();
+            }}
+          >
+            <MenuBookIcon></MenuBookIcon>
+          </IconButton>
+
+          <Swiper watchSlidesProgress={true} slidesPerView={"auto"}>
+            {props.categories.map((category) => (
+              <SwiperSlide
+                onClick={() => {
+                  setSelectedCategory(category.categoryid);
+                  props.getProducts(category.categoryid);
+                }}
+                key={category.categoryid}
+                style={{
+                  width: "auto",
+                  display: "flex",
+                  flexDirection: "row",
+                  overflow: "hidden",
+                  height: "64px",
+                }}
+              >
+                <Button
+                  sx={{
+                    marginTop: "auto",
+                    marginBottom: "auto",
+                    marginX: "5px",
+                  }}
+                  variant={
+                    selectedCategory === category.categoryid
+                      ? "contained"
+                      : null
+                  }
+                >
+                  {category.categoryshortname}
+                </Button>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </>
+      );
+    }
+  };
+  React.useEffect(() => {
+    let parts = window.location.href.split("/");
+
+    let lastPart = parts[parts.length - 1];
+
+    setHref(lastPart);
+  }, [window.location.href]);
+
   return (
     <>
-      <Box sx={{ flexGrow: 1, width: "70%" }}>
+      <Box sx={{ flexGrow: 1, width: href ? "100%" : "70%" }}>
         <AppBar
           position="relative"
           style={{
@@ -28,6 +93,7 @@ export default function CreateOrderAppBar(props) {
         >
           <Toolbar>
             <IconButton
+              onClick={props.toggleDrawer(true)}
               size="large"
               edge="start"
               color="inherit"
@@ -36,54 +102,8 @@ export default function CreateOrderAppBar(props) {
             >
               <MenuIcon />
             </IconButton>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-              onClick={() => {
-                setSelectedCategory(null);
-                props.getProducts();
-              }}
-            >
-              <MenuBookIcon></MenuBookIcon>
-            </IconButton>
-            <Box
-              sx={{
-                overflow: "hidden",
-                display: "flex",
-                height: "64px",
-              }}
-            >
-              <Swiper watchSlidesProgress={true} slidesPerView={"auto"}>
-                {props.categories.map((category) => (
-                  <SwiperSlide
-                    onClick={() => {
-                      setSelectedCategory(category.id);
-                      props.getProducts(category.id);
-                    }}
-                    key={category.id}
-                    style={{
-                      width: "auto",
-                      display: "flex",
-                    }}
-                  >
-                    <Button
-                      sx={{
-                        alignItems: "center",
-                        marginX: "5px",
-                      }}
-                      variant={
-                        selectedCategory === category.id ? "contained" : null
-                      }
-                    >
-                      {category.categoryshortname}
-                    </Button>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </Box>
+
+            {renderAppBar()}
           </Toolbar>
         </AppBar>
       </Box>

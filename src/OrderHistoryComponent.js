@@ -20,10 +20,6 @@ function Row(props) {
   const cart = JSON.parse(props.row.cart);
   const [open, setOpen] = React.useState(false);
 
-  // React.useEffect(() => {
-  //   console.log(row);
-  // });
-
   const renderVariants = (cartItem) => {
     let str = "";
 
@@ -70,11 +66,15 @@ function Row(props) {
           {parseFloat(row.totalcost).toFixed(2)}
         </TableCell>
         <TableCell align="right">
-          <Delete
+          <IconButton
+            aria-label="expand row"
+            size="small"
             onClick={() => {
               deleteOrder();
             }}
-          ></Delete>
+          >
+            <Delete></Delete>
+          </IconButton>
         </TableCell>
       </TableRow>
       <TableRow sx={{ backgroundColor: "#e7ebf0" }}>

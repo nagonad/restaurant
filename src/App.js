@@ -25,126 +25,23 @@ export default class App extends Component {
     variants: {},
     sizeVariant: [],
     sideBarOpen: false,
+    categorizedProducts: [],
   };
 
   setSideBarOpen = (open) => {
     this.setState({ sideBarOpen: open });
   };
 
-  // changeCostumerName = (value) => {
-  //   let newCheckoutInformation = this.state.checkoutInformation;
+  toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
 
-  //   newCheckoutInformation.costumerName = value;
-
-  //   this.setState({ checkoutInformation: newCheckoutInformation });
-  // };
-
-  // changeAddress = (value) => {
-  //   let newCheckoutInformation = this.state.checkoutInformation;
-
-  //   newCheckoutInformation.address = value;
-
-  //   this.setState({ checkoutInformation: newCheckoutInformation });
-  // };
-
-  // changePhoneNumber = (value) => {
-  //   let newCheckoutInformation = this.state.checkoutInformation;
-
-  //   newCheckoutInformation.phoneNumber = value;
-
-  //   this.setState({ checkoutInformation: newCheckoutInformation });
-  // };
-
-  // changePhoneNumberValue = (value) => {
-  //   this.setState({ phoneNumberValue: value });
-  // };
-
-  // changeDeliveryTarget = (e) => {
-  //   let newCheckoutInformation = this.state.checkoutInformation;
-
-  //   newCheckoutInformation.deliveryTarget = e.target.value;
-
-  //   this.setState({ checkoutInformation: newCheckoutInformation });
-  // };
-
-  // changeExtraProductCost = (event, orderNumber) => {
-  //   let newCart = this.state.cart;
-  //   let newCartItem = newCart.find((c) => c.orderNumber === orderNumber);
-  //   newCartItem.extraProductCost = event.target.value;
-
-  //   this.setState({ cart: newCart });
-  // };
-
-  // changeCostumerInfo = (costumer) => {
-  //   this.setState({ costumerInfo: costumer });
-  // };
-
-  // changeCheckoutInformation = (e) => {
-  //   let newCheckoutInformation = this.state.checkoutInformation;
-
-  //   if (e.target.name === "delivery") {
-  //     if (e.target.value === "Lieferung") {
-  //       newCheckoutInformation[e.target.name] = true;
-  //       newCheckoutInformation.deliveryTarget = Object.keys(
-  //         this.state.locations
-  //       )[0];
-  //     }
-  //     if (e.target.value === "Abholung") {
-  //       newCheckoutInformation[e.target.name] = false;
-  //       newCheckoutInformation.deliveryTarget = "";
-  //     }
-  //   } else {
-  //     newCheckoutInformation[e.target.name] = e.target.value;
-  //   }
-
-  //   this.setState({ checkoutInformation: newCheckoutInformation });
-  // };
-
-  // setOrderNumber = () => {
-  //   this.setState({ orderNumber: this.state.orderNumber + 1 });
-  // };
-
-  // removeFromCart = (product) => {
-  //   let newCart = this.state.cart.filter(
-  //     (c) => c.orderNumber !== product.orderNumber
-  //   );
-  //   this.setState({ cart: newCart });
-  // };
-
-  // addToCart = (product, productSize, orderNote) => {
-  //   let newCart = this.state.cart;
-  //   var addedItem = newCart.find((c) => {
-  //     return (
-  //       c.product.productId === product.productId &&
-  //       c.productSize === productSize &&
-  //       c.orderNote === orderNote
-  //     );
-  //   });
-  //   if (addedItem) {
-  //     if (addedItem.quantity < 9) {
-  //       addedItem.quantity += 1;
-  //     } else {
-  //       addedItem.quantity = 9;
-  //     }
-  //   } else {
-  //     newCart.push({
-  //       product: product,
-  //       quantity: 1,
-  //       orderNote: orderNote,
-  //       productSize: productSize,
-  //       orderNumber: this.state.orderNumber,
-  //     });
-  //   }
-
-  //   this.setState({ cart: newCart });
-  // };
-
-  // handleSelect = (e, orderNumber) => {
-  //   let newCart = this.state.cart;
-  //   let newCartElement = newCart.find((c) => c.orderNumber === orderNumber);
-  //   newCartElement.quantity = parseInt(e.target.value);
-  //   this.setState({ cart: newCart });
-  // };
+    this.setSideBarOpen(open);
+  };
 
   getCostumerInfo = () => {
     let url = "http://localhost:5000/costumer_info/";
@@ -167,37 +64,51 @@ export default class App extends Component {
     let url = "http://localhost:5000/menu/";
     if (categoryId) {
       url += categoryId;
-    }
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        let newData = data.map((obj) => ({ ...obj, isOpen: false }));
-        this.setState({ products: newData });
-      });
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.setState({ categorizedProducts: data });
+        });
+    } else {
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.setState({ products: data, categorizedProducts: data });
+        });
+    }
+  };
+
+  getProductsWithCategories = () => {
+    let url = "http://localhost:5000/menuWithCategories/";
+
+    const cevap = fetch(url);
+
+    return cevap;
   };
 
   deleteProduct = (product) => {
     let url = "http://localhost:5000/menu/";
     url += product.id;
 
-    fetch(url, {
+    const cevap = fetch(url, {
       method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then(() => {
-        this.getProducts();
-      });
+    });
+    return cevap;
   };
 
   getSelectedProduct = (product) => {
     let url = "http://localhost:5000/product_sizes/";
 
-    if (product) {
-      url += product.id;
-    } else {
-      url += this.state.selectedProduct.id;
-    }
+    url += product.id;
+
+    const cevap = fetch(url);
+
+    return cevap;
+  };
+
+  getProductSizes = () => {
+    let url = "http://localhost:5000/product_sizes/";
 
     const cevap = fetch(url);
 
@@ -352,7 +263,10 @@ export default class App extends Component {
 
     fetch(url)
       .then((response) => response.json())
-      .then((data) => this.setState({ sizeVariant: data }));
+      .then((data) => {
+        // console.log(data);
+        this.setState({ sizeVariant: data });
+      });
   };
 
   getSizeVariantById = (id) => {
@@ -814,6 +728,9 @@ export default class App extends Component {
         <Navi
           sideBarOpen={this.state.sideBarOpen}
           setSideBarOpen={this.setSideBarOpen}
+          toggleDrawer={this.toggleDrawer}
+          getProducts={this.getProducts}
+          categories={this.state.categories}
         />
 
         <Routes>
@@ -830,6 +747,8 @@ export default class App extends Component {
                 getCostumerInfoLike={this.getCostumerInfoLike}
                 saveOrder={this.saveOrder}
                 categories={this.state.categories}
+                toggleDrawer={this.toggleDrawer}
+                categorizedProducts={this.state.categorizedProducts}
               />
             }
           ></Route>
@@ -871,6 +790,8 @@ export default class App extends Component {
             path="/menuControl"
             element={
               <MenuControl
+                getProductSizes={this.getProductSizes}
+                getProductsWithCategories={this.getProductsWithCategories}
                 changeMenuControlIsOpen={this.changeMenuControlIsOpen}
                 products={this.state.products}
                 deleteProduct={this.deleteProduct}

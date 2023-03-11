@@ -63,7 +63,7 @@ export default function MenuItemAdd(props) {
                 onChange={handleChange}
               >
                 {props.categories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                  <option key={category.categoryid} value={category.categoryid}>
                     {category.categoryname}
                   </option>
                 ))}

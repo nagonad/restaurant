@@ -20,6 +20,20 @@ app.get("/menu", async (req, res) => {
   }
 });
 
+// get all menu with categories
+
+app.get("/menuWithCategories", async (req, res) => {
+  try {
+    const cevap = await pool.query(
+      "select * from menu inner join categories on menu.categoryid=categories.categoryid order by productid"
+    );
+
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 //add menu item
 
 app.post("/menu", async (req, res) => {
@@ -100,19 +114,6 @@ app.get("/costumer_info", async (req, res) => {
     res.sendStatus(500);
   }
 });
-
-// app.get("/costumer_info/:phonenumber", async (req, res) => {
-//   const { phonenumber } = req.params;
-//   try {
-//     const costumers = await pool.query(
-//       "SELECT * FROM costumer_info WHERE phonenumber = $1",
-//       [phonenumber]
-//     );
-//     res.json(costumers.rows);
-//   } catch (error) {
-//     res.sendStatus(500);
-//   }
-// });
 
 //get likely costumers
 
@@ -223,6 +224,19 @@ app.delete("/size/:id", async (req, res) => {
   }
 });
 
+// get productsize
+
+app.get("/product_sizes", async (req, res) => {
+  try {
+    const cevap = await pool.query(
+      "select * from product_sizes where selected=true"
+    );
+    res.json(cevap.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 // add productsize
 
 app.post("/product_sizes", async (req, res) => {
@@ -241,26 +255,12 @@ app.post("/product_sizes", async (req, res) => {
   }
 });
 
-//delete productsize
-
-// app.delete("/product_sizes/:id", async (req, res) => {
-//   try {
-//     const cevap = await pool.query(
-//       "delete from product_sizes where menutableid = $1",
-//       [req.params.id]
-//     );
-//     res.json(cevap.rows);
-//   } catch (error) {
-//     console.error(error.message);
-//   }
-// });
-
 // get product's sizes
 
 app.get("/product_sizes/:id", async (req, res) => {
   try {
     const cevap = await pool.query(
-      "select * from product_sizes where menutableid= $1 order by id",
+      "select * from product_sizes where menutableid= $1 order by productsizesid",
       [req.params.id]
     );
 
@@ -372,7 +372,7 @@ app.post("/productSizeVariant", async (req, res) => {
 app.get("/productSizeVariant", async (req, res) => {
   try {
     const cevap = await pool.query(
-      "select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.id = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid "
+      "select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.productsizesid = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid"
     );
     res.json(cevap.rows);
   } catch (error) {
@@ -387,7 +387,7 @@ app.get("/productSizeVariant/:id", async (req, res) => {
 
   try {
     const cevap = await pool.query(
-      `select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.id = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid where productsizeid=${id}`
+      `select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.productsizesid = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid where productsizeid=${id}`
     );
     res.json(cevap.rows);
   } catch (error) {
@@ -560,7 +560,7 @@ app.get("/productSizeVariantGroup/:id", async (req, res) => {
 
   try {
     const cevap = await pool.query(
-      `select * from product_size_variant_groups inner join product_sizes on product_sizes.id=product_size_variant_groups.productsizeid inner join variant_group on variant_group.variantgroupid=product_size_variant_groups.variantgroupid where product_size_variant_groups.productsizeid = ${id}`
+      `select * from product_size_variant_groups inner join product_sizes on product_sizes.productsizesid=product_size_variant_groups.productsizeid inner join variant_group on variant_group.variantgroupid=product_size_variant_groups.variantgroupid where product_size_variant_groups.productsizeid = ${id}`
     );
 
     res.json(cevap.rows);

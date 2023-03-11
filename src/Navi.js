@@ -1,7 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
@@ -9,63 +8,81 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import { Link } from "react-router-dom";
+import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+
+import CreateOrderAppBar from "./CreateOrderAppBar";
 
 export default function Navi(props) {
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    props.setSideBarOpen(open);
-  };
-
   const list = () => (
     <Box
       sx={{ width: 250 }}
       role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
+      onClick={props.toggleDrawer(false)}
+      onKeyDown={props.toggleDrawer(false)}
     >
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        <ListItem component={Link} to={"/"} disablePadding>
+          <ListItemButton>
+            {/* <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon> */}
+            <ListItemText primary={"Create Order"}></ListItemText>
+          </ListItemButton>
+        </ListItem>
+        <Divider />
+        <ListItem component={Link} to={"/orderHistory"} disablePadding>
+          <ListItemButton>
+            <ListItemText primary={"Order History"}></ListItemText>
+          </ListItemButton>
+        </ListItem>
+        <Divider />
+        <ListItem component={Link} to={"/menuControl"} disablePadding>
+          <ListItemButton>
+            <ListItemText primary={"Menu Control"}></ListItemText>
+          </ListItemButton>
+        </ListItem>
+        <Divider />
+        <ListItem component={Link} to={"/menuControl/itemAdd"} disablePadding>
+          <ListItemButton>
+            <ListItemText primary={"Add Item to Menu"}></ListItemText>
+          </ListItemButton>
+        </ListItem>
+        <Divider />
+        <ListItem component={Link} to={"/variantControl"} disablePadding>
+          <ListItemButton>
+            <ListItemText primary={"Variant Control"}></ListItemText>
+          </ListItemButton>
+        </ListItem>
+        <Divider />
+        <ListItem component={Link} to={"/VariantGroupControl"} disablePadding>
+          <ListItemButton>
+            <ListItemText primary={"Variant Group Control"}></ListItemText>
+          </ListItemButton>
+        </ListItem>
+        <Divider />
+        <ListItem component={Link} to={"/VariantGroupCostumize"} disablePadding>
+          <ListItemButton>
+            <ListItemText primary={"Variant Group Costumize"}></ListItemText>
+          </ListItemButton>
+        </ListItem>
       </List>
       <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
     </Box>
   );
 
   return (
     <div>
       <React.Fragment>
-        <Button onClick={toggleDrawer(true)}>LEFT</Button>
+        <CreateOrderAppBar
+          getProducts={props.getProducts}
+          categories={props.categories}
+          toggleDrawer={props.toggleDrawer}
+        ></CreateOrderAppBar>
         <Drawer
           anchor={"left"}
           open={props.sideBarOpen}
-          onClose={toggleDrawer(false)}
+          onClose={props.toggleDrawer(false)}
         >
           {list()}
         </Drawer>

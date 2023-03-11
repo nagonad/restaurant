@@ -114,8 +114,9 @@ export default function CreateOrder(props) {
   };
 
   const getSV = (size) => {
+    console.log(size);
     props
-      .getSizeVariantById(size.id)
+      .getSizeVariantById(size.productsizesid)
       .then((resp) => resp.json())
       .then((data) => {
         let newData = [];
@@ -431,10 +432,11 @@ export default function CreateOrder(props) {
 
   return (
     <>
-      <CreateOrderAppBar
+      {/* <CreateOrderAppBar
         getProducts={props.getProducts}
         categories={props.categories}
-      ></CreateOrderAppBar>
+        toggleDrawer={props.toggleDrawer}
+      ></CreateOrderAppBar> */}
       <Grid>
         <div>
           <Dialog
@@ -470,7 +472,7 @@ export default function CreateOrder(props) {
             <List>
               {selectedProduct
                 ? selectedProduct.map((size) => (
-                    <div key={size.id}>
+                    <div key={size.productsizesid}>
                       <ListItem
                         onClick={() => {
                           setSelectedSizeForCart(size);
@@ -703,7 +705,7 @@ export default function CreateOrder(props) {
               paddingX={2}
               columnSpacing={{ xs: 1, sm: 2, md: 3 }}
             >
-              {props.products.map((product) => (
+              {props.categorizedProducts.map((product) => (
                 <React.Fragment key={product.id}>
                   <Grid
                     onClick={() => {
