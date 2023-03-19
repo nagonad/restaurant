@@ -165,6 +165,7 @@ function RenderDialog(props) {
 
 function RenderDialogSecond(props) {
   const [sizeVariants, setSizeVariants] = React.useState();
+  const [availibleVariants, setAvailibleVariants] = React.useState();
 
   const freshSizeVariantById = () => {
     props
@@ -184,6 +185,21 @@ function RenderDialogSecond(props) {
       freshSizeVariantById();
     });
   };
+
+  React.useEffect(() => {
+    let searchArr = [];
+
+    if (sizeVariants) {
+      sizeVariants.forEach((variant) => {
+        searchArr.push(variant.variantid);
+      });
+      let availibleVariants = props.variants.filter(
+        (c) => !searchArr.includes(c.id)
+      );
+
+      setAvailibleVariants(availibleVariants);
+    }
+  }, [sizeVariants]);
 
   React.useEffect(() => {
     freshSizeVariantById();
@@ -211,7 +227,8 @@ function RenderDialogSecond(props) {
             <CloseIcon />
           </IconButton>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Sound
+            {props.row.productid} - {props.row.productname} (
+            {props.selectedProductSize.sizename})
           </Typography>
           <Button
             autoFocus
@@ -232,7 +249,7 @@ function RenderDialogSecond(props) {
             maxWidth: 360,
           }}
         >
-          <List sx={{ overflow: "auto", maxHeight: 360 }}>
+          <List sx={{ overflow: "auto", height: 360 }}>
             {sizeVariants &&
               sizeVariants.map((variant) => (
                 <React.Fragment key={variant.sizevariantid}>
@@ -259,23 +276,25 @@ function RenderDialogSecond(props) {
             margin: "1rem",
             width: "100%",
             maxWidth: 360,
-            height: 360,
           }}
         >
-          {props.variants.map((variant) => (
-            <React.Fragment key={variant.id}>
-              <ListItem>
-                <ArrowBackIcon
-                  onClick={() => {
-                    addVariantToSize(variant);
-                  }}
-                ></ArrowBackIcon>
-                {variant.variantname}
-                {variant.price ? "(" + variant.price + "€" + ")" : null}
-              </ListItem>
-              <Divider></Divider>
-            </React.Fragment>
-          ))}
+          <List sx={{ overflow: "auto", height: 360 }}>
+            {availibleVariants &&
+              availibleVariants.map((variant) => (
+                <React.Fragment key={variant.id}>
+                  <ListItem>
+                    <ArrowBackIcon
+                      onClick={() => {
+                        addVariantToSize(variant);
+                      }}
+                    ></ArrowBackIcon>
+                    {variant.variantname}
+                    {variant.price ? "(" + variant.price + "€" + ")" : null}
+                  </ListItem>
+                  <Divider></Divider>
+                </React.Fragment>
+              ))}
+          </List>
         </Paper>
       </Box>
     </Dialog>
@@ -283,6 +302,67 @@ function RenderDialogSecond(props) {
 }
 
 function RenderDialogThird(props) {
+  const [sizeVariantGroups, setSizeVariantGroups] = React.useState();
+
+  const [availibleVariantGroups, setAvailibleVariantGroups] = React.useState();
+
+  const freshVariantGroup = () => {
+    props
+      .getProductSizeVariantGroup(props.selectedProductSize)
+      .then((resp) => resp.json())
+      .then((data) => setSizeVariantGroups(data));
+  };
+
+  const deletePSVG = (variantGroup) => {
+    props.deleteProductSizeVariantGroup(variantGroup).then(() => {
+      freshVariantGroup();
+      props.deleteSizeVariantNewTry(variantGroup);
+    });
+  };
+
+  const savePSVG = (variantGroup) => {
+    props
+      .saveProductSizeVariantGroup(props.selectedProductSize, variantGroup)
+      .then(() => {
+        freshVariantGroup();
+        props
+          .getVariantGroupVariant(variantGroup)
+          .then((resp) => resp.json())
+          .then((data) => {
+            let arr = [];
+
+            data.forEach((datum) => {
+              let obj = {
+                variantgroupid: variantGroup.variantgroupid,
+                productsizesid: props.selectedProductSize.productsizesid,
+                variantid: datum.variantid,
+              };
+              arr.push(obj);
+            });
+            props.saveSizeVariantNewTry(arr);
+          });
+      });
+  };
+
+  React.useEffect(() => {
+    let searchArr = [];
+
+    if (sizeVariantGroups) {
+      sizeVariantGroups.forEach((variantGroup) => {
+        searchArr.push(variantGroup.variantgroupid);
+      });
+      let availibleVariantGroups = props.variantGroups.filter(
+        (c) => !searchArr.includes(c.variantgroupid)
+      );
+
+      setAvailibleVariantGroups(availibleVariantGroups);
+    }
+  }, [sizeVariantGroups]);
+
+  React.useEffect(() => {
+    freshVariantGroup();
+  }, []);
+
   return (
     <Dialog
       fullScreen
@@ -305,7 +385,8 @@ function RenderDialogThird(props) {
             <CloseIcon />
           </IconButton>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Sound
+            {props.row.productid} - {props.row.productname} (
+            {props.selectedProductSize.sizename})
           </Typography>
           <Button
             autoFocus
@@ -318,18 +399,58 @@ function RenderDialogThird(props) {
           </Button>
         </Toolbar>
       </AppBar>
-      <List>
-        <ListItem button>
-          <ListItemText primary="Phone ringtone" secondary="Titania" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText
-            primary="Default notification ringtone"
-            secondary="Tethys"
-          />
-        </ListItem>
-      </List>
+      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+        <Paper
+          sx={{
+            margin: "1rem",
+            width: "100%",
+            maxWidth: 360,
+          }}
+        >
+          <List sx={{ overflow: "auto", height: 360 }}>
+            {sizeVariantGroups &&
+              sizeVariantGroups.map((variantGroup) => (
+                <React.Fragment key={variantGroup.productsizevariantgroupid}>
+                  <ListItem
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Box>{variantGroup.variantgroupname}</Box>
+                    <Delete
+                      onClick={() => {
+                        deletePSVG(variantGroup);
+                      }}
+                    ></Delete>
+                  </ListItem>
+                  <Divider></Divider>
+                </React.Fragment>
+              ))}
+          </List>
+        </Paper>
+        <Paper
+          sx={{
+            margin: "1rem",
+            width: "100%",
+            maxWidth: 360,
+          }}
+        >
+          <List sx={{ overflow: "auto", height: 360 }}>
+            {availibleVariantGroups &&
+              availibleVariantGroups.map((variantGroup) => (
+                <React.Fragment key={variantGroup.variantgroupid}>
+                  <ListItem>
+                    <ArrowBackIcon
+                      onClick={() => {
+                        savePSVG(variantGroup);
+                      }}
+                    ></ArrowBackIcon>
+                    {variantGroup.variantgroupname}
+                  </ListItem>
+                  <Divider></Divider>
+                </React.Fragment>
+              ))}
+          </List>
+        </Paper>
+      </Box>
     </Dialog>
   );
 }
@@ -383,6 +504,9 @@ function Row(props) {
         <RenderDialogThird
           dialogOpenThird={dialogOpenThird}
           setDialogOpenThird={setDialogOpenThird}
+          selectedProductSize={selectedProductSize}
+          row={row}
+          {...props}
         ></RenderDialogThird>
       )}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
@@ -410,7 +534,7 @@ function Row(props) {
         </TableCell>
         <TableCell align="right">
           <IconButton
-            onClick={() => props.deleteProduct(row)}
+            onClick={() => props.deleteP(row)}
             aria-label="expand row"
             size="small"
           >
@@ -469,6 +593,7 @@ function Row(props) {
                       <TableCell align="right">
                         <Button
                           onClick={() => {
+                            setSelectedProductSize(size);
                             setDialogOpenThird(true);
                           }}
                           variant="outlined"
@@ -493,6 +618,8 @@ export default function MenuControl(props) {
   const [products, setProducts] = React.useState();
 
   const [productSizes, setProductSizes] = React.useState();
+
+  const [variantGroups, setVariantGroups] = React.useState();
 
   const [product, setProduct] = React.useState();
 
@@ -519,13 +646,21 @@ export default function MenuControl(props) {
       });
   };
 
-  const deleteProduct = (product) => {
+  const fetchVariantGroups = () => {
+    props
+      .getVariantGroup()
+      .then((resp) => resp.json())
+      .then((data) => setVariantGroups(data));
+  };
+
+  const deleteP = (product) => {
     props.deleteProduct(product).then(() => getProductsWithCategories());
   };
 
   React.useEffect(() => {
     getProductsWithCategories();
     getProductSizes();
+    fetchVariantGroups();
   }, []);
 
   return (
@@ -552,13 +687,14 @@ export default function MenuControl(props) {
                   <Row
                     key={row.id}
                     row={row}
+                    variantGroups={variantGroups}
                     productSizes={productSizes}
                     getProductSizes={getProductSizes}
                     updateProductSize={props.updateProductSize}
                     getSelectedProduct={props.getSelectedProduct}
                     product={product}
                     filterProductSizes={filterProductSizes}
-                    deleteProduct={deleteProduct}
+                    deleteP={deleteP}
                     setProduct={setProduct}
                     {...props}
                   />

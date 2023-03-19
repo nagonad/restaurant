@@ -272,6 +272,49 @@ export default class App extends Component {
     return cevap;
   };
 
+  saveProductSizeVariantGroup = (productSize, variantGroup) => {
+    let query = {
+      productsizesid: productSize.productsizesid,
+      variantgroupid: variantGroup.variantgroupid,
+    };
+
+    let url = "http://localhost:5000/productSizeVariantGroup";
+
+    const cevap = fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+    });
+
+    return cevap;
+  };
+
+  getProductSizeVariantGroup = (productSize) => {
+    let url = "http://localhost:5000/productSizeVariantGroup/";
+
+    if (productSize) {
+      url += productSize.productsizesid;
+    }
+
+    const cevap = fetch(url);
+
+    return cevap;
+  };
+
+  deleteProductSizeVariantGroup = (psvg) => {
+    let url = "http://localhost:5000/productSizeVariantGroup/";
+
+    url += psvg.productsizevariantgroupid;
+
+    const cevap = fetch(url, {
+      method: "DELETE",
+    });
+
+    return cevap;
+  };
+
   saveVariantGroup = (obj) => {
     let url = "http://localhost:5000/variantGroupControl";
 
@@ -360,49 +403,6 @@ export default class App extends Component {
     let url = "http://localhost:5000/variantGroupVariants/";
 
     url += vgv.vgvid;
-
-    const cevap = fetch(url, {
-      method: "DELETE",
-    });
-
-    return cevap;
-  };
-
-  saveProductSizeVariantGroup = (productSize, variantGroup) => {
-    let query = {
-      productsizeid: productSize.id,
-      variantgroupid: variantGroup.variantgroupid,
-    };
-
-    let url = "http://localhost:5000/productSizeVariantGroup";
-
-    const cevap = fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(query),
-    });
-
-    return cevap;
-  };
-
-  getProductSizeVariantGroup = (productSize) => {
-    let url = "http://localhost:5000/productSizeVariantGroup/";
-
-    if (productSize) {
-      url += productSize.id;
-    }
-
-    const cevap = fetch(url);
-
-    return cevap;
-  };
-
-  deleteProductSizeVariantGroup = (psvg) => {
-    let url = "http://localhost:5000/productSizeVariantGroup/";
-
-    url += psvg.productsizevariantgroupid;
 
     const cevap = fetch(url, {
       method: "DELETE",
