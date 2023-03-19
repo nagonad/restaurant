@@ -275,11 +275,11 @@ app.get("/product_sizes/:id", async (req, res) => {
 app.put("/product_sizes/:id", async (req, res) => {
   const { id } = req.params;
 
-  const { query } = req.body;
+  const query = getUpdateQuery(req.body);
 
   try {
     const cevap = await pool.query(
-      `UPDATE product_sizes SET ${query} WHERE id = ${id}`
+      `UPDATE product_sizes SET ${query} WHERE productsizesid = ${id}`
     );
 
     res.json(cevap.rows);
@@ -296,7 +296,9 @@ app.post("/variantControl", async (req, res) => {
   let values = getValues(req.body);
 
   try {
-    const cevap = pool.query(`insert into variants${keys} values${values}`);
+    const cevap = await pool.query(
+      `insert into variants${keys} values${values}`
+    );
 
     res.json(cevap.rows);
   } catch (error) {
@@ -357,11 +359,11 @@ app.post("/productSizeVariant", async (req, res) => {
   let values = getValues(req.body);
 
   try {
-    const cevap = pool.query(
+    const cevap = await pool.query(
       `insert into product_size_variants${keys} values${values}`
     );
 
-    res.json(cevap.rows);
+    res.json(cevap);
   } catch (error) {
     res.sendStatus(500);
   }
@@ -372,7 +374,7 @@ app.post("/productSizeVariant", async (req, res) => {
 app.get("/productSizeVariant", async (req, res) => {
   try {
     const cevap = await pool.query(
-      "select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.productsizesid = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid"
+      "select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.productsizesid = product_size_variants.productsizesid inner join variants on variants.id=product_size_variants.variantid"
     );
     res.json(cevap.rows);
   } catch (error) {
@@ -387,7 +389,8 @@ app.get("/productSizeVariant/:id", async (req, res) => {
 
   try {
     const cevap = await pool.query(
-      `select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.productsizesid = product_size_variants.productsizeid inner join variants on variants.id=product_size_variants.variantid where productsizeid=${id}`
+      `select * from product_size_variants psv inner join variants v on psv.variantid = v.id where psv.productsizesid =${id} order by sizevariantid`
+      // `select * from menu inner join product_sizes on menu.id = product_sizes.menutableid  inner join product_size_variants on product_sizes.productsizesid = product_size_variants.productsizesid inner join variants on variants.id=product_size_variants.variantid where productsizesid=${id}`
     );
     res.json(cevap.rows);
   } catch (error) {
@@ -405,7 +408,7 @@ app.delete("/productSizeVariant/:id", async (req, res) => {
       `delete from product_size_variants where sizevariantid=${id}`
     );
 
-    res.json(cevap.rows);
+    res.json(cevap);
   } catch (error) {
     res.sendStatus(500);
   }
@@ -560,7 +563,7 @@ app.get("/productSizeVariantGroup/:id", async (req, res) => {
 
   try {
     const cevap = await pool.query(
-      `select * from product_size_variant_groups inner join product_sizes on product_sizes.productsizesid=product_size_variant_groups.productsizeid inner join variant_group on variant_group.variantgroupid=product_size_variant_groups.variantgroupid where product_size_variant_groups.productsizeid = ${id}`
+      `select * from product_size_variant_groups inner join product_sizes on product_sizes.productsizesid=product_size_variant_groups.productsizesid inner join variant_group on variant_group.variantgroupid=product_size_variant_groups.variantgroupid where product_size_variant_groups.productsizesid = ${id}`
     );
 
     res.json(cevap.rows);
@@ -649,7 +652,11 @@ const getUpdateQuery = (obj) => {
   let query = "";
 
   for (const key in obj) {
-    query += key + "='" + obj[key] + "',";
+    if (obj[key] === null) {
+      query += key + "=" + obj[key] + ",";
+    } else {
+      query += key + "='" + obj[key] + "',";
+    }
   }
 
   query = query.substring(0, query.length - 1);

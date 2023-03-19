@@ -114,9 +114,8 @@ export default function CreateOrder(props) {
   };
 
   const getSV = (size) => {
-    console.log(size);
     props
-      .getSizeVariantById(size.productsizesid)
+      .getSizeVariantById(size)
       .then((resp) => resp.json())
       .then((data) => {
         let newData = [];
@@ -475,6 +474,7 @@ export default function CreateOrder(props) {
                     <div key={size.productsizesid}>
                       <ListItem
                         onClick={() => {
+                          // console.log(size);
                           setSelectedSizeForCart(size);
                           getSV(size);
                           setOpenSecond(true);

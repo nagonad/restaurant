@@ -19,18 +19,372 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Delete from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import {
+  Divider,
+  Dialog,
+  AppBar,
+  Toolbar,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import Slide from "@mui/material/Slide";
 
 import * as React from "react";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+function RenderDialog(props) {
+  const [selectedProductSizes, setSelectedProductSizes] = React.useState();
+
+  const getSelectedProductSizes = () => {
+    if (props.product) {
+      props
+        .getSelectedProduct(props.product)
+        .then((resp) => resp.json())
+        .then((data) => {
+          setSelectedProductSizes(data);
+        });
+    }
+  };
+
+  const handleChangeSize = (e, size) => {
+    let obj = {};
+    if (e.target.name === "selected") {
+      obj[e.target.name] = e.target.checked;
+    } else if (e.target.name === "unitprice") {
+      obj[e.target.name] = e.target.value;
+    }
+
+    if (!e.target.value) {
+      obj[e.target.name] = null;
+    }
+
+    props.updateProductSize(obj, size).then(() => {
+      getSelectedProductSizes();
+      props.getProductSizes();
+    });
+  };
+
+  React.useEffect(() => {
+    getSelectedProductSizes();
+  }, [props.product]);
+
+  return (
+    <Dialog
+      fullScreen
+      open={props.dialogOpen}
+      onClose={() => {}}
+      TransitionComponent={Transition}
+    >
+      <AppBar sx={{ position: "relative" }}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => {
+              props.setDialogOpen(false);
+            }}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            {props.row.productid} - {props.row.productname}
+          </Typography>
+          <Button
+            autoFocus
+            color="inherit"
+            onClick={() => {
+              props.setDialogOpen(false);
+            }}
+          >
+            save
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <TableContainer
+        sx={{ maxWidth: "600px", margin: "1rem" }}
+        component={Paper}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Product Size</TableCell>
+              <TableCell>Size Price</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selectedProductSizes &&
+              selectedProductSizes.map((size) => (
+                <TableRow key={size.productsizesid}>
+                  <TableCell>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          name={"selected"}
+                          checked={size.selected}
+                          onChange={(e) => {
+                            handleChangeSize(e, size);
+                          }}
+                        />
+                      }
+                      label={size.sizename}
+                    ></FormControlLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      name={"unitprice"}
+                      InputLabelProps={{ shrink: true }}
+                      type={"number"}
+                      label="Price"
+                      variant="outlined"
+                      value={size.unitprice || ""}
+                      onChange={(e) => {
+                        handleChangeSize(e, size);
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Dialog>
+  );
+}
+
+function RenderDialogSecond(props) {
+  const [sizeVariants, setSizeVariants] = React.useState();
+
+  const freshSizeVariantById = () => {
+    props
+      .getSizeVariantById(props.selectedProductSize)
+      .then((resp) => resp.json())
+      .then((data) => {
+        setSizeVariants(data);
+      });
+  };
+
+  const deleteVariantFromSize = (variant) => {
+    props.deleteSizeVariant(variant).then(() => freshSizeVariantById());
+  };
+
+  const addVariantToSize = (variant) => {
+    props.saveSizeVariant(variant, props.selectedProductSize).then(() => {
+      freshSizeVariantById();
+    });
+  };
+
+  React.useEffect(() => {
+    freshSizeVariantById();
+  }, []);
+
+  return (
+    <Dialog
+      fullScreen
+      open={props.dialogOpenSecond}
+      onClose={() => {
+        props.setDialogOpenSecond(false);
+      }}
+      TransitionComponent={Transition}
+    >
+      <AppBar sx={{ position: "relative" }}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => {
+              props.setDialogOpenSecond(false);
+            }}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Sound
+          </Typography>
+          <Button
+            autoFocus
+            color="inherit"
+            onClick={() => {
+              props.setDialogOpenSecond(false);
+            }}
+          >
+            save
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+        <Paper
+          sx={{
+            margin: "1rem",
+            width: "100%",
+            maxWidth: 360,
+          }}
+        >
+          <List sx={{ overflow: "auto", maxHeight: 360 }}>
+            {sizeVariants &&
+              sizeVariants.map((variant) => (
+                <React.Fragment key={variant.sizevariantid}>
+                  <ListItem
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Box>
+                      {variant.variantname}
+                      {variant.price ? "(" + variant.price + "€" + ")" : null}
+                    </Box>
+                    <Delete
+                      onClick={() => {
+                        deleteVariantFromSize(variant);
+                      }}
+                    ></Delete>
+                  </ListItem>
+                  <Divider></Divider>
+                </React.Fragment>
+              ))}
+          </List>
+        </Paper>
+        <Paper
+          sx={{
+            margin: "1rem",
+            width: "100%",
+            maxWidth: 360,
+            height: 360,
+          }}
+        >
+          {props.variants.map((variant) => (
+            <React.Fragment key={variant.id}>
+              <ListItem>
+                <ArrowBackIcon
+                  onClick={() => {
+                    addVariantToSize(variant);
+                  }}
+                ></ArrowBackIcon>
+                {variant.variantname}
+                {variant.price ? "(" + variant.price + "€" + ")" : null}
+              </ListItem>
+              <Divider></Divider>
+            </React.Fragment>
+          ))}
+        </Paper>
+      </Box>
+    </Dialog>
+  );
+}
+
+function RenderDialogThird(props) {
+  return (
+    <Dialog
+      fullScreen
+      open={props.dialogOpenThird}
+      onClose={() => {
+        props.setDialogOpenThird(false);
+      }}
+      TransitionComponent={Transition}
+    >
+      <AppBar sx={{ position: "relative" }}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => {
+              props.setDialogOpenThird(false);
+            }}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Sound
+          </Typography>
+          <Button
+            autoFocus
+            color="inherit"
+            onClick={() => {
+              props.setDialogOpenThird(false);
+            }}
+          >
+            save
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <List>
+        <ListItem button>
+          <ListItemText primary="Phone ringtone" secondary="Titania" />
+        </ListItem>
+        <Divider />
+        <ListItem button>
+          <ListItemText
+            primary="Default notification ringtone"
+            secondary="Tethys"
+          />
+        </ListItem>
+      </List>
+    </Dialog>
+  );
+}
 
 function Row(props) {
   const { row } = props;
 
-  const filteredProductSizes = props.filterProductSizes(row.id);
+  const [filteredProductSizes, setFilteredProductSizes] = React.useState(
+    props.filterProductSizes(row.id)
+  );
+
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialogOpenSecond, setDialogOpenSecond] = React.useState(false);
+  const [dialogOpenThird, setDialogOpenThird] = React.useState(false);
+
+  const [selectedProductSize, setSelectedProductSize] = React.useState();
 
   const [open, setOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    setFilteredProductSizes(
+      props.filterProductSizes(row.id).sort((a, b) => {
+        return a.productsizesid - b.productsizesid;
+      })
+    );
+  }, [props.productSizes]);
+
   return (
     <React.Fragment>
+      {dialogOpen && (
+        <RenderDialog
+          getSelectedProduct={props.getSelectedProduct}
+          product={props.product}
+          dialogOpen={dialogOpen}
+          setDialogOpen={setDialogOpen}
+          setFilteredProductSizes={setFilteredProductSizes}
+          row={row}
+          {...props}
+        ></RenderDialog>
+      )}
+      {dialogOpenSecond && (
+        <RenderDialogSecond
+          dialogOpenSecond={dialogOpenSecond}
+          setDialogOpenSecond={setDialogOpenSecond}
+          selectedProductSize={selectedProductSize}
+          row={row}
+          {...props}
+        ></RenderDialogSecond>
+      )}
+      {dialogOpenThird && (
+        <RenderDialogThird
+          dialogOpenThird={dialogOpenThird}
+          setDialogOpenThird={setDialogOpenThird}
+        ></RenderDialogThird>
+      )}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton
@@ -64,53 +418,64 @@ function Row(props) {
           </IconButton>
         </TableCell>
       </TableRow>
-      {/* <TableRow sx={{ backgroundColor: "#e7ebf0" }}>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+      <TableRow sx={{ backgroundColor: "#e7ebf0" }}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              {row.delivery === "1" ? (
-                <Typography variant="h6" gutterBottom component="div">
-                  {row.costumername}, {row.costumeraddress}, {row.phonenumber}
-                </Typography>
-              ) : null}
+              <Box>
+                <Button
+                  onClick={() => {
+                    setDialogOpen(true);
+                    props.setProduct(row);
+                  }}
+                  variant="outlined"
+                  size="small"
+                >
+                  Edit Sizes
+                </Button>
+                <Button></Button>
+              </Box>
+              <Divider></Divider>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
                     <TableCell>#</TableCell>
-                    <TableCell>Quantity</TableCell>
-                    <TableCell>Product Name</TableCell>
-                    <TableCell align="right">Product Size</TableCell>
-                    <TableCell align="right">Product Price</TableCell>
-                    <TableCell align="right">Variants</TableCell>
-                    <TableCell align="right">Variants Price</TableCell>
-                    <TableCell align="right">Total price</TableCell>
+                    <TableCell>Size Name</TableCell>
+                    <TableCell>Size Price</TableCell>
+                    <TableCell align="right">#</TableCell>
+                    <TableCell align="right">#</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {cart.map((cartItem) => (
-                    <TableRow key={cartItem.orderNumber}>
-                      <TableCell component="th" scope="row">
-                        {cartItem.orderNumber}
-                      </TableCell>
-                      <TableCell>{cartItem.quantity}</TableCell>
-                      <TableCell>{cartItem.product.productname}</TableCell>
-
-                      <TableCell align="right">
-                        {cartItem.size.sizename}
+                  {filteredProductSizes.map((size) => (
+                    <TableRow key={size.productsizesid}>
+                      <TableCell component="th" scope="row"></TableCell>
+                      <TableCell>{size.sizename}</TableCell>
+                      <TableCell>
+                        {size.unitprice && size.unitprice + "€"}
                       </TableCell>
                       <TableCell align="right">
-                        {cartItem.size.unitprice}
+                        <Button
+                          onClick={() => {
+                            setSelectedProductSize(size);
+                            setDialogOpenSecond(true);
+                          }}
+                          variant="outlined"
+                          size="small"
+                        >
+                          Add Variant
+                        </Button>
                       </TableCell>
                       <TableCell align="right">
-                        {renderVariants(cartItem)}
-                      </TableCell>
-                      <TableCell align="right">
-                        {cartItem.cartItemVariantsCost
-                          ? cartItem.cartItemVariantsCost.toFixed(2)
-                          : null}
-                      </TableCell>
-                      <TableCell align="right">
-                        {cartItem.cartItemTotalCost.toFixed(2)}
+                        <Button
+                          onClick={() => {
+                            setDialogOpenThird(true);
+                          }}
+                          variant="outlined"
+                          size="small"
+                        >
+                          Add Variant Group
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -119,7 +484,7 @@ function Row(props) {
             </Box>
           </Collapse>
         </TableCell>
-      </TableRow> */}
+      </TableRow>
     </React.Fragment>
   );
 }
@@ -128,6 +493,8 @@ export default function MenuControl(props) {
   const [products, setProducts] = React.useState();
 
   const [productSizes, setProductSizes] = React.useState();
+
+  const [product, setProduct] = React.useState();
 
   const filterProductSizes = (productid) => {
     const cevap = productSizes.filter((c) => c.menutableid === productid);
@@ -162,36 +529,45 @@ export default function MenuControl(props) {
   }, []);
 
   return (
-    <TableContainer
-      sx={{ width: "80%", marginLeft: "auto", marginRight: "auto" }}
-      component={Paper}
-    >
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>Product Id</TableCell>
-            <TableCell>Product Name</TableCell>
-            <TableCell>Category Name</TableCell>
-            <TableCell>Product Sizes</TableCell>
-            <TableCell align="right">#</TableCell>
-            <TableCell align="right">#</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {products && productSizes
-            ? products.map((row) => (
-                <Row
-                  key={row.id}
-                  row={row}
-                  filterProductSizes={filterProductSizes}
-                  deleteProduct={deleteProduct}
-                />
-              ))
-            : null}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer
+        sx={{ width: "80%", marginLeft: "auto", marginRight: "auto" }}
+        component={Paper}
+      >
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>Product Id</TableCell>
+              <TableCell>Product Name</TableCell>
+              <TableCell>Category Name</TableCell>
+              <TableCell>Product Sizes</TableCell>
+              <TableCell align="right">#</TableCell>
+              <TableCell align="right">#</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {products && productSizes
+              ? products.map((row) => (
+                  <Row
+                    key={row.id}
+                    row={row}
+                    productSizes={productSizes}
+                    getProductSizes={getProductSizes}
+                    updateProductSize={props.updateProductSize}
+                    getSelectedProduct={props.getSelectedProduct}
+                    product={product}
+                    filterProductSizes={filterProductSizes}
+                    deleteProduct={deleteProduct}
+                    setProduct={setProduct}
+                    {...props}
+                  />
+                ))
+              : null}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }
 

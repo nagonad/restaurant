@@ -129,52 +129,20 @@ export default class App extends Component {
       });
   };
 
-  updateProductSize = (e, bodyJson) => {
+  updateProductSize = (body, size) => {
     let url = "http://localhost:5000/product_sizes/";
 
-    url += bodyJson.id;
+    url += size.productsizesid;
 
-    let query = `selected=${e.target.checked}, unitprice=null`;
-
-    fetch(url, {
+    const cevap = fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query: query }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return data;
-      });
-  };
+      body: JSON.stringify(body),
+    });
 
-  updateProductSizeUnitPrice = (e, size) => {
-    let url = "http://localhost:5000/product_sizes/";
-
-    url += size.id;
-
-    let query = "";
-
-    let price = parseFloat(e.target.value).toFixed(2);
-
-    if (!e.target.value || parseFloat(e.target.value) === 0) {
-      query = `unitprice=null`;
-    } else {
-      query = `unitprice=${price}`;
-    }
-
-    fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query: query }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return data;
-      });
+    return cevap;
   };
 
   deleteVariant = (variant) => {
@@ -227,21 +195,23 @@ export default class App extends Component {
       .then((data) => this.getVariants());
   };
 
-  saveSizeVariant = (variantid, size) => {
+  saveSizeVariant = (variant, size) => {
     let obj = {};
 
-    obj.variantid = variantid;
-    obj.productsizeid = size.id;
+    obj.variantid = variant.id;
+    obj.productsizesid = size.productsizesid;
 
     let url = "http://localhost:5000/productSizeVariant";
 
-    fetch(url, {
+    const cevap = fetch(url, {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(obj),
     });
+
+    return cevap;
   };
 
   saveSizeVariantNewTry = (obj) => {
@@ -258,37 +228,37 @@ export default class App extends Component {
     return cevap;
   };
 
-  getSizeVariant = () => {
+  // getSizeVariant = () => {
+  //   let url = "http://localhost:5000/productSizeVariant/";
+
+  //   fetch(url)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //       this.setState({ sizeVariant: data });
+  //     });
+  // };
+
+  getSizeVariantById = (size) => {
     let url = "http://localhost:5000/productSizeVariant/";
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log(data);
-        this.setState({ sizeVariant: data });
-      });
-  };
-
-  getSizeVariantById = (id) => {
-    let url = "http://localhost:5000/productSizeVariant/";
-
-    url += id;
+    url += size.productsizesid;
 
     const cevap = fetch(url);
 
     return cevap;
   };
 
-  deleteSizeVariant = (id) => {
+  deleteSizeVariant = (variant) => {
     let url = "http://localhost:5000/productSizeVariant/";
 
-    url += id;
+    url += variant.sizevariantid;
 
-    fetch(url, {
+    const cevap = fetch(url, {
       method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then((data) => {});
+    });
+
+    return cevap;
   };
 
   deleteSizeVariantNewTry = (psvgelement) => {
@@ -639,7 +609,7 @@ export default class App extends Component {
     this.getCategories();
     this.getSize();
     this.getVariants();
-    this.getSizeVariant();
+    // this.getSizeVariant();
     document.body.style = "background: #F7F8FA;";
   }
 
