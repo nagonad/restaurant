@@ -22,7 +22,7 @@ export default class App extends Component {
     cart: [],
     categories: [],
     sizes: [],
-    variants: {},
+    variants: [],
     sizeVariant: [],
     sideBarOpen: false,
     categorizedProducts: [],
@@ -150,13 +150,11 @@ export default class App extends Component {
 
     url += variant.id;
 
-    fetch(url, {
+    const cevap = fetch(url, {
       method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        this.getVariants();
-      });
+    });
+
+    return cevap;
   };
 
   saveVariant = (bodyJson) => {
@@ -816,6 +814,7 @@ export default class App extends Component {
             path="/variantControl"
             element={
               <VariantControl
+                getVariants={this.getVariants}
                 variants={this.state.variants}
                 saveVariant={this.saveVariant}
                 deleteVariant={this.deleteVariant}

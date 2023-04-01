@@ -1,89 +1,125 @@
-import React, { useState } from "react";
-
+import * as React from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Delete from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
 import {
-  Container,
-  Row,
-  Col,
-  Form,
-  FormGroup,
-  Label,
-  Input,
+  IconButton,
+  Dialog,
+  AppBar,
+  Toolbar,
+  Typography,
   Button,
-} from "reactstrap";
-import { RxPencil1, RxCrossCircled, RxPlusCircled } from "react-icons/rx";
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+} from "@mui/material";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function VariantControl(props) {
-  const [variant, setVariant] = useState({});
+  const [dialogOpen, setDialogOpen] = React.useState(false);
 
-  const [editName, setEditName] = useState();
-
-  const [editPrice, setEditPrice] = useState();
-
-  const [selectedVariantController, setSelectedVariantController] = useState();
-
-  const handleChange = (e) => {
-    let obj = variant;
-
-    if (e.target.value) {
-      if (e.target.type === "number") {
-        obj[e.target.name] = parseFloat(e.target.value).toFixed(2);
-      } else {
-        obj[e.target.name] = e.target.value;
-      }
-    } else {
-      delete obj[e.target.name];
-    }
-
-    setVariant(obj);
+  const deleteV = (variant) => {
+    props.deleteVariant(variant).then(() => props.getVariants());
   };
-
-  const handleChangeEdit = (e) => {
-    if (e.target.name === "variantname") {
-      setEditName(e.target.value);
-    }
-    if (e.target.name === "price") {
-      setEditPrice(e.target.value);
-    }
-  };
-
-  const changeSelectedVariantController = (variant) => {
-    setSelectedVariantController(variant);
-    setEditName(variant.variantname);
-    setEditPrice(variant.price);
-  };
-
-  const editVariant = () => {
-    let obj = {};
-
-    if (editName !== selectedVariantController.variantname) {
-      obj["variantname"] = editName;
-    }
-    if (editPrice !== selectedVariantController.price) {
-      if (editPrice === "") {
-        obj["price"] = null;
-      } else {
-        obj["price"] = parseFloat(editPrice).toFixed(2);
-      }
-    }
-    if (obj.variantname === "") {
-      alert("Variant ismi girmeniz gerekiyor");
-    } else {
-      props.updateVariant(selectedVariantController, obj);
-      setSelectedVariantController();
-    }
-  };
-
-  const saveVariant = () => {
-    if (variant.variantname) {
-      props.saveVariant(variant);
-    } else {
-      alert("Variant ismi girmeniz gerekiyor");
-    }
-  };
-
   return (
     <>
-      <Container style={{ display: "flex" }}>
+      <TableContainer
+        component={Paper}
+        sx={{ width: "60%", margin: "0 0 1rem 1rem" }}
+      >
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>Variant Name</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell align="right">#</TableCell>
+              <TableCell align="right">#</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {props.variants &&
+              props.variants.map((variant) => (
+                <TableRow
+                  key={variant.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    #
+                  </TableCell>
+                  <TableCell> {variant.variantname}</TableCell>
+
+                  <TableCell>{variant.price}</TableCell>
+                  <TableCell align="right">
+                    <IconButton aria-label="expand row" size="small">
+                      <EditIcon></EditIcon>
+                    </IconButton>
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      aria-label="expand row"
+                      size="small"
+                      onClick={() => deleteV(variant)}
+                    >
+                      <Delete></Delete>
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Dialog
+        fullScreen
+        open={dialogOpen}
+        onClose={() => {
+          console.log("dialog kapandi");
+        }}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: "relative" }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={() => {}}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              Sound
+            </Typography>
+            <Button autoFocus color="inherit" onClick={() => {}}>
+              save
+            </Button>
+          </Toolbar>
+        </AppBar>
+        <List>
+          <ListItem button>
+            <ListItemText primary="Phone ringtone" secondary="Titania" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText
+              primary="Default notification ringtone"
+              secondary="Tethys"
+            />
+          </ListItem>
+        </List>
+      </Dialog>
+      {/* <Container style={{ display: "flex" }}>
         <Container style={{ width: "50%" }}>
           <Form>
             {props.variants.length > 0 ? (
@@ -175,7 +211,7 @@ export default function VariantControl(props) {
             </>
           )}
         </Form>
-      </Container>
+      </Container> */}
     </>
   );
 }

@@ -665,10 +665,7 @@ export default function MenuControl(props) {
 
   return (
     <>
-      <TableContainer
-        sx={{ width: "80%", marginLeft: "auto", marginRight: "auto" }}
-        component={Paper}
-      >
+      <TableContainer sx={{ width: "80%", margin: "0 auto" }} component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
