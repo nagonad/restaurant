@@ -166,7 +166,7 @@ export default class App extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(bodyJson),
-    }).then((data) => {
+    }).then(() => {
       this.getVariants();
     });
   };

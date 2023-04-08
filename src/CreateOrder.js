@@ -160,7 +160,10 @@ export default function CreateOrder(props) {
 
     variants.forEach((variant) => {
       if (variant.orderSelected) {
-        cost += parseFloat(variant.price);
+        if (variant.price) {
+          cost += parseFloat(variant.price);
+        }
+
         cartObjVariants.push(variant);
       }
     });
@@ -174,6 +177,8 @@ export default function CreateOrder(props) {
     cartObj.cartItemVariantsCost = cost;
 
     let newCart = cart;
+
+    console.log(newCart);
 
     newCart.push(cartObj);
 
@@ -651,9 +656,7 @@ export default function CreateOrder(props) {
             <Grid item xs={12} md={4}>
               <ListItem xs={4}>
                 <FormControl sx={{ width: 300 }}>
-                  <InputLabel id="demo-simple-select-label">
-                    Lieferung oder Abholung
-                  </InputLabel>
+                  <InputLabel>Lieferung oder Abholung</InputLabel>
                   <Select
                     label="Lieferung oder Abholung"
                     value={delivery || ""}
@@ -669,9 +672,7 @@ export default function CreateOrder(props) {
               <Grid item xs={12} md={4}>
                 <ListItem xs={4}>
                   <FormControl sx={{ width: 300 }}>
-                    <InputLabel id="demo-simple-select-label">
-                      Lieferung Kosten
-                    </InputLabel>
+                    <InputLabel>Lieferung Kosten</InputLabel>
                     <Select
                       startAdornment={
                         <InputAdornment position="start">€</InputAdornment>

@@ -123,7 +123,7 @@ function Row(props) {
                           : null}
                       </TableCell>
                       <TableCell align="right">
-                        {cartItem.cartItemTotalCost.toFixed(2)}
+                        {cartItem.cartItemTotalCost?.toFixed(2)}
                       </TableCell>
                     </TableRow>
                   ))}
