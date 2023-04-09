@@ -60,12 +60,12 @@ export default function Navi(props) {
             <ListItemText primary={"Variant Group Control"}></ListItemText>
           </ListItemButton>
         </ListItem>
-        <Divider />
+        {/* <Divider />
         <ListItem component={Link} to={"/VariantGroupCostumize"} disablePadding>
           <ListItemButton>
             <ListItemText primary={"Variant Group Costumize"}></ListItemText>
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
       </List>
       <Divider />
     </Box>

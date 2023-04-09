@@ -20,13 +20,18 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Delete from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { TextField } from "@mui/material";
+import { TextField, Box } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 function RenderDialog(props) {
+  const [variantGroupVariants, setVariantGroupVariants] = React.useState();
+
+  const [availibleVariants, setAvailibleVariants] = React.useState();
+
   const handleChange = (e) => {
     props.setUpdatedVariantGroup({ [e.target.name]: e.target.value });
   };
@@ -49,9 +54,54 @@ function RenderDialog(props) {
     }
   };
 
+  const deleteVGV = (variantGroupVariant) => {
+    props.deleteVariantGroupVariant(variantGroupVariant).then(() => getVGV());
+  };
+
+  const getVGV = () => {
+    props
+      .getVariantGroup(props.selectedVariantGroup)
+      .then((resp) => resp.json())
+      .then((data) => {
+        setVariantGroupVariants(data);
+      });
+  };
+
+  const saveVGV = (variant) => {
+    props
+      .saveVariantGroupVariant(props.selectedVariantGroup, variant)
+      .then(() => getVGV());
+  };
+
+  React.useEffect(() => {
+    let searchArr = [];
+
+    if (variantGroupVariants) {
+      variantGroupVariants.forEach((variantGroupVariant) => {
+        searchArr.push(variantGroupVariant.variantid);
+      });
+      let availibleVariants = props.variants.filter(
+        (c) => !searchArr.includes(c.id)
+      );
+
+      setAvailibleVariants(availibleVariants);
+    }
+  }, [variantGroupVariants]);
+
+  React.useEffect(() => {
+    getVGV();
+  }, [props.selectedVariantGroup]);
+
   return (
     <>
-      <Dialog fullScreen open={props.open} TransitionComponent={Transition}>
+      <Dialog
+        fullScreen
+        onClose={() => {
+          props.setSelectedVariantGroup();
+        }}
+        open={props.open}
+        TransitionComponent={Transition}
+      >
         <AppBar sx={{ position: "relative" }}>
           <Toolbar>
             <IconButton
@@ -84,6 +134,64 @@ function RenderDialog(props) {
           </ListItem>
           <Divider></Divider>
         </List>
+        <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+          <Paper
+            sx={{
+              margin: "1rem",
+              width: "100%",
+              maxWidth: 360,
+            }}
+          >
+            <List sx={{ overflow: "auto", height: 360 }}>
+              {variantGroupVariants &&
+                variantGroupVariants.map((variantGroupVariant) => (
+                  <React.Fragment key={variantGroupVariant.vgvid}>
+                    <ListItem
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Box>
+                        {variantGroupVariant.variantname}
+                        {variantGroupVariant.price
+                          ? "(" + variantGroupVariant.price + "€" + ")"
+                          : null}
+                      </Box>
+                      <Delete
+                        onClick={() => {
+                          deleteVGV(variantGroupVariant);
+                        }}
+                      ></Delete>
+                    </ListItem>
+                    <Divider></Divider>
+                  </React.Fragment>
+                ))}
+            </List>
+          </Paper>
+          <Paper
+            sx={{
+              margin: "1rem",
+              width: "100%",
+              maxWidth: 360,
+            }}
+          >
+            <List sx={{ overflow: "auto", height: 360 }}>
+              {availibleVariants &&
+                availibleVariants.map((variant) => (
+                  <React.Fragment key={variant.id}>
+                    <ListItem>
+                      <ArrowBackIcon
+                        onClick={() => {
+                          saveVGV(variant);
+                        }}
+                      ></ArrowBackIcon>
+                      {variant.variantname}
+                      {variant.price ? "(" + variant.price + "€" + ")" : null}
+                    </ListItem>
+                    <Divider></Divider>
+                  </React.Fragment>
+                ))}
+            </List>
+          </Paper>
+        </Box>
       </Dialog>
     </>
   );
@@ -117,6 +225,7 @@ export default function VariantGroupControl(props) {
         <RenderDialog
           open={open}
           setOpen={setOpen}
+          setSelectedVariantGroup={setSelectedVariantGroup}
           selectedVariantGroup={selectedVariantGroup}
           updatedVariantGroup={updatedVariantGroup}
           setUpdatedVariantGroup={setUpdatedVariantGroup}

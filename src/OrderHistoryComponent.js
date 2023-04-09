@@ -60,7 +60,7 @@ function Row(props) {
           {row.delivery === "1" ? "Lieferung" : "Abholung"}
         </TableCell>
         <TableCell align="right">
-          {row.deliverycost ? parseFloat(row.deliverycost).toFixed(2) : ""}
+          {row.deliverycost ? parseFloat(row.deliverycost).toFixed(2) : null}
         </TableCell>
         <TableCell align="right">
           {parseFloat(row.totalcost).toFixed(2)}

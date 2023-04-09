@@ -827,10 +827,13 @@ export default class App extends Component {
             path="/VariantGroupControl"
             element={
               <VariantGroupControl
+                variants={this.state.variants}
                 saveVariantGroup={this.saveVariantGroup}
                 getVariantGroup={this.getVariantGroup}
                 deleteVariantGroup={this.deleteVariantGroup}
                 updateVariantGroup={this.updateVariantGroup}
+                deleteVariantGroupVariant={this.deleteVariantGroupVariant}
+                saveVariantGroupVariant={this.saveVariantGroupVariant}
               ></VariantGroupControl>
             }
           ></Route>
