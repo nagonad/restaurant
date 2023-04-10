@@ -1,19 +1,15 @@
 import Navi from "./Navi.js";
 
 import React, { Component } from "react";
-import { Container, Row } from "reactstrap";
 import Checkout from "./Checkout.js";
 import { Routes, Route } from "react-router-dom";
-
 import MenuControl from "./MenuControl";
 import "./App.css";
 import OrderHistoryComponent from "./OrderHistoryComponent.js";
 import MenuItemAdd from "./MenuItemAdd.js";
-import MenuList from "./MenuList";
 import SizeControl from "./SizeControl.js";
 import VariantControl from "./VariantControl.js";
 import VariantGroupControl from "./VariantGroupControl.js";
-import VariantGroupCostumize from "./VariantGroupCostumize.js";
 import CreateOrder from "./CreateOrder";
 
 export default class App extends Component {
@@ -23,7 +19,6 @@ export default class App extends Component {
     categories: [],
     sizes: [],
     variants: [],
-    sizeVariant: [],
     sideBarOpen: false,
     categorizedProducts: [],
   };
@@ -225,17 +220,6 @@ export default class App extends Component {
 
     return cevap;
   };
-
-  // getSizeVariant = () => {
-  //   let url = "http://localhost:5000/productSizeVariant/";
-
-  //   fetch(url)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       this.setState({ sizeVariant: data });
-  //     });
-  // };
 
   getSizeVariantById = (size) => {
     let url = "http://localhost:5000/productSizeVariant/";
@@ -440,74 +424,6 @@ export default class App extends Component {
       });
   };
 
-  updateProduct = (updatedProduct, productInfo) => {
-    let query = "";
-    if (updatedProduct.unitprice) {
-      updatedProduct.unitprice = updatedProduct.unitprice.replace(/,/g, ".");
-      updatedProduct.unitprice = parseFloat(updatedProduct.unitprice).toFixed(
-        2
-      );
-    }
-
-    if (updatedProduct.categoryid) {
-      let categories = this.state.categories;
-
-      categories.forEach((category) => {
-        if (category.categoryname === updatedProduct.categoryid) {
-          updatedProduct.categoryid = category.id;
-        }
-      });
-    }
-
-    if (updatedProduct.productid) {
-      updatedProduct.productid = parseInt(updatedProduct.productid);
-    }
-
-    for (const property in updatedProduct) {
-      if (typeof updatedProduct[property] === "string") {
-        updatedProduct[property] = "'" + updatedProduct[property] + "'";
-      }
-
-      query += property + "=" + updatedProduct[property] + ", ";
-    }
-    query = query.trim();
-
-    if (query.charAt(query.length - 1) === ",") {
-      query = query.substring(0, query.length - 1);
-    }
-
-    let url = "http://localhost:5000/menu/";
-
-    url += productInfo.id;
-
-    fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ query: query }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        this.getProducts();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  handleChangeNew = (e) => {
-    let newUpdatedProduct = this.state.updatedProduct;
-
-    if (e.target.value) {
-      newUpdatedProduct[e.target.name] = e.target.value;
-    } else {
-      delete newUpdatedProduct[e.target.name];
-    }
-
-    this.setState({ updatedProduct: newUpdatedProduct });
-  };
-
   getOrderHistory = () => {
     let url = "http://localhost:5000/order_history";
 
@@ -539,24 +455,6 @@ export default class App extends Component {
     });
 
     return cevap;
-  };
-
-  changeMenuControlIsOpen = (menuItem) => {
-    let products = this.state.products;
-
-    let otherProducts = products.filter((c) => c.id !== menuItem.id);
-
-    otherProducts.map((product) => (product.isOpen = false));
-
-    let product = products.find((c) => c.id === menuItem.id);
-
-    if (product.isOpen === true) {
-      product.isOpen = false;
-    } else {
-      product.isOpen = true;
-    }
-
-    this.setState({ products: products });
   };
 
   getCategories = () => {
@@ -607,88 +505,9 @@ export default class App extends Component {
     this.getCategories();
     this.getSize();
     this.getVariants();
-    // this.getSizeVariant();
+
     document.body.style = "background: #F7F8FA;";
   }
-
-  // categorizeProducts = (products) => {
-  //   let categorizedProductList = [];
-
-  //   let controller;
-
-  //   for (let i = 0; i < products.length; i++) {
-  //     controller = false;
-  //     for (let k = 0; k < categorizedProductList.length; k++) {
-  //       if (products[i].productid === categorizedProductList[k].productId) {
-  //         if (products[i].productsize === "Klein") {
-  //           categorizedProductList[k].unitPrice.Klein = products[i].unitprice;
-  //         }
-  //         if (products[i].productsize === "Mittel") {
-  //           categorizedProductList[k].unitPrice.Mittel = products[i].unitprice;
-  //         }
-  //         if (products[i].productsize === "Groß") {
-  //           categorizedProductList[k].unitPrice.Groß = products[i].unitprice;
-  //         }
-  //         if (products[i].productsize === "Grand") {
-  //           categorizedProductList[k].unitPrice.Grand = products[i].unitprice;
-  //         }
-  //         controller = true;
-  //       }
-  //     }
-
-  //     if (controller === false) {
-  //       categorizedProductList[categorizedProductList.length] = {
-  //         id: null,
-  //         productName: null,
-  //         productId: null,
-  //         categoryId: null,
-  //         productDescription: null,
-  //         unitPrice: {
-  //           Klein: null,
-  //           Mittel: null,
-  //           Groß: null,
-  //           Grand: null,
-  //         },
-  //       };
-
-  //       categorizedProductList[categorizedProductList.length - 1].productId =
-  //         products[i].productid;
-
-  //       categorizedProductList[categorizedProductList.length - 1].id =
-  //         products[i].id;
-  //       categorizedProductList[categorizedProductList.length - 1].categoryId =
-  //         products[i].categoryid;
-  //       categorizedProductList[categorizedProductList.length - 1].productName =
-  //         products[i].productname;
-  //       categorizedProductList[
-  //         categorizedProductList.length - 1
-  //       ].productDescription = products[i].productdescription;
-
-  //       if (products[i].productsize === "Klein") {
-  //         categorizedProductList[
-  //           categorizedProductList.length - 1
-  //         ].unitPrice.Klein = products[i].unitprice;
-  //       }
-  //       if (products[i].productsize === "Mittel") {
-  //         categorizedProductList[
-  //           categorizedProductList.length - 1
-  //         ].unitPrice.Mittel = products[i].unitprice;
-  //       }
-  //       if (products[i].productsize === "Groß") {
-  //         categorizedProductList[
-  //           categorizedProductList.length - 1
-  //         ].unitPrice.Groß = products[i].unitprice;
-  //       }
-  //       if (products[i].productsize === "Grand") {
-  //         categorizedProductList[
-  //           categorizedProductList.length - 1
-  //         ].unitPrice.Grand = products[i].unitprice;
-  //       }
-  //     }
-  //   }
-
-  //   this.setState({ catProducts: categorizedProductList });
-  // };
 
   render() {
     return (
@@ -760,18 +579,10 @@ export default class App extends Component {
               <MenuControl
                 getProductSizes={this.getProductSizes}
                 getProductsWithCategories={this.getProductsWithCategories}
-                changeMenuControlIsOpen={this.changeMenuControlIsOpen}
-                products={this.state.products}
                 deleteProduct={this.deleteProduct}
-                categories={this.state.categories}
-                productSizes={this.state.productSizes}
-                updateProduct={this.updateProduct}
-                updatedProduct={this.state.updatedProduct}
-                handleChangeNew={this.handleChangeNew}
-                sizes={this.state.sizes}
+                // sizes={this.state.sizes}
                 getSelectedProduct={this.getSelectedProduct}
                 updateProductSize={this.updateProductSize}
-                updateProductSizeUnitPrice={this.updateProductSizeUnitPrice}
                 variants={this.state.variants}
                 saveSizeVariant={this.saveSizeVariant}
                 getSizeVariantById={this.getSizeVariantById}
@@ -835,18 +646,6 @@ export default class App extends Component {
                 deleteVariantGroupVariant={this.deleteVariantGroupVariant}
                 saveVariantGroupVariant={this.saveVariantGroupVariant}
               ></VariantGroupControl>
-            }
-          ></Route>
-          <Route
-            exact
-            path="/variantGroupCostumize"
-            element={
-              <VariantGroupCostumize
-                getVariantGroup={this.getVariantGroup}
-                variants={this.state.variants}
-                saveVariantGroupVariant={this.saveVariantGroupVariant}
-                deleteVariantGroupVariant={this.deleteVariantGroupVariant}
-              ></VariantGroupCostumize>
             }
           ></Route>
         </Routes>

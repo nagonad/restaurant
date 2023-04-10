@@ -178,8 +178,6 @@ export default function CreateOrder(props) {
 
     let newCart = cart;
 
-    console.log(newCart);
-
     newCart.push(cartObj);
 
     setCart(newCart);

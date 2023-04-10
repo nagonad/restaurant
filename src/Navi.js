@@ -9,7 +9,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import { Link } from "react-router-dom";
-import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+import Icon from "@mui/material/Icon";
+import Logo from "./logo2.png";
 
 import CreateOrderAppBar from "./CreateOrderAppBar";
 
@@ -24,9 +25,11 @@ export default function Navi(props) {
       <List>
         <ListItem component={Link} to={"/"} disablePadding>
           <ListItemButton>
-            {/* <ListItemIcon>
-              <InboxIcon />
-            </ListItemIcon> */}
+            <img src={Logo} alt="" width={180} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem component={Link} to={"/"} disablePadding>
+          <ListItemButton>
             <ListItemText primary={"Create Order"}></ListItemText>
           </ListItemButton>
         </ListItem>
