@@ -1,7 +1,7 @@
 import Navi from "./Navi.js";
 
 import React, { Component } from "react";
-import Checkout from "./Checkout.js";
+// import Checkout from "./Checkout.js";
 import { Routes, Route } from "react-router-dom";
 import MenuControl from "./MenuControl";
 import "./App.css";
@@ -539,29 +539,7 @@ export default class App extends Component {
               />
             }
           ></Route>
-          <Route
-            exact
-            path="/checkout"
-            element={
-              <Checkout
-                changeAddress={this.changeAddress}
-                changeCostumerName={this.changeCostumerName}
-                changePhoneNumber={this.changePhoneNumber}
-                changePhoneNumberValue={this.changePhoneNumberValue}
-                phoneNumberValue={this.state.phoneNumberValue}
-                changeCostumerInfo={this.changeCostumerInfo}
-                costumerInfo={this.state.costumerInfo}
-                locations={this.state.locations}
-                changeDeliveryTarget={this.changeDeliveryTarget}
-                changeCheckoutInformation={this.changeCheckoutInformation}
-                checkoutInformation={this.state.checkoutInformation}
-                removeFromCart={this.removeFromCart}
-                handleSelect={this.handleSelect}
-                cart={this.state.cart}
-                changeExtraProductCost={this.changeExtraProductCost}
-              />
-            }
-          ></Route>
+
           <Route
             exact
             path="/orderHistory"

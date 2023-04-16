@@ -5,16 +5,16 @@ import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import { Link } from "react-router-dom";
-import Icon from "@mui/material/Icon";
 import Logo from "./logo2.png";
+import Collapse from "@mui/material/Collapse";
 
 import CreateOrderAppBar from "./CreateOrderAppBar";
 
 export default function Navi(props) {
+  const [open, setOpen] = React.useState(false);
+
   const list = () => (
     <Box
       sx={{ width: 250 }}
@@ -45,6 +45,14 @@ export default function Navi(props) {
             <ListItemText primary={"Menu Control"}></ListItemText>
           </ListItemButton>
         </ListItem>
+        {/* <Collapse in={open} timeout="auto" unmountOnExit>
+          <ListItem component={Link} to={"/menuControl"} disablePadding>
+            <ListItemButton>
+              <ListItemText primary={"Menu Control"}></ListItemText>
+            </ListItemButton>
+          </ListItem>
+        </Collapse> */}
+
         <Divider />
         <ListItem component={Link} to={"/menuControl/itemAdd"} disablePadding>
           <ListItemButton>
@@ -63,12 +71,6 @@ export default function Navi(props) {
             <ListItemText primary={"Variant Group Control"}></ListItemText>
           </ListItemButton>
         </ListItem>
-        {/* <Divider />
-        <ListItem component={Link} to={"/VariantGroupCostumize"} disablePadding>
-          <ListItemButton>
-            <ListItemText primary={"Variant Group Costumize"}></ListItemText>
-          </ListItemButton>
-        </ListItem> */}
       </List>
       <Divider />
     </Box>

@@ -14,7 +14,6 @@ export default function MenuItemAdd(props) {
   const [categoryid, setCategoryId] = useState();
   const [productid, setProductId] = useState();
   const [productname, setProductName] = useState();
-  const [unitprice, setUnitPrice] = useState();
 
   const handleChange = (e) => {
     if (e.target.name === "categoryid") {
@@ -45,6 +44,9 @@ export default function MenuItemAdd(props) {
     bodyJson.productname = productname;
 
     props.saveProduct(bodyJson);
+
+    // setProductId(null);
+    setProductName(null);
   };
 
   return (
@@ -78,6 +80,7 @@ export default function MenuItemAdd(props) {
                 type="number"
                 name="productid"
                 id=""
+                value={productid || ""}
                 placeholder=" "
                 onChange={handleChange}
               />
@@ -93,6 +96,7 @@ export default function MenuItemAdd(props) {
                 type="text"
                 name="productname"
                 id=""
+                value={productname || ""}
                 onChange={handleChange}
               ></Input>
             </Col>

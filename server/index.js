@@ -354,9 +354,9 @@ app.put("/variantControl/:id", async (req, res) => {
 // post variants to product's sizes
 
 app.post("/productSizeVariant", async (req, res) => {
-  let keys = getKeys(req.body);
-
   let values = getValues(req.body);
+
+  let keys = "(" + Object.keys(req.body[0]).join(",") + ")";
 
   try {
     const cevap = await pool.query(
