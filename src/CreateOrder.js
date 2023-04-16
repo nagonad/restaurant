@@ -417,7 +417,7 @@ export default function CreateOrder(props) {
         minute: "numeric",
       });
 
-      // console.log(order);
+      console.log(cart);
 
       setFinalOrderOjb(order);
     }
@@ -486,7 +486,7 @@ export default function CreateOrder(props) {
                       >
                         <ListItemText
                           primary={size.sizename}
-                          secondary={size.unitprice}
+                          secondary={parseFloat(size.unitprice).toFixed(2)}
                         />
                       </ListItem>
                       <Divider />

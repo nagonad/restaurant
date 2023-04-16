@@ -55,7 +55,12 @@ const renderCart = (props) => {
                   ? cartItem.size.sizename
                   : null}
               </Box>
-              <Box sx={{ marginLeft: "auto" }}>{cartItem.size.unitprice}€</Box>
+              <Box sx={{ marginLeft: "auto" }}>
+                {parseFloat(
+                  cartItem.size.unitprice * cartItem.quantity
+                ).toFixed(2)}
+                €
+              </Box>
             </Box>
             {renderVariants(cartItem)}
           </Box>

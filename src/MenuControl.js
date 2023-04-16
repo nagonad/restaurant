@@ -64,7 +64,6 @@ function RenderDialog(props) {
 
     props.updateProductSize(obj, size).then(() => {
       getSelectedProductSizes();
-      // props.getProductSizes();
     });
   };
 
@@ -99,7 +98,6 @@ function RenderDialog(props) {
             color="inherit"
             onClick={() => {
               props.setDialogOpen(false);
-              props.getProductsWithCategorie();
             }}
           >
             save
@@ -484,7 +482,8 @@ function Row(props) {
           setDialogOpen={setDialogOpen}
           setFilteredProductSizes={setFilteredProductSizes}
           row={row}
-          {...props}
+          updateProductSize={props.updateProductSize}
+          getProductSizes={props.getProductSizes}
         ></RenderDialog>
       )}
       {dialogOpenSecond && (
@@ -647,7 +646,6 @@ export default function MenuControl(props) {
       .getProductSizes()
       .then((resp) => resp.json())
       .then((data) => {
-        // console.log(data);
         setProductSizes(data);
       });
   };
@@ -671,7 +669,10 @@ export default function MenuControl(props) {
 
   return (
     <>
-      <TableContainer sx={{ width: "80%", margin: "0 auto" }} component={Paper}>
+      <TableContainer
+        sx={{ width: "80%", margin: "0 auto 2rem auto" }}
+        component={Paper}
+      >
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
