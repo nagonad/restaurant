@@ -1,11 +1,11 @@
 const express = require("express");
 const app = express();
-// const cors = require("cors");
+const cors = require("cors");
 const path = require("path");
 
 const pool = require("./db");
 
-// app.use(cors());
+app.use(cors());
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../build")));
