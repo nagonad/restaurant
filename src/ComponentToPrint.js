@@ -28,7 +28,7 @@ const renderVariants = (cartItem) => {
       <Box sx={{ fontStyle: "italic" }}>{cartItem.variants ? str : null}</Box>
       {cartItem.cartItemVariantsCost ? (
         <Box sx={{ marginLeft: "auto" }}>
-          {cartItem.cartItemVariantsCost.toFixed(2)}€
+          {(cartItem.cartItemVariantsCost * cartItem.quantity).toFixed(2)}€
         </Box>
       ) : null}
     </Box>

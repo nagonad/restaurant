@@ -324,16 +324,18 @@ function RenderDialogThird(props) {
           .then((data) => {
             let arr = [];
 
-            data.forEach((datum) => {
-              let obj = {
-                variantgroupid: variantGroup.variantgroupid,
-                productsizesid: props.selectedProductSize.productsizesid,
-                variantid: datum.variantid,
-              };
-              arr.push(obj);
-            });
+            if (data.length > 0) {
+              data.forEach((datum) => {
+                let obj = {
+                  variantgroupid: variantGroup.variantgroupid,
+                  productsizesid: props.selectedProductSize.productsizesid,
+                  variantid: datum.variantid,
+                };
+                arr.push(obj);
+              });
 
-            props.saveSizeVariantNewTry(arr);
+              props.saveSizeVariantNewTry(arr);
+            }
           });
       });
   };
