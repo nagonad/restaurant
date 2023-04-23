@@ -58,6 +58,8 @@ export default class App extends Component {
   getProducts = (categoryId) => {
     let url = process.env.REACT_APP_BASE_URL + "/menu";
 
+    console.log(url);
+
     if (categoryId) {
       url += categoryId;
 
