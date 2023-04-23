@@ -585,7 +585,7 @@ app.delete("/productSizeVariantGroup/:id", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
+app.listen(10000, () => {
   console.log("server running on server 5000");
 });
 
