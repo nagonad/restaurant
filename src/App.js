@@ -1,7 +1,7 @@
 import Navi from "./Navi.js";
 
 import React, { Component } from "react";
-// import Checkout from "./Checkout.js";
+
 import { Routes, Route } from "react-router-dom";
 import MenuControl from "./MenuControl";
 import "./App.css";
@@ -39,7 +39,7 @@ export default class App extends Component {
   };
 
   getCostumerInfo = () => {
-    let url = "http://localhost:5000/costumer_info/";
+    let url = process.env.REACT_APP_BASE_URL + "/costumer_info/";
 
     const cevap = fetch(url);
 
@@ -47,7 +47,7 @@ export default class App extends Component {
   };
 
   getCostumerInfoLike = (number) => {
-    let url = "http://localhost:5000/costumer_info_like/";
+    let url = process.env.REACT_APP_BASE_URL + "/costumer_info_like/";
     url += number;
 
     const cevap = fetch(url);
@@ -56,7 +56,7 @@ export default class App extends Component {
   };
 
   getProducts = (categoryId) => {
-    let url = "https://exxx-woak.onrender.com/menu";
+    let url = process.env.REACT_APP_BASE_URL + "/menu";
     if (categoryId) {
       url += categoryId;
 
@@ -75,7 +75,7 @@ export default class App extends Component {
   };
 
   getProductsWithCategories = () => {
-    let url = "http://localhost:5000/menuWithCategories/";
+    let url = process.env.REACT_APP_BASE_URL + "/menuWithCategories/";
 
     const cevap = fetch(url);
 
