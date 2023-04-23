@@ -13,8 +13,7 @@ app.use(express.static(path.join(__dirname, "../build")));
 //get all menu
 app.get("/menu", async (req, res) => {
   try {
-    const menu = await pool.query("SELECT * from menu order by productid");
-    console.log(menu);
+    const menu = await pool.query("select * from menu order by productid");
     res.json(menu.rows);
   } catch (error) {
     console.error(error.message);
