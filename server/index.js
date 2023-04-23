@@ -12,13 +12,6 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../build")));
 
-app.get("/*", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "../public/index.html"),
-    (err) => err && res.status(500).send(err)
-  );
-});
-
 //get all menu
 app.get("/menu", async (req, res) => {
   try {
@@ -598,6 +591,14 @@ app.delete("/productSizeVariantGroup/:id", async (req, res) => {
   } catch (error) {
     console.error(error.message);
   }
+});
+
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "../public/index.html"), function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
 
 app.listen(process.env.REACT_APP_PORT, () => {
