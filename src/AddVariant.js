@@ -20,7 +20,7 @@ export default function AddVariant(props) {
   };
 
   useEffect(() => {
-    let url = "http://localhost:5000/productSizeVariant/";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariant/";
 
     url += props.selectedSize.id;
 

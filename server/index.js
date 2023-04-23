@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -45,7 +47,7 @@ app.post("/menu", async (req, res) => {
     );
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -58,7 +60,7 @@ app.delete("/menu/:id", async (req, res) => {
     ]);
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -73,7 +75,7 @@ app.put("/menu/:id", async (req, res) => {
 
     res.json("menu item updated");
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -85,7 +87,7 @@ app.get("/categories", async (req, res) => {
     );
     res.json(menu.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -99,7 +101,7 @@ app.get("/menu/:id", async (req, res) => {
     );
     res.json(categorizedMenu.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -111,7 +113,7 @@ app.get("/costumer_info", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -126,7 +128,7 @@ app.get("/costumer_info_like/:phonenumber", async (req, res) => {
     );
     res.json(costumers.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -140,7 +142,7 @@ app.post("/costumer_info", async (req, res) => {
     );
     res.json(costumerInfo.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -153,7 +155,7 @@ app.get("/order_history", async (req, res) => {
     );
     res.json(orderHistory.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -169,7 +171,7 @@ app.post("/order_history", async (req, res) => {
     );
     res.json(orderHistory.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -183,7 +185,7 @@ app.delete("/order_history/:id", async (req, res) => {
     );
     res.json(cevap.json);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -194,7 +196,7 @@ app.get("/size", async (req, res) => {
     const sizes = await pool.query("select * from size");
     res.json(sizes.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -207,7 +209,7 @@ app.post("/size", async (req, res) => {
     ]);
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -220,7 +222,7 @@ app.delete("/size/:id", async (req, res) => {
     ]);
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -251,7 +253,7 @@ app.post("/product_sizes", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -266,7 +268,7 @@ app.get("/product_sizes/:id", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -284,7 +286,7 @@ app.put("/product_sizes/:id", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -302,7 +304,7 @@ app.post("/variantControl", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -316,7 +318,7 @@ app.get("/variantControl", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -330,7 +332,7 @@ app.delete("/variantControl/:id", async (req, res) => {
 
     res.json(cevap);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -347,7 +349,7 @@ app.put("/variantControl/:id", async (req, res) => {
     );
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -357,7 +359,13 @@ app.post("/productSizeVariant", async (req, res) => {
   try {
     let values = getValues(req.body);
 
-    let keys = "(" + Object.keys(req.body[0]).join(",") + ")";
+    let keys = "";
+
+    if (Array.isArray(req.body)) {
+      keys = "(" + Object.keys(req.body[0]).join(",") + ")";
+    } else {
+      keys = "(" + Object.keys(req.body).join(",") + ")";
+    }
 
     const cevap = await pool.query(
       `insert into product_size_variants${keys} values${values}`
@@ -365,7 +373,7 @@ app.post("/productSizeVariant", async (req, res) => {
 
     res.json(cevap);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -378,7 +386,7 @@ app.get("/productSizeVariant", async (req, res) => {
     );
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -394,7 +402,7 @@ app.get("/productSizeVariant/:id", async (req, res) => {
     );
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -410,7 +418,7 @@ app.delete("/productSizeVariant/:id", async (req, res) => {
 
     res.json(cevap);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -426,7 +434,7 @@ app.delete("/productSizeVariantNewTry/:id", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -444,7 +452,7 @@ app.post("/variantGroupControl", async (req, res) => {
 
     res.json(cevap);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -454,7 +462,7 @@ app.get("/variantGroupControl", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -497,7 +505,7 @@ app.get("/variantGroupControl/:id", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -526,7 +534,7 @@ app.get("/variantGroupVariants/:id", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -568,7 +576,7 @@ app.get("/productSizeVariantGroup/:id", async (req, res) => {
 
     res.json(cevap.rows);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error.message);
   }
 });
 
@@ -585,8 +593,8 @@ app.delete("/productSizeVariantGroup/:id", async (req, res) => {
   }
 });
 
-app.listen(10000, () => {
-  console.log("server running on server 5000");
+app.listen(process.env.REACT_APP_PORT, () => {
+  console.log("server running on server " + process.env.REACT_APP_PORT);
 });
 
 const getKeys = (reqJson) => {

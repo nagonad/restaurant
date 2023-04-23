@@ -57,6 +57,7 @@ export default class App extends Component {
 
   getProducts = (categoryId) => {
     let url = process.env.REACT_APP_BASE_URL + "/menu";
+
     if (categoryId) {
       url += categoryId;
 
@@ -83,7 +84,7 @@ export default class App extends Component {
   };
 
   deleteProduct = (product) => {
-    let url = "http://localhost:5000/menu/";
+    let url = process.env.REACT_APP_BASE_URL + "/menu/";
     url += product.id;
 
     const cevap = fetch(url, {
@@ -93,7 +94,7 @@ export default class App extends Component {
   };
 
   getSelectedProduct = (product) => {
-    let url = "http://localhost:5000/product_sizes/";
+    let url = process.env.REACT_APP_BASE_URL + "/product_sizes/";
 
     url += product.id;
 
@@ -103,7 +104,7 @@ export default class App extends Component {
   };
 
   getProductSizes = () => {
-    let url = "http://localhost:5000/product_sizes/";
+    let url = process.env.REACT_APP_BASE_URL + "/product_sizes/";
 
     const cevap = fetch(url);
 
@@ -111,7 +112,9 @@ export default class App extends Component {
   };
 
   saveProductSize = (bodyJson) => {
-    fetch("http://localhost:5000/product_sizes", {
+    let url = process.env.REACT_APP_BASE_URL + "/product_sizes";
+
+    fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,7 +128,7 @@ export default class App extends Component {
   };
 
   updateProductSize = (body, size) => {
-    let url = "http://localhost:5000/product_sizes/";
+    let url = process.env.REACT_APP_BASE_URL + "/product_sizes/";
 
     url += size.productsizesid;
 
@@ -141,7 +144,7 @@ export default class App extends Component {
   };
 
   deleteVariant = (variant) => {
-    let url = "http://localhost:5000/variantControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantControl/";
 
     url += variant.id;
 
@@ -153,7 +156,7 @@ export default class App extends Component {
   };
 
   saveVariant = (bodyJson) => {
-    let url = "http://localhost:5000/variantControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantControl/";
 
     fetch(url, {
       method: "POST", // or 'PUT'
@@ -167,13 +170,15 @@ export default class App extends Component {
   };
 
   getVariants = () => {
-    fetch("http://localhost:5000/variantControl")
+    let url = process.env.REACT_APP_BASE_URL + "/variantControl";
+
+    fetch(url)
       .then((response) => response.json())
       .then((data) => this.setState({ variants: data }));
   };
 
   updateVariant = (variant, editedVariant) => {
-    let url = "http://localhost:5000/variantControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantControl/";
 
     url += variant.id;
 
@@ -194,7 +199,9 @@ export default class App extends Component {
     obj.variantid = variant.id;
     obj.productsizesid = size.productsizesid;
 
-    let url = "http://localhost:5000/productSizeVariant";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariant";
+
+    console.log(url);
 
     const cevap = fetch(url, {
       method: "POST", // or 'PUT'
@@ -208,7 +215,7 @@ export default class App extends Component {
   };
 
   saveSizeVariantNewTry = (obj) => {
-    let url = "http://localhost:5000/productSizeVariant";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariant";
 
     const cevap = fetch(url, {
       method: "POST",
@@ -222,7 +229,7 @@ export default class App extends Component {
   };
 
   getSizeVariantById = (size) => {
-    let url = "http://localhost:5000/productSizeVariant/";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariant/";
 
     url += size.productsizesid;
 
@@ -232,7 +239,7 @@ export default class App extends Component {
   };
 
   deleteSizeVariant = (variant) => {
-    let url = "http://localhost:5000/productSizeVariant/";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariant/";
 
     url += variant.sizevariantid;
 
@@ -244,7 +251,7 @@ export default class App extends Component {
   };
 
   deleteSizeVariantNewTry = (psvgelement) => {
-    let url = "http://localhost:5000/productSizeVariantNewTry/";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariantNewTry/";
 
     url += psvgelement.variantgroupid;
 
@@ -260,7 +267,7 @@ export default class App extends Component {
       variantgroupid: variantGroup.variantgroupid,
     };
 
-    let url = "http://localhost:5000/productSizeVariantGroup";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariantGroup";
 
     const cevap = fetch(url, {
       method: "POST",
@@ -274,7 +281,7 @@ export default class App extends Component {
   };
 
   getProductSizeVariantGroup = (productSize) => {
-    let url = "http://localhost:5000/productSizeVariantGroup/";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariantGroup/";
 
     if (productSize) {
       url += productSize.productsizesid;
@@ -286,7 +293,7 @@ export default class App extends Component {
   };
 
   deleteProductSizeVariantGroup = (psvg) => {
-    let url = "http://localhost:5000/productSizeVariantGroup/";
+    let url = process.env.REACT_APP_BASE_URL + "/productSizeVariantGroup/";
 
     url += psvg.productsizevariantgroupid;
 
@@ -298,7 +305,7 @@ export default class App extends Component {
   };
 
   saveVariantGroup = (obj) => {
-    let url = "http://localhost:5000/variantGroupControl";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl";
 
     const promise = fetch(url, {
       method: "POST",
@@ -312,7 +319,7 @@ export default class App extends Component {
   };
 
   getVariantGroup = (variantGroup) => {
-    let url = "http://localhost:5000/variantGroupControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl/";
 
     if (variantGroup) {
       url += variantGroup.variantgroupid;
@@ -326,7 +333,7 @@ export default class App extends Component {
   deleteVariantGroup = (variantGroup) => {
     const id = variantGroup.variantgroupid;
 
-    let url = "http://localhost:5000/variantGroupControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl/";
 
     url += id;
 
@@ -338,7 +345,7 @@ export default class App extends Component {
   };
 
   updateVariantGroup = (variantGroup, editedVariantGroup) => {
-    let url = "http://localhost:5000/variantGroupControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl/";
 
     url += variantGroup.variantgroupid;
 
@@ -359,7 +366,7 @@ export default class App extends Component {
       variantid: variant.id,
     };
 
-    let url = "http://localhost:5000/variantGroupVariants";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupVariants";
 
     const cevap = fetch(url, {
       method: "POST",
@@ -373,7 +380,7 @@ export default class App extends Component {
   };
 
   getVariantGroupVariant = (variantGroup) => {
-    let url = "http://localhost:5000/variantGroupVariants/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupVariants/";
     url += variantGroup.variantgroupid;
 
     const cevap = fetch(url);
@@ -382,7 +389,7 @@ export default class App extends Component {
   };
 
   deleteVariantGroupVariant = (vgv) => {
-    let url = "http://localhost:5000/variantGroupVariants/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupVariants/";
 
     url += vgv.vgvid;
 
@@ -394,7 +401,9 @@ export default class App extends Component {
   };
 
   saveProduct = (bodyJson) => {
-    fetch("http://localhost:5000/menu", {
+    let url = process.env.REACT_APP_BASE_URL + "/menu";
+
+    fetch(url, {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -425,7 +434,7 @@ export default class App extends Component {
   };
 
   getOrderHistory = () => {
-    let url = "http://localhost:5000/order_history";
+    let url = process.env.REACT_APP_BASE_URL + "/order_history";
 
     const cevap = fetch(url);
 
@@ -433,7 +442,7 @@ export default class App extends Component {
   };
 
   saveOrder = (order) => {
-    let url = "http://localhost:5000/order_history";
+    let url = process.env.REACT_APP_BASE_URL + "/order_history";
 
     const cevap = fetch(url, {
       method: "POST",
@@ -447,7 +456,7 @@ export default class App extends Component {
   };
 
   deleteOrder = (order) => {
-    let url = "http://localhost:5000/order_history/";
+    let url = process.env.REACT_APP_BASE_URL + "/order_history/";
     url += order.orderhistoryid;
 
     const cevap = fetch(url, {
@@ -458,7 +467,8 @@ export default class App extends Component {
   };
 
   getCategories = () => {
-    fetch("http://localhost:5000/categories")
+    let url = process.env.REACT_APP_BASE_URL + "/categories";
+    fetch(url)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ categories: data });
@@ -466,7 +476,8 @@ export default class App extends Component {
   };
 
   getSize = () => {
-    fetch("http://localhost:5000/size")
+    let url = process.env.REACT_APP_BASE_URL + "/size";
+    fetch(url)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ sizes: data });
@@ -474,7 +485,8 @@ export default class App extends Component {
   };
 
   saveSize = (size) => {
-    fetch("http://localhost:5000/size", {
+    let url = process.env.REACT_APP_BASE_URL + "/size";
+    fetch(url, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -488,7 +500,7 @@ export default class App extends Component {
   };
 
   deleteSize = (size) => {
-    let url = "http://localhost:5000/size/" + size.id;
+    let url = process.env.REACT_APP_BASE_URL + "/size/" + size.id;
 
     fetch(url, {
       method: "DELETE",
