@@ -56,14 +56,13 @@ export default class App extends Component {
   };
 
   getProducts = (categoryId) => {
-    let url = "http://localhost:10000/menu/";
+    let url = "http://localhost:5000/menu/";
     if (categoryId) {
       url += categoryId;
 
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           this.setState({ categorizedProducts: data });
         });
     } else {

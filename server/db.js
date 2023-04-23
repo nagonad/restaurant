@@ -29,7 +29,7 @@ const pool = new Pool({
 //   database: "pfmegrnargs",
 // });
 
-// pool.query("select * from menu").then((data) => console.log(data));
+pool.query("select * from menu").then((data) => console.log(data));
 
 // pool.connect();
 
