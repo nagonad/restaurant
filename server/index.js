@@ -7,17 +7,17 @@ const path = require("path");
 
 const pool = require("./db");
 
+app.use(cors());
+app.use(express.json());
+
+app.use(express.static(path.join(__dirname, "../build")));
+
 app.get("/*", (req, res) => {
   res.sendFile(
     path.join(__dirname, "../public/index.html"),
     (err) => err && res.status(500).send(err)
   );
 });
-
-app.use(cors());
-app.use(express.json());
-
-app.use(express.static(path.join(__dirname, "../build")));
 
 //get all menu
 app.get("/menu", async (req, res) => {
