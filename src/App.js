@@ -56,7 +56,7 @@ export default class App extends Component {
   };
 
   getProducts = (categoryId) => {
-    let url = "http://localhost:10000/menu/";
+    let url = "https://exxx-woak.onrender.com/menu";
     if (categoryId) {
       url += categoryId;
 
