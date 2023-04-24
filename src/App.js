@@ -144,7 +144,7 @@ export default class App extends Component {
   };
 
   deleteVariant = (variant) => {
-    let url = process.env.REACT_APP_BASE_URL + "/variantControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariant/";
 
     url += variant.id;
 
@@ -156,7 +156,7 @@ export default class App extends Component {
   };
 
   saveVariant = (bodyJson) => {
-    let url = process.env.REACT_APP_BASE_URL + "/variantControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariant/";
 
     fetch(url, {
       method: "POST", // or 'PUT'
@@ -170,7 +170,7 @@ export default class App extends Component {
   };
 
   getVariants = () => {
-    let url = process.env.REACT_APP_BASE_URL + "/variantControl";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariant";
 
     fetch(url)
       .then((response) => response.json())
@@ -178,7 +178,7 @@ export default class App extends Component {
   };
 
   updateVariant = (variant, editedVariant) => {
-    let url = process.env.REACT_APP_BASE_URL + "/variantControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariant/";
 
     url += variant.id;
 
@@ -305,7 +305,7 @@ export default class App extends Component {
   };
 
   saveVariantGroup = (obj) => {
-    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariantGroup";
 
     const promise = fetch(url, {
       method: "POST",
@@ -319,7 +319,7 @@ export default class App extends Component {
   };
 
   getVariantGroup = (variantGroup) => {
-    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariantGroup/";
 
     if (variantGroup) {
       url += variantGroup.variantgroupid;
@@ -333,7 +333,7 @@ export default class App extends Component {
   deleteVariantGroup = (variantGroup) => {
     const id = variantGroup.variantgroupid;
 
-    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariantGroup/";
 
     url += id;
 
@@ -345,7 +345,7 @@ export default class App extends Component {
   };
 
   updateVariantGroup = (variantGroup, editedVariantGroup) => {
-    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl/";
+    let url = process.env.REACT_APP_BASE_URL + "/manageVariantGroup/";
 
     url += variantGroup.variantgroupid;
 

@@ -292,7 +292,7 @@ app.put("/product_sizes/:id", async (req, res) => {
 
 // post variants
 
-app.post("/variantControl", async (req, res) => {
+app.post("/manageVariant", async (req, res) => {
   try {
     let keys = getKeys(req.body);
 
@@ -310,7 +310,7 @@ app.post("/variantControl", async (req, res) => {
 
 // get variants
 
-app.get("/variantControl", async (req, res) => {
+app.get("/manageVariant", async (req, res) => {
   try {
     const cevap = await pool.query(
       "select * from variants order by price,variantname"
@@ -324,7 +324,7 @@ app.get("/variantControl", async (req, res) => {
 
 //delete variants
 
-app.delete("/variantControl/:id", async (req, res) => {
+app.delete("/manageVariant/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -338,7 +338,7 @@ app.delete("/variantControl/:id", async (req, res) => {
 
 //update variants
 
-app.put("/variantControl/:id", async (req, res) => {
+app.put("/manageVariant/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -440,7 +440,7 @@ app.delete("/productSizeVariantNewTry/:id", async (req, res) => {
 
 // post variant group
 
-app.post("/variantGroupControl", async (req, res) => {
+app.post("/manageVariantGroup", async (req, res) => {
   try {
     const keys = getKeys(req.body);
 
@@ -456,7 +456,7 @@ app.post("/variantGroupControl", async (req, res) => {
   }
 });
 
-app.get("/variantGroupControl", async (req, res) => {
+app.get("/manageVariantGroup", async (req, res) => {
   try {
     const cevap = await pool.query("select * from variant_group");
 
@@ -466,7 +466,7 @@ app.get("/variantGroupControl", async (req, res) => {
   }
 });
 
-app.delete("/variantGroupControl/:id", async (req, res) => {
+app.delete("/manageVariantGroup/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -479,7 +479,7 @@ app.delete("/variantGroupControl/:id", async (req, res) => {
   }
 });
 
-app.put("/variantGroupControl/:id", async (req, res) => {
+app.put("/manageVariantGroup/:id", async (req, res) => {
   try {
     let { id } = req.params;
 
@@ -495,7 +495,7 @@ app.put("/variantGroupControl/:id", async (req, res) => {
   }
 });
 
-app.get("/variantGroupControl/:id", async (req, res) => {
+app.get("/manageVariantGroup/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
