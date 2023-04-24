@@ -86,7 +86,11 @@ const ComponentToPrint = forwardRef((props, ref) => {
           marginBottom: "8px",
         }}
       >
-        <img src={"./logo.png"} alt="Logo" style={{ width: "100px" }} />
+        <img
+          src={require("./Logo.png")}
+          alt="Logo"
+          style={{ width: "100px" }}
+        />
       </Box>
       <Divider></Divider>
       <Box marginY={1}>

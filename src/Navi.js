@@ -24,7 +24,7 @@ export default function Navi(props) {
       <List>
         <ListItem component={Link} to={"/"} disablePadding>
           <ListItemButton>
-            <img src={"./Logo.png"} alt="Logo" width={180} />
+            <img src={require("./Logo.png")} alt="Logo" width={180} />
           </ListItemButton>
         </ListItem>
         <ListItem component={Link} to={"/"} disablePadding>

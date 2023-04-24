@@ -777,7 +777,7 @@ export default function CreateOrder(props) {
                   onClick={() => setKundeDialog(true)}
                   variant="contained"
                 >
-                  Kunde Info
+                  Kundeninformationen
                 </Button>
                 {cart.length > 0 ? (
                   <PrintComponent
@@ -789,7 +789,7 @@ export default function CreateOrder(props) {
                   ></PrintComponent>
                 ) : (
                   <Button variant="contained" onClick={() => finalizeOrder()}>
-                    Drücken
+                    Drucken
                   </Button>
                 )}
               </Box>
