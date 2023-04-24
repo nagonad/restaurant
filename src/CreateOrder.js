@@ -206,7 +206,24 @@ export default function CreateOrder(props) {
     let str4 = <Box sx={{ fontStyle: "italic" }}>{str3}</Box>;
 
     let str5 = (
-      <Box marginLeft={"auto"} marginRight={1}>
+      <Box
+        sx={{ display: "flex", flexDirection: "row" }}
+        marginLeft={"auto"}
+        marginRight={1}
+      >
+        <Box sx={{ fontStyle: "italic" }} marginRight={"1rem"}>
+          <div>
+            {parseFloat(cartItem.cartItemCost * cartItem.quantity).toFixed(2)}€
+          </div>
+          {cartItem.cartItemVariantsCost ? (
+            <div>
+              {parseFloat(
+                cartItem.cartItemVariantsCost * cartItem.quantity
+              ).toFixed(2)}
+              €
+            </div>
+          ) : null}
+        </Box>
         <RemoveRounded
           onClick={() => minusQuantity(cartItem)}
           sx={{ fontSize: "30px" }}
@@ -417,8 +434,6 @@ export default function CreateOrder(props) {
         minute: "numeric",
       });
 
-      console.log(cart);
-
       setFinalOrderOjb(order);
     }
   }, [cart, cart.length, deliveryCost]);
@@ -442,72 +457,20 @@ export default function CreateOrder(props) {
       <Grid>
         <div>
           <Dialog
-            fullScreen
+            // fullScreen
+            fullWidth={true}
+            maxWidth={"lg"}
             open={open}
             onClose={handleClose}
             TransitionComponent={Transition}
           >
-            <AppBar sx={{ position: "relative" }}>
-              <Toolbar>
-                <IconButton
-                  edge="start"
-                  color="inherit"
-                  onClick={handleClose}
-                  aria-label="close"
-                >
-                  <CloseIcon />
-                </IconButton>
-                <Typography
-                  sx={{ ml: 2, flex: 1 }}
-                  variant="h6"
-                  component="div"
-                >
-                  {selectedProduct ? (
-                    <>
-                      {selectedProductForCart.productid} -{" "}
-                      {selectedProductForCart.productname}
-                    </>
-                  ) : null}
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            <List>
-              {selectedProduct
-                ? selectedProduct.map((size) => (
-                    <div key={size.productsizesid}>
-                      <ListItem
-                        onClick={() => {
-                          // console.log(size);
-                          setSelectedSizeForCart(size);
-                          getSV(size);
-                          setOpenSecond(true);
-                        }}
-                        button
-                      >
-                        <ListItemText
-                          primary={size.sizename}
-                          secondary={
-                            parseFloat(size.unitprice).toFixed(2) + "€"
-                          }
-                        />
-                      </ListItem>
-                      <Divider />
-                    </div>
-                  ))
-                : null}
-            </List>
-            <Dialog
-              fullScreen
-              open={openSecond}
-              onClose={() => setOpenSecond(false)}
-              TransitionComponent={Transition}
-            >
+            <div style={{ height: "400px" }}>
               <AppBar sx={{ position: "relative" }}>
                 <Toolbar>
                   <IconButton
                     edge="start"
                     color="inherit"
-                    onClick={() => setOpenSecond(false)}
+                    onClick={handleClose}
                     aria-label="close"
                   >
                     <CloseIcon />
@@ -517,58 +480,118 @@ export default function CreateOrder(props) {
                     variant="h6"
                     component="div"
                   >
-                    {selectedProductForCart ? (
+                    {selectedProduct ? (
                       <>
                         {selectedProductForCart.productid} -{" "}
-                        {selectedProductForCart.productname}{" "}
-                        {selectedSizeForCart ? (
-                          <>
-                            {selectedSizeForCart.sizename !== "SingleSize"
-                              ? `(${selectedSizeForCart.sizename})`
-                              : null}
-                          </>
-                        ) : null}
+                        {selectedProductForCart.productname}
                       </>
                     ) : null}
                   </Typography>
-                  <Button
-                    autoFocus
-                    color="inherit"
-                    onClick={() => {
-                      saveItemToTheCart();
-                    }}
-                  >
-                    Save
-                  </Button>
                 </Toolbar>
               </AppBar>
-              <Grid container spacing={{ xs: 2, md: 3 }} padding={2}>
-                {variants
-                  ? variants.map((variant) => (
-                      <Grid
-                        item
-                        xs={6}
-                        sm={4}
-                        md={3}
-                        key={variant.sizevariantid}
-                      >
-                        <Item
-                          sx={{
-                            boxShadow: variant.orderSelected
-                              ? "inset 0 0 10px rgba(0, 0, 0, 0.5)"
-                              : "",
-                          }}
+              <List>
+                {selectedProduct
+                  ? selectedProduct.map((size) => (
+                      <div key={size.productsizesid}>
+                        <ListItem
                           onClick={() => {
-                            setOrderSelect(variant);
+                            // console.log(size);
+                            setSelectedSizeForCart(size);
+                            getSV(size);
+                            setOpenSecond(true);
                           }}
+                          button
                         >
-                          <div>{variant.variantname}</div>
-                        </Item>
-                      </Grid>
+                          <ListItemText
+                            primary={size.sizename}
+                            secondary={
+                              parseFloat(size.unitprice).toFixed(2) + "€"
+                            }
+                          />
+                        </ListItem>
+                        <Divider />
+                      </div>
                     ))
                   : null}
-              </Grid>
-            </Dialog>
+              </List>
+              <Dialog
+                // fullScreen
+                fullWidth={true}
+                maxWidth={"lg"}
+                open={openSecond}
+                onClose={() => setOpenSecond(false)}
+                TransitionComponent={Transition}
+              >
+                <div style={{ height: "400px" }}>
+                  <AppBar sx={{ position: "relative" }}>
+                    <Toolbar>
+                      <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() => setOpenSecond(false)}
+                        aria-label="close"
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                      <Typography
+                        sx={{ ml: 2, flex: 1 }}
+                        variant="h6"
+                        component="div"
+                      >
+                        {selectedProductForCart ? (
+                          <>
+                            {selectedProductForCart.productid} -{" "}
+                            {selectedProductForCart.productname}{" "}
+                            {selectedSizeForCart ? (
+                              <>
+                                {selectedSizeForCart.sizename !== "SingleSize"
+                                  ? `(${selectedSizeForCart.sizename})`
+                                  : null}
+                              </>
+                            ) : null}
+                          </>
+                        ) : null}
+                      </Typography>
+                      <Button
+                        autoFocus
+                        color="inherit"
+                        onClick={() => {
+                          saveItemToTheCart();
+                        }}
+                      >
+                        Save
+                      </Button>
+                    </Toolbar>
+                  </AppBar>
+                  <Grid container spacing={{ xs: 2, md: 3 }} padding={2}>
+                    {variants
+                      ? variants.map((variant) => (
+                          <Grid
+                            item
+                            xs={6}
+                            sm={4}
+                            md={3}
+                            key={variant.sizevariantid}
+                          >
+                            <Item
+                              sx={{
+                                boxShadow: variant.orderSelected
+                                  ? "inset 0 0 10px rgba(0, 0, 0, 0.5)"
+                                  : "",
+                              }}
+                              onClick={() => {
+                                setOrderSelect(variant);
+                              }}
+                            >
+                              <div>{variant.variantname}</div>
+                            </Item>
+                          </Grid>
+                        ))
+                      : null}
+                  </Grid>
+                </div>
+              </Dialog>
+            </div>
           </Dialog>
         </div>
         <Dialog
