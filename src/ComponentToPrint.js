@@ -28,7 +28,7 @@ const renderVariants = (cartItem) => {
       <Box sx={{ fontStyle: "italic" }}>{cartItem.variants ? str : null}</Box>
       {cartItem.cartItemVariantsCost ? (
         <Box sx={{ marginLeft: "auto" }}>
-          {(cartItem.cartItemVariantsCost * cartItem.quantity).toFixed(2)}€
+          {cartItem.cartItemVariantsCost.toFixed(2)}€
         </Box>
       ) : null}
     </Box>
@@ -56,10 +56,7 @@ const renderCart = (props) => {
                   : null}
               </Box>
               <Box sx={{ marginLeft: "auto" }}>
-                {parseFloat(
-                  cartItem.size.unitprice * cartItem.quantity
-                ).toFixed(2)}
-                €
+                {parseFloat(cartItem.size.unitprice).toFixed(2)}€
               </Box>
             </Box>
             {renderVariants(cartItem)}

@@ -486,7 +486,9 @@ export default function CreateOrder(props) {
                       >
                         <ListItemText
                           primary={size.sizename}
-                          secondary={parseFloat(size.unitprice).toFixed(2)}
+                          secondary={
+                            parseFloat(size.unitprice).toFixed(2) + "€"
+                          }
                         />
                       </ListItem>
                       <Divider />
