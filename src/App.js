@@ -345,7 +345,7 @@ export default class App extends Component {
   };
 
   updateVariantGroup = (variantGroup, editedVariantGroup) => {
-    let url = process.env.REACT_APP_BASE_URL + "/manageVariantGroup/";
+    let url = process.env.REACT_APP_BASE_URL + "/variantGroupControl/";
 
     url += variantGroup.variantgroupid;
 
@@ -591,7 +591,7 @@ export default class App extends Component {
           ></Route>
           <Route
             exact
-            path="/menuControl/itemAdd"
+            path="/itemAdd"
             element={
               <MenuItemAdd
                 categories={this.state.categories}

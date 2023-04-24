@@ -53,7 +53,7 @@ export default function Navi(props) {
         </Collapse> */}
 
         <Divider />
-        <ListItem component={Link} to={"/menuControl/itemAdd"} disablePadding>
+        <ListItem component={Link} to={"/itemAdd"} disablePadding>
           <ListItemButton>
             <ListItemText primary={"Add Item to Menu"}></ListItemText>
           </ListItemButton>
