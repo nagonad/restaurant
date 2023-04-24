@@ -7,7 +7,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { Link } from "react-router-dom";
-import Logo from "./logo2.png";
 import Collapse from "@mui/material/Collapse";
 
 import CreateOrderAppBar from "./CreateOrderAppBar";
@@ -25,7 +24,7 @@ export default function Navi(props) {
       <List>
         <ListItem component={Link} to={"/"} disablePadding>
           <ListItemButton>
-            <img src={Logo} alt="" width={180} />
+            <img src={"./Logo.png"} alt="Logo" width={180} />
           </ListItemButton>
         </ListItem>
         <ListItem component={Link} to={"/"} disablePadding>

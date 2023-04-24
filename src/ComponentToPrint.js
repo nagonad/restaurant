@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import { Box, Divider, Typography } from "@mui/material";
-import logo from "./logo.png";
+
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
@@ -89,7 +89,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
           marginBottom: "8px",
         }}
       >
-        <img src={logo} alt="Bissula Grill" style={{ width: "100px" }} />
+        <img src={"./logo.png"} alt="Logo" style={{ width: "100px" }} />
       </Box>
       <Divider></Divider>
       <Box marginY={1}>
