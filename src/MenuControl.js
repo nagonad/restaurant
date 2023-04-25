@@ -309,7 +309,7 @@ function RenderDialogThird(props) {
   const deletePSVG = (variantGroup) => {
     props.deleteProductSizeVariantGroup(variantGroup).then(() => {
       freshVariantGroup();
-      props.deleteSizeVariantNewTry(variantGroup);
+      props.deleteSizeVariantNewTry(variantGroup, props.selectedProductSize);
     });
   };
 
@@ -331,6 +331,7 @@ function RenderDialogThird(props) {
                   productsizesid: props.selectedProductSize.productsizesid,
                   variantid: datum.variantid,
                 };
+                console.log(obj);
                 arr.push(obj);
               });
 

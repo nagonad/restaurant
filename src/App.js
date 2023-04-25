@@ -250,13 +250,17 @@ export default class App extends Component {
     return cevap;
   };
 
-  deleteSizeVariantNewTry = (psvgelement) => {
+  deleteSizeVariantNewTry = (psvgelement, productSize) => {
     let url = process.env.REACT_APP_BASE_URL + "/productSizeVariantNewTry/";
 
     url += psvgelement.variantgroupid;
 
     const cevap = fetch(url, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(productSize),
     });
     return cevap;
   };

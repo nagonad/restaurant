@@ -428,8 +428,10 @@ app.delete("/productSizeVariantNewTry/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
+    const productsizesid = req.body.productsizesid;
+
     const cevap = await pool.query(
-      `delete from product_size_variants where variantgroupid=${id}`
+      `delete from product_size_variants where variantgroupid=${id} and productsizesid=${productsizesid}`
     );
 
     res.json(cevap.rows);
