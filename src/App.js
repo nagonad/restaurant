@@ -21,6 +21,11 @@ export default class App extends Component {
     variants: [],
     sideBarOpen: false,
     categorizedProducts: [],
+    isLoading: true,
+  };
+
+  setIsloading = (value) => {
+    this.setState({ isLoading: value });
   };
 
   setSideBarOpen = (open) => {
@@ -65,12 +70,14 @@ export default class App extends Component {
         .then((response) => response.json())
         .then((data) => {
           this.setState({ categorizedProducts: data });
+          this.setIsloading(false);
         });
     } else {
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
           this.setState({ products: data, categorizedProducts: data });
+          this.setIsloading(false);
         });
     }
   };
@@ -552,6 +559,8 @@ export default class App extends Component {
                 categories={this.state.categories}
                 toggleDrawer={this.toggleDrawer}
                 categorizedProducts={this.state.categorizedProducts}
+                isLoading={this.state.isLoading}
+                setIsloading={this.setIsloading}
               />
             }
           ></Route>

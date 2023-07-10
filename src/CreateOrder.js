@@ -454,6 +454,11 @@ export default function CreateOrder(props) {
         categories={props.categories}
         toggleDrawer={props.toggleDrawer}
       ></CreateOrderAppBar> */}
+      {props.isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+        </div>
+      )}
       <Grid>
         <div>
           <Dialog
