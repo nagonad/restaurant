@@ -84,6 +84,8 @@ export default function CreateOrder(props) {
 
   const [cart, setCart] = React.useState([]);
 
+  const [dots, setDots] = React.useState("");
+
   const incrementCartItemOrderNumber = () => {
     setCartItemOrderNumber((prev) => prev + 1);
   };
@@ -447,6 +449,22 @@ export default function CreateOrder(props) {
       });
   }, []);
 
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prevDots) => {
+        if (prevDots.length >= 3) {
+          return "";
+        } else {
+          return prevDots + ".";
+        }
+      });
+    }, 500); // Adjust the interval duration as needed
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <>
       {/* <CreateOrderAppBar
@@ -456,6 +474,16 @@ export default function CreateOrder(props) {
       ></CreateOrderAppBar> */}
       {props.isLoading && (
         <div className="loading-overlay">
+          <Paper
+            sx={{
+              padding: "1rem",
+              marginBottom: "1rem",
+
+              width: "350px",
+            }}
+          >
+            <Typography>Please wait. This can take 30 seconds{dots}</Typography>
+          </Paper>
           <div className="spinner"></div>
         </div>
       )}
