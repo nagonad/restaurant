@@ -70,14 +70,14 @@ export default class App extends Component {
         .then((response) => response.json())
         .then((data) => {
           this.setState({ categorizedProducts: data });
-          // this.setIsloading(false);
+          this.setIsloading(false);
         });
     } else {
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
           this.setState({ products: data, categorizedProducts: data });
-          // this.setIsloading(false);
+          this.setIsloading(false);
         });
     }
   };
